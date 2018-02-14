@@ -1631,7 +1631,8 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 		// We're supposedly clean...
 		m_iDirtyCount = 0;
 		// Just load the prabable startup session...
-		if (loadSessionFileEx(m_pOptions->sSessionFile, false, !bSessionId)) {
+		const int iFlags = qtractorDocument::Default;
+		if (loadSessionFileEx(m_pOptions->sSessionFile, iFlags, !bSessionId)) {
 			m_pOptions->sSessionFile.clear();
 			// Take appropriate action when session is loaded from
 			// some foreign session manager (eg. JACK session)...
@@ -1953,8 +1954,9 @@ bool qtractorMainForm::newSession (void)
 	// Check whether we start the new session
 	// based on existing template...
 	if (m_pOptions && m_pOptions->bSessionTemplate) {
+		const int iFlags = qtractorDocument::Template;
 		const bool bNewSession
-			= loadSessionFileEx(m_pOptions->sSessionTemplatePath, true, false);
+			= loadSessionFileEx(m_pOptions->sSessionTemplatePath, iFlags, false);
 		return bNewSession;
 	}
 #ifdef CONFIG_NSM
@@ -2202,7 +2204,7 @@ bool qtractorMainForm::saveSession ( bool bPrompt )
 	}
 
 	// Save it right away.
-	return saveSessionFile(sFilename);
+	return saveSessionFileEx(sFilename, qtractorDocument::Default, true);
 }
 
 
@@ -2354,22 +2356,51 @@ bool qtractorMainForm::closeSession (void)
 
 
 // Load a session from specific file path.
+bool qtractorMainForm::loadSessionFile ( const QString& sFilename )
+{
+	bool bUpdate = true;
+
+	// We're supposedly clean...
+	m_iDirtyCount = 0;
+
+#ifdef CONFIG_NSM
+	if (m_pNsmClient && m_pNsmClient->is_active()) {
+		m_pSession->setClientName(m_pNsmClient->client_id());
+		bUpdate = false;
+	}
+#endif
+
+	const bool bLoadSessionFile
+		= loadSessionFileEx(sFilename, qtractorDocument::Default, bUpdate);
+
+#ifdef CONFIG_NSM
+	if (m_pNsmClient && m_pNsmClient->is_active()) {
+		m_pSession->setSessionName(m_pNsmClient->display_name());
+		m_pSession->setSessionDir(m_pNsmClient->path_name());
+		m_sNsmExt = QFileInfo(sFilename).suffix();
+		updateDirtyCount(true);
+		stabilizeForm();
+	}
+#endif
+
+	return bLoadSessionFile;
+}
+
+
 bool qtractorMainForm::loadSessionFileEx (
-	const QString& sFilename, bool bTemplate, bool bUpdate )
+	const QString& sFilename, int iFlags, bool bUpdate )
 {
 #ifdef CONFIG_DEBUG
 	qDebug("qtractorMainForm::loadSessionFileEx(\"%s\", %d, %d)",
-		sFilename.toUtf8().constData(), int(bTemplate), int(bUpdate));
+		sFilename.toUtf8().constData(), iFlags, int(bUpdate));
 #endif
 
 	// Flag whether we're about to load a template or archive...
 	QFileInfo info(sFilename);
-	int iFlags = qtractorDocument::Default;
 	const QString& sSuffix = info.suffix();
-	if (sSuffix == qtractorDocument::templateExt() || bTemplate) {
+	if (sSuffix == qtractorDocument::templateExt())
 		iFlags |= qtractorDocument::Template;
-		bTemplate = true;
-	}
+
 #ifdef CONFIG_LIBZ
 	if (sSuffix == qtractorDocument::archiveExt()) {
 		iFlags |= qtractorDocument::Archive;
@@ -2453,7 +2484,7 @@ bool qtractorMainForm::loadSessionFileEx (
 	if (bLoadSessionFileEx) {
 		// Got something loaded...
 		// we're not dirty anymore.
-		if (!bTemplate && bUpdate) {
+		if ((iFlags & qtractorDocument::Template) == 0 && bUpdate) {
 			updateRecentFiles(sFilename);
 		//	m_iDirtyCount = 0;
 		}
@@ -2487,7 +2518,7 @@ bool qtractorMainForm::loadSessionFileEx (
 	}
 
 	// Stabilize form title...
-	if (bTemplate) {
+	if (iFlags & qtractorDocument::Template) {
 		++m_iUntitled;
 		m_sFilename.clear();
 	} else if (bUpdate) {
@@ -2503,53 +2534,19 @@ bool qtractorMainForm::loadSessionFileEx (
 }
 
 
-bool qtractorMainForm::loadSessionFile ( const QString& sFilename )
-{
-	bool bUpdate = true;
-
-	// We're supposedly clean...
-	m_iDirtyCount = 0;
-
-#ifdef CONFIG_NSM
-	if (m_pNsmClient && m_pNsmClient->is_active()) {
-		m_pSession->setClientName(m_pNsmClient->client_id());
-		bUpdate = false;
-	}
-#endif
-
-	const bool bLoadSessionFile
-		= loadSessionFileEx(sFilename, false, bUpdate);
-
-#ifdef CONFIG_NSM
-	if (m_pNsmClient && m_pNsmClient->is_active()) {
-		m_pSession->setSessionName(m_pNsmClient->display_name());
-		m_pSession->setSessionDir(m_pNsmClient->path_name());
-		m_sNsmExt = QFileInfo(sFilename).suffix();
-		updateDirtyCount(true);
-		stabilizeForm();
-	}
-#endif
-
-	return bLoadSessionFile;
-}
-
-
 // Save current session to specific file path.
 bool qtractorMainForm::saveSessionFileEx (
-	const QString& sFilename, bool bTemplate, bool bUpdate )
+	const QString& sFilename, int iFlags, bool bUpdate )
 {
 #ifdef CONFIG_DEBUG
 	qDebug("qtractorMainForm::saveSessionFileEx(\"%s\", %d, %d)",
-		sFilename.toUtf8().constData(), int(bTemplate), int(bUpdate));
+		sFilename.toUtf8().constData(), iFlags, int(bUpdate));
 #endif
 
 	// Flag whether we're about to save as template or archive...
-	int iFlags = qtractorDocument::Default;
 	const QString& sSuffix = QFileInfo(sFilename).suffix();
-	if (sSuffix == qtractorDocument::templateExt() || bTemplate) {
+	if (sSuffix == qtractorDocument::templateExt())
 		iFlags |= qtractorDocument::Template;
-		bTemplate = true;
-	}
 #ifdef CONFIG_LIBZ
 	if (sSuffix == qtractorDocument::archiveExt())
 		iFlags |= qtractorDocument::Archive;
@@ -2596,7 +2593,7 @@ bool qtractorMainForm::saveSessionFileEx (
 	if (bResult) {
 		// Got something saved...
 		// we're not dirty anymore.
-		if (!bTemplate && bUpdate) {
+		if ((iFlags & qtractorDocument::Template) == 0 && bUpdate) {
 			updateRecentFiles(sFilename);
 			autoSaveReset();
 			m_iDirtyCount = 0;
@@ -2627,7 +2624,7 @@ bool qtractorMainForm::saveSessionFileEx (
 	}
 
 	// Stabilize form title...
-	if (!bTemplate && bUpdate)
+	if ((iFlags & qtractorDocument::Template) == 0 && bUpdate)
 		m_sFilename = sFilename;
 
 	appendMessages(tr("Save session: \"%1\".").arg(sessionName(sFilename)));
@@ -2636,12 +2633,6 @@ bool qtractorMainForm::saveSessionFileEx (
 	stabilizeForm();
 
 	return bResult;
-}
-
-
-bool qtractorMainForm::saveSessionFile ( const QString& sFilename )
-{
-	return saveSessionFileEx(sFilename, false, true);
 }
 
 
@@ -2719,7 +2710,8 @@ void qtractorMainForm::openNsmSession (void)
 		const QFileInfo fi(path_name, display_name + '.' + m_sNsmExt);
 		const QString& sFilename = fi.absoluteFilePath();
 		if (fi.exists()) {
-			bLoaded = loadSessionFileEx(sFilename, false, false);
+			const int iFlags = qtractorDocument::Default;
+			bLoaded = loadSessionFileEx(sFilename, iFlags, false);
 			if (bLoaded) m_sNsmFile = sFilename;
 		} else {
 			updateSessionPre();
@@ -2793,7 +2785,8 @@ void qtractorMainForm::saveNsmSessionEx ( bool bSaveReply )
 		m_pSession->setSessionDir(path_name);
 		const QFileInfo fi(path_name, display_name + '.' + m_sNsmExt);
 		const QString& sFilename = fi.absoluteFilePath();
-		bSaved = saveSessionFileEx(sFilename, false, false);
+		const int iFlags = qtractorDocument::SymLink;
+		bSaved = saveSessionFileEx(sFilename, iFlags, false);
 		if (bSaved) m_sNsmFile = sFilename;
 	}
 
@@ -2898,7 +2891,8 @@ void qtractorMainForm::autoSaveSession (void)
 		sAutoSavePathname.toUtf8().constData());
 #endif
 
-	if (saveSessionFileEx(sAutoSavePathname, false, false)) {
+	const int iFlags = qtractorDocument::Default;
+	if (saveSessionFileEx(sAutoSavePathname, iFlags, false)) {
 		m_pOptions->sAutoSavePathname = sAutoSavePathname;
 		m_pOptions->sAutoSaveFilename = m_sFilename;
 		m_pOptions->saveOptions();
@@ -2928,7 +2922,8 @@ bool qtractorMainForm::autoSaveOpen (void)
 			"Do you want to crash-recover from it?")
 			.arg(sAutoSavePathname),
 			QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
-			if (loadSessionFileEx(sAutoSavePathname, false, false)) {
+			const int iFlags = qtractorDocument::Default;
+			if (loadSessionFileEx(sAutoSavePathname, iFlags, false)) {
 				m_sFilename = m_pOptions->sAutoSaveFilename;
 				++m_iDirtyCount;
 				return true;
@@ -7867,7 +7862,8 @@ void qtractorMainForm::audioBuffNotify ( unsigned int iBufferSize )
 		qtractorLv2PluginType::lv2_close();
 	#endif
 		// Reload the auto-saved session alright...
-		if (loadSessionFileEx(sAutoSavePathname, false, false)) {
+		const int iFlags = qtractorDocument::Default;
+		if (loadSessionFileEx(sAutoSavePathname, iFlags, false)) {
 			m_sFilename = m_pOptions->sAutoSaveFilename;
 			++m_iDirtyCount;
 		}
@@ -7941,8 +7937,10 @@ void qtractorMainForm::audioSessNotify ( void *pvSessionArg )
 
 	const QString sFilename
 		= QFileInfo(sSessionDir, sSessionFile).absoluteFilePath();
+	const int iFlags
+		= (bTemplate ? qtractorDocument::Template : qtractorDocument::Default);
 
-	if (saveSessionFileEx(sFilename, bTemplate, false))
+	if (saveSessionFileEx(sFilename, iFlags | qtractorDocument::SymLink, false))
 		args << QString("\"${SESSION_DIR}%1\"").arg(sSessionFile);
 
 	const QByteArray aCmdLine = args.join(" ").toUtf8();
