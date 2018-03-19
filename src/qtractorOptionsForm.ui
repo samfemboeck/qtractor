@@ -3914,11 +3914,8 @@
   <tabstop>DummyPluginScanCheckBox</tabstop>
   <tabstop>Lv2DynManifestCheckBox</tabstop>
   <tabstop>SaveCurve14bitCheckBox</tabstop>
-<<<<<<< HEAD
-  <tabstop>OscServerPortSpinBox</tabstop>
-=======
   <tabstop>TrackListPluginsCheckBox</tabstop>
->>>>>>> master
+  <tabstop>OscServerPortSpinBox</tabstop>
   <tabstop>DialogButtonBox</tabstop>
  </tabstops>
  <resources>
