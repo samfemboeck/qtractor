@@ -92,6 +92,8 @@ public:
 
 	unsigned short channel() const
 		{ return (m_pData ? m_pData->channel() : 0); }
+	int bankSelMethod() const
+		{ return (m_pData ? m_pData->bankSelMethod() : -1); }
 	int bank() const
 		{ return (m_pData ? m_pData->bank() : -1); }
 	int prog() const
@@ -119,9 +121,11 @@ public:
 	void draw(QPainter *pPainter,
 		const QRect& clipRect, unsigned long iClipOffset);
 
+	// Clip update method (rolling stats).
+	void update();
+
 	// Clip editor methods.
 	bool startEditor(QWidget *pParent = NULL);
-	void resetEditor(bool bSelectClear);
 	void updateEditor(bool bSelectClear);
 	void updateEditorContents();
 	bool queryEditor();
@@ -168,6 +172,8 @@ public:
 		unsigned short channel() const
 			{ return m_pSeq->channel(); }
 
+		int bankSelMethod() const
+			{ return m_pSeq->bankSelMethod(); }
 		int bank() const
 			{ return m_pSeq->bank(); }
 		int prog() const
@@ -208,7 +214,6 @@ public:
 
 	// Sync all ref-counted clip editors.
 	void updateEditorEx(bool bSelectClear);
-	void resetEditorEx(bool bSelectClear);
 
 	// Sync all ref-counted clip-dirtyness.
 	void setDirtyEx(bool bDirty);

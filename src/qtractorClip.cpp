@@ -28,6 +28,8 @@
 
 #include "qtractorClipCommand.h"
 
+#include "qtractorMidiClip.h"
+
 #include "qtractorClipForm.h"
 
 #include <QFileInfo>
@@ -487,6 +489,9 @@ void qtractorClip::drawClipRecord (
 	// Draw the framed rectangle and background...
 	pPainter->drawRect(clipRect);
 
+	// Update clip rolling stats, if any...
+	update();
+
 	// Draw clip contents (virtual)...
 	draw(pPainter, clipRect, iClipOffset);
 
@@ -504,11 +509,6 @@ bool qtractorClip::startEditor ( QWidget *pParent )
 	return clipForm.exec();
 }
 
-// Clip editor reset.
-void qtractorClip::resetEditor ( bool /*bSelectClear*/ )
-{
-	// Do nothing here.
-}
 
 // Clip editor update.
 void qtractorClip::updateEditor ( bool /*bSelectClear*/ )
@@ -516,11 +516,13 @@ void qtractorClip::updateEditor ( bool /*bSelectClear*/ )
 	// Do nothing here.
 }
 
+
 // Clip editor contents update.
 void qtractorClip::updateEditorContents (void)
 {
 	// Do nothing here.
 }
+
 
 // Clip query-close method (return true if editing is done).
 bool qtractorClip::queryEditor (void)
