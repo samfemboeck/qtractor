@@ -109,7 +109,6 @@ HEADERS += config.h \
 	qtractorThumbView.h \
 	qtractorTimeScale.h \
 	qtractorTimeScaleCommand.h \
-	qtractorTimeStretch.h \
 	qtractorTimeStretcher.h \
 	qtractorTrack.h \
 	qtractorTrackButton.h \
@@ -120,6 +119,7 @@ HEADERS += config.h \
 	qtractorTracks.h \
 	qtractorVstPlugin.h \
 	qtractorZipFile.h \
+	qtractorWsolaTimeStretcher.h \
 	qtractorBusForm.h \
 	qtractorClipForm.h \
 	qtractorConnectForm.h \
@@ -133,6 +133,7 @@ HEADERS += config.h \
 	qtractorMidiSysexForm.h \
 	qtractorMidiToolsForm.h \
 	qtractorOptionsForm.h \
+	qtractorPaletteForm.h \
 	qtractorPasteRepeatForm.h \
 	qtractorPluginForm.h \
 	qtractorPluginSelectForm.h \
@@ -233,7 +234,6 @@ SOURCES += \
 	qtractorThumbView.cpp \
 	qtractorTimeScale.cpp \
 	qtractorTimeScaleCommand.cpp \
-	qtractorTimeStretch.cpp \
 	qtractorTimeStretcher.cpp \
 	qtractorTrack.cpp \
 	qtractorTrackButton.cpp \
@@ -243,6 +243,7 @@ SOURCES += \
 	qtractorTrackView.cpp \
 	qtractorTracks.cpp \
 	qtractorVstPlugin.cpp \
+	qtractorWsolaTimeStretcher.cpp \
 	qtractorZipFile.cpp \
 	qtractorBusForm.cpp \
 	qtractorClipForm.cpp \
@@ -257,6 +258,7 @@ SOURCES += \
 	qtractorMidiSysexForm.cpp \
 	qtractorMidiToolsForm.cpp \
 	qtractorOptionsForm.cpp \
+	qtractorPaletteForm.cpp \
 	qtractorPasteRepeatForm.cpp \
 	qtractorPluginForm.cpp \
 	qtractorPluginSelectForm.cpp \
@@ -281,6 +283,7 @@ FORMS += \
 	qtractorMidiSysexForm.ui \
 	qtractorMidiToolsForm.ui \
 	qtractorOptionsForm.ui \
+	qtractorPaletteForm.ui \
 	qtractorPasteRepeatForm.ui \
 	qtractorPluginForm.ui \
 	qtractorPluginSelectForm.ui \
@@ -361,13 +364,8 @@ unix {
 		mimetypes/application-x-$${NAME}-archive.svg
 }
 
-# XML/DOM support
-QT += xml
+QT += widgets xml
 
 # OSC/UDP support
 QT += network
 
-# QT5 support
-!lessThan(QT_MAJOR_VERSION, 5) {
-	QT += widgets
-}

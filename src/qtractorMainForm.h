@@ -430,6 +430,9 @@ protected:
 	void updateSyncViewHold();
 	void updateOscControl();
 
+	void updateCustomColorTheme();
+	void updateCustomStyleTheme();
+
 	void updateContents(qtractorMidiEditor *pMidiEditor, bool bRefresh);
 	void updateDirtyCount(bool bDirtyCount);
 
