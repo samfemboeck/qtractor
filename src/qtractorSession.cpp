@@ -2446,8 +2446,12 @@ bool qtractorSession::saveElement (
 
 // Rename session files...
 void qtractorSession::renameSession (
-	const QString& sOldSessionName, const QString& sNewSessionName )
+	const QString& sOldName, const QString& sNewName )
 {
+	// Do nothing if names are obviously the same...
+	if (sOldName == sNewName)
+		return;
+
 	qtractorFiles *pFiles = NULL;
 	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
 	if (pMainForm)
@@ -2458,7 +2462,7 @@ void qtractorSession::renameSession (
 	// Lock it up...
 	lock();
 
-	const QRegExp rx('^' + sOldSessionName);
+	const QRegExp rx('^' + sOldName);
 
 	// For each and every track...
 	for (qtractorTrack *pTrack = m_tracks.first();
@@ -2479,7 +2483,7 @@ void qtractorSession::renameSession (
 			// Rename clip filename prefix...
 			const QFileInfo info1(pClip->filename());
 			QString sFileName = info1.fileName();
-			sFileName.replace(rx, sNewSessionName);
+			sFileName.replace(rx, sNewName);
 			const QFileInfo info2(info1.dir(), sFileName);
 		#ifdef CONFIG_DEBUG
 			qDebug("qtractorSession::renameSession: \"%s\" -> \"%s\"",
@@ -2491,24 +2495,16 @@ void qtractorSession::renameSession (
 			const QString& sNewFilePath
 				= info2.absoluteFilePath();
 			if (QFile::rename(sOldFilePath, sNewFilePath)) {
+				// Re-hash clip filenames...
 				if (iFileType == qtractorFileList::Midi) {
 					qtractorMidiClip *pMidiClip
 						= static_cast<qtractorMidiClip *> (pClip);
-					if (pMidiClip) {
-						pMidiClip->removeHashKey();
-						pMidiClip->setFilename(sNewFilePath);
-						pMidiClip->updateHashKey();
-						pMidiClip->insertHashKey();
-					}
+					if (pMidiClip)
+						pMidiClip->setFilenameEx(sNewFilePath, false);
 				} else {
-					qtractorAudioClip *pAudioClip
-						= static_cast<qtractorAudioClip *> (pClip);
-					if (pAudioClip) {
-						pAudioClip->removeHashKey();
-						pAudioClip->setFilename(sNewFilePath);
-						pAudioClip->updateHashKey();
-						pAudioClip->insertHashKey();
-					}
+					pClip->close();
+					pClip->setFilename(sNewFilePath);
+					pClip->open();
 				}
 				// Manage files-view item...
 				if (pFileListView) {
@@ -2525,6 +2521,10 @@ void qtractorSession::renameSession (
 			}
 		}
 	}
+
+	// If session name has changed, we'll prompt
+	// for correct filename when save is triggered...
+	pMainForm->clearFilename();
 
 	// Done.
 	unlock();
