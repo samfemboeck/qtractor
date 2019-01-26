@@ -99,6 +99,8 @@ public:
 	QString sessionName(const QString& sFilename) const;
 	QString untitledName(void) const;
 
+	void clearFilename();
+
 	void updateTransportTime(unsigned long iPlayHead);
 
 	void appendMessages(const QString& s);
