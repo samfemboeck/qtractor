@@ -3714,6 +3714,7 @@
           </property>
           <item row="0" column="0">
            <widget class="QCheckBox" name="SaveCurve14bitCheckBox">
+<<<<<<< HEAD
             <property name="font">
              <font>
               <weight>50</weight>
