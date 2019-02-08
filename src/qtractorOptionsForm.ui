@@ -1460,7 +1460,7 @@
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeHint">
-             <size>
+1             <size>
               <width>20</width>
               <height>20</height>
              </size>
