@@ -394,32 +394,32 @@ MIDI:	</translation>
         <translation>%1 (%2)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptions.cpp" line="697"/>
+        <location filename="../qtractorOptions.cpp" line="683"/>
         <source>Usage: %1 [options] [session-file]</source>
         <translation>Utilizzo: %1 [opzioni] [file di sessione]</translation>
     </message>
     <message>
-        <location filename="../qtractorOptions.cpp" line="700"/>
+        <location filename="../qtractorOptions.cpp" line="686"/>
         <source>Options:</source>
         <translation>Opzioni:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptions.cpp" line="703"/>
+        <location filename="../qtractorOptions.cpp" line="689"/>
         <source>Set session identification (uuid)</source>
         <translation>Imposta identificativo sessione (uuid)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptions.cpp" line="706"/>
+        <location filename="../qtractorOptions.cpp" line="692"/>
         <source>Show help about command line options</source>
         <translation>Mostra opzioni della riga di comando</translation>
     </message>
     <message>
-        <location filename="../qtractorOptions.cpp" line="708"/>
+        <location filename="../qtractorOptions.cpp" line="694"/>
         <source>Show version information</source>
         <translation>Mostra informazioni di versione</translation>
     </message>
     <message>
-        <location filename="../qtractorOptions.cpp" line="745"/>
+        <location filename="../qtractorOptions.cpp" line="731"/>
         <source>Option -s requires an argument (session-id).</source>
         <translation>L&apos;opzione -s richiede un argomento (ID sessione).</translation>
     </message>
@@ -434,7 +434,7 @@ MIDI:	</translation>
         <translation>Attiva</translation>
     </message>
     <message>
-        <location filename="../qtractorPlugin.cpp" line="2031"/>
+        <location filename="../qtractorPlugin.cpp" line="2026"/>
         <source>%1(%2): %3 plugin not found.</source>
         <translation>%1(%2): %3 plugin non trovata.</translation>
     </message>
@@ -686,32 +686,32 @@ Traccia: &quot;%1&quot; Ingresso: &quot;%2&quot; Uscita: &quot;%3&quot;</transla
         <translation>strumento della traccia</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="112"/>
+        <location filename="../qtractorTrackList.cpp" line="111"/>
         <source>Automation (%1)</source>
         <translation>Automazione (%1)</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="120"/>
+        <location filename="../qtractorTrackList.cpp" line="119"/>
         <source>none</source>
         <translation>nessuno</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="220"/>
+        <location filename="../qtractorTrackList.cpp" line="219"/>
         <source>Automation</source>
         <translation>Automazione</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="436"/>
+        <location filename="../qtractorTrackList.cpp" line="435"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="467"/>
+        <location filename="../qtractorTrackList.cpp" line="466"/>
         <source>MIDI</source>
         <translation>MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="544"/>
+        <location filename="../qtractorTrackList.cpp" line="543"/>
         <source>Unknown</source>
         <translation>Sconosciuto</translation>
     </message>
@@ -800,11 +800,6 @@ Traccia: &quot;%1&quot; Ingresso: &quot;%2&quot; Uscita: &quot;%3&quot;</transla
         <location filename="../qtractorCurveFile.cpp" line="222"/>
         <source>%1: Automation/curve file not found.</source>
         <translation>%1: File di automazione/curva non trovato.</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportExtender.cpp" line="409"/>
-        <source>Drums</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3017,7 +3012,7 @@ Vuoi applicare le modifiche?</translation>
     <message>
         <location filename="../qtractorMainForm.ui" line="912"/>
         <location filename="../qtractorMainForm.ui" line="2943"/>
-        <location filename="../qtractorMainForm.cpp" line="7008"/>
+        <location filename="../qtractorMainForm.cpp" line="7000"/>
         <source>&amp;None</source>
         <translation>&amp;Nessuno</translation>
     </message>
@@ -5416,7 +5411,7 @@ Vuoi applicare le modifiche?</translation>
     <message>
         <location filename="../qtractorMainForm.ui" line="3054"/>
         <location filename="../qtractorMainForm.ui" line="3057"/>
-        <location filename="../qtractorMainForm.cpp" line="5894"/>
+        <location filename="../qtractorMainForm.cpp" line="5886"/>
         <source>About</source>
         <translation>Informazioni su</translation>
     </message>
@@ -5442,92 +5437,92 @@ Vuoi applicare le modifiche?</translation>
         <translation>Mostra informazioni sulle librerie Qt</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="548"/>
+        <location filename="../qtractorMainForm.cpp" line="546"/>
         <source>Current tempo (BPM)</source>
         <translation>Tempo corrente (BPM)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="564"/>
+        <location filename="../qtractorMainForm.cpp" line="562"/>
         <source>Snap/beat</source>
         <translation>Allineamento/battito</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="620"/>
+        <location filename="../qtractorMainForm.cpp" line="618"/>
         <source>Track</source>
         <translation>Traccia</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="622"/>
+        <location filename="../qtractorMainForm.cpp" line="620"/>
         <source>Current track name</source>
         <translation>Nome traccia corrente</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="635"/>
-        <location filename="../qtractorMainForm.cpp" line="6289"/>
+        <location filename="../qtractorMainForm.cpp" line="633"/>
+        <location filename="../qtractorMainForm.cpp" line="6281"/>
         <source>MOD</source>
         <translation>MOD</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="638"/>
+        <location filename="../qtractorMainForm.cpp" line="636"/>
         <source>Session modification state</source>
         <translation>Stato modifica sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="644"/>
-        <location filename="../qtractorMainForm.cpp" line="6294"/>
+        <location filename="../qtractorMainForm.cpp" line="642"/>
+        <location filename="../qtractorMainForm.cpp" line="6286"/>
         <source>REC</source>
         <translation>REC</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="647"/>
+        <location filename="../qtractorMainForm.cpp" line="645"/>
         <source>Session record state</source>
         <translation>Stato registrazione sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="653"/>
-        <location filename="../qtractorMainForm.cpp" line="6299"/>
+        <location filename="../qtractorMainForm.cpp" line="651"/>
+        <location filename="../qtractorMainForm.cpp" line="6291"/>
         <source>MUTE</source>
         <translation>MUTE</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="656"/>
+        <location filename="../qtractorMainForm.cpp" line="654"/>
         <source>Session muting state</source>
         <translation>Stato silenziamento sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="662"/>
-        <location filename="../qtractorMainForm.cpp" line="6304"/>
+        <location filename="../qtractorMainForm.cpp" line="660"/>
+        <location filename="../qtractorMainForm.cpp" line="6296"/>
         <source>SOLO</source>
         <translation>SOLO</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="665"/>
+        <location filename="../qtractorMainForm.cpp" line="663"/>
         <source>Session soloing state</source>
         <translation>Stato solo sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="671"/>
-        <location filename="../qtractorMainForm.cpp" line="6309"/>
+        <location filename="../qtractorMainForm.cpp" line="669"/>
+        <location filename="../qtractorMainForm.cpp" line="6301"/>
         <source>LOOP</source>
         <translation>LOOP</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="674"/>
+        <location filename="../qtractorMainForm.cpp" line="672"/>
         <source>Session looping state</source>
         <translation>Stato loop sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="692"/>
+        <location filename="../qtractorMainForm.cpp" line="690"/>
         <source>Session total time</source>
         <translation>Tempo totale sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="702"/>
+        <location filename="../qtractorMainForm.cpp" line="700"/>
         <source>Session sample rate</source>
         <translation>Frequenza di campionamento sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="1654"/>
+        <location filename="../qtractorMainForm.cpp" line="1652"/>
         <source>Could not set default session directory:
 
 %1
@@ -5540,81 +5535,81 @@ Sorry.</source>
 Spiacente.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="1618"/>
+        <location filename="../qtractorMainForm.cpp" line="1616"/>
         <source>Ready</source>
         <translation>Pronto</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="684"/>
+        <location filename="../qtractorMainForm.cpp" line="682"/>
         <source>Session XRUN state</source>
         <translation>Stato della sessione XRUN</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="1929"/>
-        <location filename="../qtractorMainForm.cpp" line="8004"/>
+        <location filename="../qtractorMainForm.cpp" line="1927"/>
+        <location filename="../qtractorMainForm.cpp" line="7996"/>
         <source>Untitled%1</source>
         <translation>SenzaTitolo%1</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="1980"/>
-        <location filename="../qtractorMainForm.cpp" line="2737"/>
+        <location filename="../qtractorMainForm.cpp" line="1978"/>
+        <location filename="../qtractorMainForm.cpp" line="2735"/>
         <source>New session: &quot;%1&quot;.</source>
         <translation>Nuova sessione: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2001"/>
-        <location filename="../qtractorMainForm.cpp" line="2096"/>
+        <location filename="../qtractorMainForm.cpp" line="1999"/>
+        <location filename="../qtractorMainForm.cpp" line="2094"/>
         <source>Session files (*.%1 *.%2 *.%3)</source>
         <translation>File di sessione (*.%1 *.%2 *.%3)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2005"/>
-        <location filename="../qtractorMainForm.cpp" line="2100"/>
+        <location filename="../qtractorMainForm.cpp" line="2003"/>
+        <location filename="../qtractorMainForm.cpp" line="2098"/>
         <source>Session files (*.%1 *.%2)</source>
         <translation>File di sessione (*.%1 *.%2)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2008"/>
-        <location filename="../qtractorMainForm.cpp" line="2103"/>
+        <location filename="../qtractorMainForm.cpp" line="2006"/>
+        <location filename="../qtractorMainForm.cpp" line="2101"/>
         <source>Template files (*.%1)</source>
         <translation>File di template (*.%1)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2011"/>
-        <location filename="../qtractorMainForm.cpp" line="2106"/>
+        <location filename="../qtractorMainForm.cpp" line="2009"/>
+        <location filename="../qtractorMainForm.cpp" line="2104"/>
         <source>Archive files (*.%1)</source>
         <translation>File di archivio (*.%1)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2014"/>
-        <location filename="../qtractorMainForm.cpp" line="2109"/>
+        <location filename="../qtractorMainForm.cpp" line="2012"/>
+        <location filename="../qtractorMainForm.cpp" line="2107"/>
         <source>All files (*.*)</source>
         <translation type="unfinished">Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2019"/>
+        <location filename="../qtractorMainForm.cpp" line="2017"/>
         <source>Open Session</source>
         <translation>Apri Sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2112"/>
+        <location filename="../qtractorMainForm.cpp" line="2110"/>
         <source>Save Session</source>
         <translation>Salva Sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2169"/>
-        <location filename="../qtractorMainForm.cpp" line="2258"/>
-        <location filename="../qtractorMainForm.cpp" line="2313"/>
-        <location filename="../qtractorMainForm.cpp" line="2420"/>
-        <location filename="../qtractorMainForm.cpp" line="2930"/>
-        <location filename="../qtractorMainForm.cpp" line="4128"/>
-        <location filename="../qtractorMainForm.cpp" line="4230"/>
-        <location filename="../qtractorMainForm.cpp" line="6532"/>
+        <location filename="../qtractorMainForm.cpp" line="2167"/>
+        <location filename="../qtractorMainForm.cpp" line="2256"/>
+        <location filename="../qtractorMainForm.cpp" line="2311"/>
+        <location filename="../qtractorMainForm.cpp" line="2418"/>
+        <location filename="../qtractorMainForm.cpp" line="2928"/>
+        <location filename="../qtractorMainForm.cpp" line="4120"/>
+        <location filename="../qtractorMainForm.cpp" line="4222"/>
+        <location filename="../qtractorMainForm.cpp" line="6524"/>
         <source>Warning</source>
         <translation>Attenzione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2170"/>
+        <location filename="../qtractorMainForm.cpp" line="2168"/>
         <source>The file already exists:
 
 &quot;%1&quot;
@@ -5627,12 +5622,12 @@ Do you want to replace it?</source>
 Vuoi sostituirlo?</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2201"/>
+        <location filename="../qtractorMainForm.cpp" line="2199"/>
         <source>Backup session: &quot;%1&quot; as &quot;%2&quot;.</source>
         <translation>Esegui backup della sessione: &quot;%1&quot; su &quot;%2&quot;.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2205"/>
+        <location filename="../qtractorMainForm.cpp" line="2203"/>
         <source>Could not backup existing session:
 
 %1 as %2
@@ -5645,7 +5640,7 @@ Sorry.</source>
 Spiacente.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2259"/>
+        <location filename="../qtractorMainForm.cpp" line="2257"/>
         <source>The current session has been changed:
 
 &quot;%1&quot;
@@ -5658,7 +5653,7 @@ Do you want to save the changes?</source>
 Vuoi salvare le modifiche?</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2314"/>
+        <location filename="../qtractorMainForm.cpp" line="2312"/>
         <source>About to remove archive directory:
 
 &quot;%1&quot;
@@ -5671,12 +5666,12 @@ Are you sure?</source>
 Sei sicuro?</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2353"/>
+        <location filename="../qtractorMainForm.cpp" line="2351"/>
         <source>Session closed.</source>
         <translation>Sessione chiusa.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2421"/>
+        <location filename="../qtractorMainForm.cpp" line="2419"/>
         <source>The directory already exists:
 
 &quot;%1&quot;
@@ -5689,12 +5684,12 @@ Do you want to replace it?</source>
 Vuoi sostituirla?</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2463"/>
+        <location filename="../qtractorMainForm.cpp" line="2461"/>
         <source>Opening &quot;%1&quot;...</source>
         <translation>Apertura &quot;%1&quot;...</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2519"/>
+        <location filename="../qtractorMainForm.cpp" line="2517"/>
         <source>Session could not be loaded
 from &quot;%1&quot;.
 
@@ -5705,17 +5700,17 @@ da &quot;%1&quot;.
 Spiacente.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2532"/>
+        <location filename="../qtractorMainForm.cpp" line="2530"/>
         <source>Open session: &quot;%1&quot;.</source>
         <translation>Sessione aperta: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2568"/>
+        <location filename="../qtractorMainForm.cpp" line="2566"/>
         <source>Saving &quot;%1&quot;...</source>
         <translation>Salvataggio &quot;%1&quot;...</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2635"/>
+        <location filename="../qtractorMainForm.cpp" line="2633"/>
         <source>Session could not be saved
 to &quot;%1&quot;.
 
@@ -5726,12 +5721,12 @@ su &quot;%1&quot;.
 Spiacente.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2644"/>
+        <location filename="../qtractorMainForm.cpp" line="2642"/>
         <source>Save session: &quot;%1&quot;.</source>
         <translation>Sessione salvata: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2931"/>
+        <location filename="../qtractorMainForm.cpp" line="2929"/>
         <source>Oops!
 
 Looks like it crashed or did not close properly last time it was run... however, an auto-saved session file exists:
@@ -5748,7 +5743,7 @@ Sembra che sia avvenuto un crash o che il programma non sia stato chiuso corrett
 Vuoi recuperare il crash da questo file ?</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="4129"/>
+        <location filename="../qtractorMainForm.cpp" line="4121"/>
         <source>About to clear automation:
 
 &quot;%1&quot;
@@ -5761,7 +5756,7 @@ Are you sure?</source>
 Sei sicuro?</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="4231"/>
+        <location filename="../qtractorMainForm.cpp" line="4223"/>
         <source>About to clear all automation:
 
 &quot;%1&quot;
@@ -5774,154 +5769,154 @@ Are you sure?</source>
 Sei sicuro?</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="4671"/>
+        <location filename="../qtractorMainForm.cpp" line="4663"/>
         <source>take range</source>
         <translation>intervallo ripresa</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5241"/>
+        <location filename="../qtractorMainForm.cpp" line="5233"/>
         <source>session</source>
         <translation>sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5244"/>
+        <location filename="../qtractorMainForm.cpp" line="5236"/>
         <source> or </source>
         <translation> o </translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5245"/>
+        <location filename="../qtractorMainForm.cpp" line="5237"/>
         <source>program</source>
         <translation>programma</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5249"/>
+        <location filename="../qtractorMainForm.cpp" line="5241"/>
         <source>Information</source>
         <translation>Informazioni</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5250"/>
+        <location filename="../qtractorMainForm.cpp" line="5242"/>
         <source>Some settings may be only effective
 next time you start this %1.</source>
         <translation>Alcune impostazioni potrebbero avere effetto solo
 al prossimo avvio di questo %1.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5716"/>
+        <location filename="../qtractorMainForm.cpp" line="5708"/>
         <source>Player panic!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5753"/>
+        <location filename="../qtractorMainForm.cpp" line="5745"/>
         <source>Debugging option enabled.</source>
         <translation>Opzione di debug attiva.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5756"/>
+        <location filename="../qtractorMainForm.cpp" line="5748"/>
         <source>Ogg Vorbis (libvorbis) file support disabled.</source>
         <translation>Supporto file Ogg Vorbis (libvorbis) disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5759"/>
+        <location filename="../qtractorMainForm.cpp" line="5751"/>
         <source>MPEG-1 Audio Layer 3 (libmad) file support disabled.</source>
         <translation>Supporto file MPEG-1 Audio Layer 3 (libmad) disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5762"/>
+        <location filename="../qtractorMainForm.cpp" line="5754"/>
         <source>Sample-rate conversion (libsamplerate) disabled.</source>
         <translation>Conversione frequenza di campionamento (libsamplerate) disabilitata.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5765"/>
+        <location filename="../qtractorMainForm.cpp" line="5757"/>
         <source>Pitch-shifting support (librubberband) disabled.</source>
         <translation>Supporto pitch-shift (librubberband) disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5768"/>
+        <location filename="../qtractorMainForm.cpp" line="5760"/>
         <source>OSC service support (liblo) disabled.</source>
         <translation>Supporto servizio OSC (liblo) disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5771"/>
+        <location filename="../qtractorMainForm.cpp" line="5763"/>
         <source>LADSPA Plug-in support disabled.</source>
         <translation>Supporto Plug-in LADSPA disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5774"/>
+        <location filename="../qtractorMainForm.cpp" line="5766"/>
         <source>DSSI Plug-in support disabled.</source>
         <translation>Supporto Plug-in DSSI disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5777"/>
+        <location filename="../qtractorMainForm.cpp" line="5769"/>
         <source>VST Plug-in support disabled.</source>
         <translation>Supporto Plug-in VST disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5780"/>
+        <location filename="../qtractorMainForm.cpp" line="5772"/>
         <source>VeSTige header support enabled.</source>
         <translation>Supporto header VeSTige disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5783"/>
+        <location filename="../qtractorMainForm.cpp" line="5775"/>
         <source>LV2 Plug-in support disabled.</source>
         <translation>Supporto Plug-in LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5789"/>
+        <location filename="../qtractorMainForm.cpp" line="5781"/>
         <source>LV2 Plug-in UI support disabled.</source>
         <translation>Supporto UI della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5792"/>
+        <location filename="../qtractorMainForm.cpp" line="5784"/>
         <source>LV2 Plug-in UI support (libsuil) disabled.</source>
         <translation>Supporto UI plugin LV2 (libsuil) disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5799"/>
+        <location filename="../qtractorMainForm.cpp" line="5791"/>
         <source>LV2 Plug-in MIDI/Event support (DEPRECATED) enabled.</source>
         <translation>Supporto MIDI/Eventi (DEPRECATO) della plugin LV2 abilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5812"/>
+        <location filename="../qtractorMainForm.cpp" line="5804"/>
         <source>LV2 plug-in State Make Path support (DANGEROUS)	enabled.</source>
         <translation>Supporto State Make Path (PERICOLOSO) della plugin LV2	abilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5815"/>
+        <location filename="../qtractorMainForm.cpp" line="5807"/>
         <source>LV2 Plug-in State Files support disabled.</source>
         <translation>Supporto dei file di stato della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5824"/>
+        <location filename="../qtractorMainForm.cpp" line="5816"/>
         <source>LV2 Plug-in Patch support disabled.</source>
         <translation>Supporto alle patch della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5837"/>
+        <location filename="../qtractorMainForm.cpp" line="5829"/>
         <source>LV2 Plug-in UI Touch interface support disabled.</source>
         <translation>Supporto all&apos;interfaccia touch della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5840"/>
+        <location filename="../qtractorMainForm.cpp" line="5832"/>
         <source>LV2 Plug-in UI Idle interface support disabled.</source>
         <translation>Supporto dell&apos;interfaccia UI Idle della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5843"/>
+        <location filename="../qtractorMainForm.cpp" line="5835"/>
         <source>LV2 Plug-in UI Show interface support disabled.</source>
         <translation>Supporto dell&apos;interfaccia UI Show della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5866"/>
+        <location filename="../qtractorMainForm.cpp" line="5858"/>
         <source>JACK Metadata support disabled.</source>
         <translation>Supporto ai metadata di JACK disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="6314"/>
+        <location filename="../qtractorMainForm.cpp" line="6306"/>
         <source>XRUN</source>
         <translation>XRUN</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="6533"/>
+        <location filename="../qtractorMainForm.cpp" line="6525"/>
         <source>The following issues were detected:
 
 %1
@@ -5934,7 +5929,7 @@ Saving into another session file is highly recommended.</source>
 E&apos; fortemente consigliato il salvataggio in un nuovo file di sessione.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7913"/>
+        <location filename="../qtractorMainForm.cpp" line="7905"/>
         <source>The audio engine buffer size has changed,
 increased from %1 to %2 frames/period.
 
@@ -5947,122 +5942,122 @@ E&apos; altamente consigliato ricaricaricare
 il file della sessione corrente.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8139"/>
+        <location filename="../qtractorMainForm.cpp" line="8131"/>
         <source>TRACK MONITOR %1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="474"/>
+        <location filename="../qtractorMainForm.cpp" line="472"/>
         <source>Set current snap to %1</source>
         <translation>Imposta allineamento corrente a %1</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="533"/>
+        <location filename="../qtractorMainForm.cpp" line="531"/>
         <source>Current time (play-head)</source>
         <translation>Tempo corrente (barra di riproduzione)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5786"/>
+        <location filename="../qtractorMainForm.cpp" line="5778"/>
         <source>LV2 Plug-in support (liblilv) disabled.</source>
         <translation>Supporto Plug-in LV2 (liblilv) disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5795"/>
+        <location filename="../qtractorMainForm.cpp" line="5787"/>
         <source>LV2 Plug-in External UI support disabled.</source>
         <translation>Supporto UI esterna Plug-in LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5802"/>
+        <location filename="../qtractorMainForm.cpp" line="5794"/>
         <source>LV2 Plug-in MIDI/Atom support disabled.</source>
         <translation>Supporto MIDI/Atom plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5805"/>
+        <location filename="../qtractorMainForm.cpp" line="5797"/>
         <source>LV2 Plug-in Worker/Schedule support disabled.</source>
         <translation>Supporto Worker/Schedule plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5808"/>
+        <location filename="../qtractorMainForm.cpp" line="5800"/>
         <source>LV2 Plug-in State support disabled.</source>
         <translation>Supporto stato Plug-in LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5818"/>
+        <location filename="../qtractorMainForm.cpp" line="5810"/>
         <source>LV2 Plug-in Programs support disabled.</source>
         <translation>Supporto programmi Plug-in LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5821"/>
+        <location filename="../qtractorMainForm.cpp" line="5813"/>
         <source>LV2 Plug-in Presets support disabled.</source>
         <translation>Supporto preset plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5827"/>
+        <location filename="../qtractorMainForm.cpp" line="5819"/>
         <source>LV2 Plug-in Time/position support disabled.</source>
         <translation>Supporto Tempo/posizione plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5830"/>
+        <location filename="../qtractorMainForm.cpp" line="5822"/>
         <source>LV2 Plug-in Options support disabled.</source>
         <translation>Supporto delle opzioni della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5833"/>
+        <location filename="../qtractorMainForm.cpp" line="5825"/>
         <source>LV2 Plug-in Buf-size support disabled.</source>
         <translation>Supporto dimensione buffer della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5860"/>
+        <location filename="../qtractorMainForm.cpp" line="5852"/>
         <source>JACK Session support disabled.</source>
         <translation>Supporto sessione JACK disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5863"/>
+        <location filename="../qtractorMainForm.cpp" line="5855"/>
         <source>JACK Latency support disabled.</source>
         <translation>Supporto latenza JACK disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5876"/>
+        <location filename="../qtractorMainForm.cpp" line="5868"/>
         <source>Version</source>
         <translation>Versione</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5884"/>
+        <location filename="../qtractorMainForm.cpp" line="5876"/>
         <source>Website</source>
         <translation>Sito</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5889"/>
+        <location filename="../qtractorMainForm.cpp" line="5881"/>
         <source>This program is free software; you can redistribute it and/or modify it</source>
         <translation>Questo programma è un software gratuito; è possibile ridistribuirlo e/o modificarlo</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5890"/>
+        <location filename="../qtractorMainForm.cpp" line="5882"/>
         <source>under the terms of the GNU General Public License version 2 or later.</source>
         <translation>nei termini della GNU General Public License versione 2 o successiva.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5967"/>
+        <location filename="../qtractorMainForm.cpp" line="5959"/>
         <source>record clip</source>
         <translation>registra clip</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="6192"/>
+        <location filename="../qtractorMainForm.cpp" line="6184"/>
         <source>[modified]</source>
         <translation>[modificato]</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="6322"/>
+        <location filename="../qtractorMainForm.cpp" line="6314"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="6416"/>
+        <location filename="../qtractorMainForm.cpp" line="6408"/>
         <source>Session started.</source>
         <translation>Sessione avviata.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="6507"/>
+        <location filename="../qtractorMainForm.cpp" line="6499"/>
         <source>The original session sample rate (%1 Hz)
 is not the same as the current audio engine (%2 Hz).
 
@@ -6075,7 +6070,7 @@ Salvare e ricaricare da un nuovo file di sessione
 è particolarmente raccomandato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="6421"/>
+        <location filename="../qtractorMainForm.cpp" line="6413"/>
         <source>The audio/MIDI engine could not be started.
 
 Make sure the JACK audio server (jackd) and/or
@@ -6088,84 +6083,84 @@ il modulo kernel del sequencer ALSA (snd-seq-midi)
 siano attivi ed in esecuzione, poi riavvia la sessione.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="2328"/>
-        <location filename="../qtractorMainForm.cpp" line="2435"/>
+        <location filename="../qtractorMainForm.cpp" line="2326"/>
+        <location filename="../qtractorMainForm.cpp" line="2433"/>
         <source>Don&apos;t ask this again</source>
         <translation>Non chiederlo di nuovo</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5848"/>
+        <location filename="../qtractorMainForm.cpp" line="5840"/>
         <source>LV2 Plug-in UI GTK2 native support disabled.</source>
         <translation>Supporto nativo per UI GTK2 della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5853"/>
+        <location filename="../qtractorMainForm.cpp" line="5845"/>
         <source>LV2 Plug-in UI X11 native support disabled.</source>
         <translation>Supporto nativo per UI X11 della plugin LV2 disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5869"/>
+        <location filename="../qtractorMainForm.cpp" line="5861"/>
         <source>NSM support disabled.</source>
         <translation>Supporto NSM disabilitato.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7124"/>
+        <location filename="../qtractorMainForm.cpp" line="7116"/>
         <source>&amp;Hold</source>
         <translation>&amp;Hold</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7129"/>
+        <location filename="../qtractorMainForm.cpp" line="7121"/>
         <source>&amp;Linear</source>
         <translation>&amp;Lineare</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7135"/>
+        <location filename="../qtractorMainForm.cpp" line="7127"/>
         <source>&amp;Spline</source>
         <translation>&amp;Spline</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7252"/>
+        <location filename="../qtractorMainForm.cpp" line="7244"/>
         <source>Take %1</source>
         <translation>Ripresa %1</translation>
     </message>
     <message>
         <location filename="../qtractorMainForm.ui" line="2946"/>
-        <location filename="../qtractorMainForm.cpp" line="7259"/>
+        <location filename="../qtractorMainForm.cpp" line="7251"/>
         <source>None</source>
         <translation>Nessuno</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7349"/>
+        <location filename="../qtractorMainForm.cpp" line="7341"/>
         <source>Error</source>
         <translation>Errore</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7704"/>
+        <location filename="../qtractorMainForm.cpp" line="7696"/>
         <source>XRUN(%1 skipped)</source>
         <translation>XRUN(%1 saltato)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7709"/>
+        <location filename="../qtractorMainForm.cpp" line="7701"/>
         <source>XRUN(%1): some frames might have been lost.</source>
         <translation>XRUN(%1): alcuni campioni potrebbero essere stati persi.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7726"/>
+        <location filename="../qtractorMainForm.cpp" line="7718"/>
         <source>Audio connections change.</source>
         <translation>Cambiamento connessioni audio.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7741"/>
+        <location filename="../qtractorMainForm.cpp" line="7733"/>
         <source>MIDI connections change.</source>
         <translation>Cambiamento connessioni MIDI.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7763"/>
+        <location filename="../qtractorMainForm.cpp" line="7755"/>
         <source>Playing ended.</source>
         <translation>Riproduzione terminata.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="7838"/>
+        <location filename="../qtractorMainForm.cpp" line="7830"/>
         <source>The audio engine has been shutdown.
 
 Make sure the JACK audio server (jackd)
@@ -6176,120 +6171,120 @@ Accertati che il server audio JACK (jackd)
 sia avviato ed in esecuzione, poi riavvia la sessione.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8074"/>
-        <location filename="../qtractorMainForm.cpp" line="8261"/>
+        <location filename="../qtractorMainForm.cpp" line="8066"/>
+        <location filename="../qtractorMainForm.cpp" line="8253"/>
         <source>STOP</source>
         <translation>STOP</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8081"/>
+        <location filename="../qtractorMainForm.cpp" line="8073"/>
         <source>PLAY</source>
         <translation>PLAY</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8085"/>
+        <location filename="../qtractorMainForm.cpp" line="8077"/>
         <source>FFWD</source>
         <translation>FFWD</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8089"/>
+        <location filename="../qtractorMainForm.cpp" line="8081"/>
         <source>REW</source>
         <translation>REW</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8094"/>
+        <location filename="../qtractorMainForm.cpp" line="8086"/>
         <source>REC ON</source>
         <translation>REC ON</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8102"/>
+        <location filename="../qtractorMainForm.cpp" line="8094"/>
         <source>REC OFF</source>
         <translation>REC OFF</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8106"/>
+        <location filename="../qtractorMainForm.cpp" line="8098"/>
         <source>RESET</source>
         <translation>RESET</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8110"/>
+        <location filename="../qtractorMainForm.cpp" line="8102"/>
         <source>LOCATE %1</source>
         <translation>TROVA %1</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8114"/>
+        <location filename="../qtractorMainForm.cpp" line="8106"/>
         <source>SHUTTLE %1</source>
         <translation>SHUTTLE %1</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8118"/>
+        <location filename="../qtractorMainForm.cpp" line="8110"/>
         <source>STEP %1</source>
         <translation>STEP %1</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8124"/>
+        <location filename="../qtractorMainForm.cpp" line="8116"/>
         <source>TRACK RECORD %1 %2</source>
         <translation>REGISTRA TRACCIA %1 %2</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8129"/>
+        <location filename="../qtractorMainForm.cpp" line="8121"/>
         <source>TRACK MUTE %1 %2</source>
         <translation>MUTE TRACCIA %1 %2</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8134"/>
+        <location filename="../qtractorMainForm.cpp" line="8126"/>
         <source>TRACK SOLO %1 %2</source>
         <translation>SOLO TRACCIA %1 %2</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8144"/>
+        <location filename="../qtractorMainForm.cpp" line="8136"/>
         <source>Unknown sub-command</source>
         <translation>Sotto-comando sconosciuto</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8150"/>
-        <location filename="../qtractorMainForm.cpp" line="8281"/>
+        <location filename="../qtractorMainForm.cpp" line="8142"/>
+        <location filename="../qtractorMainForm.cpp" line="8273"/>
         <source>Not implemented</source>
         <translation>Non implementato</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8163"/>
+        <location filename="../qtractorMainForm.cpp" line="8155"/>
         <source>MIDI CTL: %1, Channel %2, Param %3, Value %4</source>
         <translation>MIDI CTL: %1, Canale %2, Parametro %3, Valore %4</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8212"/>
+        <location filename="../qtractorMainForm.cpp" line="8204"/>
         <source>(track %1, gain %2)</source>
         <translation>(traccia %1, guadagno %2)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8233"/>
+        <location filename="../qtractorMainForm.cpp" line="8225"/>
         <source>(track %1, panning %2)</source>
         <translation>(traccia %1, bilanciamento %2)</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8254"/>
+        <location filename="../qtractorMainForm.cpp" line="8246"/>
         <source>START</source>
         <translation>AVVIA</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8269"/>
+        <location filename="../qtractorMainForm.cpp" line="8261"/>
         <source>CONTINUE</source>
         <translation>CONTINUA</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8275"/>
+        <location filename="../qtractorMainForm.cpp" line="8267"/>
         <source>SONGPOS %1</source>
         <translation>SONGPOS %1</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8299"/>
+        <location filename="../qtractorMainForm.cpp" line="8291"/>
         <source>%1 BPM</source>
         <translation>%1 BPM</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="8377"/>
-        <location filename="../qtractorMainForm.cpp" line="8434"/>
+        <location filename="../qtractorMainForm.cpp" line="8369"/>
+        <location filename="../qtractorMainForm.cpp" line="8426"/>
         <source>Playing &quot;%1&quot;...</source>
         <translation>Riproduzione &quot;%1&quot;...</translation>
     </message>
@@ -8806,156 +8801,6 @@ Vuoi salvare i cambiamenti?</translation>
     </message>
 </context>
 <context>
-    <name>qtractorMidiImportForm</name>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="34"/>
-        <source>MIDI import</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="46"/>
-        <source>Plugins</source>
-        <translation type="unfinished">Plugins</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="55"/>
-        <source>Track plugins</source>
-        <translation type="unfinished">Plugin traccia</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="70"/>
-        <source>Add plugin</source>
-        <translation type="unfinished">Aggiungi plugin</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="73"/>
-        <source>&amp;Add...</source>
-        <translation type="unfinished">&amp;Aggiungi...</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="92"/>
-        <source>Remove plugin</source>
-        <translation type="unfinished">Rimuovi plugin</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="95"/>
-        <source>&amp;Remove</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="127"/>
-        <source>Move plugin up</source>
-        <translation type="unfinished">Sposta su plugin</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="130"/>
-        <source>&amp;Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="149"/>
-        <source>Move plugin down</source>
-        <translation type="unfinished">Sposta giù plugin</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="152"/>
-        <source>&amp;Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="178"/>
-        <source>Instrument and bank selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="184"/>
-        <source>Instruments</source>
-        <translation type="unfinished">Strumenti</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="196"/>
-        <location filename="../qtractorMidiImportForm.ui" line="255"/>
-        <source>&amp;Instrument:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="211"/>
-        <source>Select instrument for all instruments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="218"/>
-        <location filename="../qtractorMidiImportForm.ui" line="277"/>
-        <source>&amp;Bank:</source>
-        <translation type="unfinished">&amp;Banco:</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="233"/>
-        <source>Select bank for all instruments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="243"/>
-        <source>Drums</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="270"/>
-        <source>Select instrument for all drums</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="292"/>
-        <source>Select bank for all drums</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="307"/>
-        <source>Track names</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="313"/>
-        <source>Set MIDI filename (without extension) for track name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="316"/>
-        <source>&amp;MIDI filename</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="326"/>
-        <source>Set &apos;Track n&apos; (n = number) for track name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="329"/>
-        <source>&amp;Track [n]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="339"/>
-        <source>Instrument name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.ui" line="342"/>
-        <source>&amp;Patch name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.h" line="81"/>
-        <source>(No instrument)</source>
-        <translation type="unfinished">(Nessuno strumento)</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMidiImportForm.h" line="82"/>
-        <source>(None)</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>qtractorMidiListView</name>
     <message>
         <location filename="../qtractorMidiListView.cpp" line="132"/>
@@ -9916,7 +9761,7 @@ Sei sicuro?</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="296"/>
-        <location filename="../qtractorOptionsForm.ui" line="2429"/>
+        <location filename="../qtractorOptionsForm.ui" line="2397"/>
         <source>Options</source>
         <translation>Opzioni</translation>
     </message>
@@ -10023,9 +9868,9 @@ Sei sicuro?</translation>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="559"/>
         <location filename="../qtractorOptionsForm.ui" line="649"/>
-        <location filename="../qtractorOptionsForm.ui" line="1659"/>
-        <location filename="../qtractorOptionsForm.ui" line="1750"/>
-        <location filename="../qtractorOptionsForm.ui" line="1812"/>
+        <location filename="../qtractorOptionsForm.ui" line="1627"/>
+        <location filename="../qtractorOptionsForm.ui" line="1718"/>
+        <location filename="../qtractorOptionsForm.ui" line="1780"/>
         <source>None</source>
         <translation>Nessuno</translation>
     </message>
@@ -10071,6 +9916,7 @@ Sei sicuro?</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="683"/>
+        <location filename="../qtractorOptionsForm.ui" line="1390"/>
         <source>Capture / Export</source>
         <translation>Cattura / Esporta</translation>
     </message>
@@ -10106,7 +9952,7 @@ Sei sicuro?</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="841"/>
-        <location filename="../qtractorOptionsForm.ui" line="1520"/>
+        <location filename="../qtractorOptionsForm.ui" line="1488"/>
         <source>Playback</source>
         <translation>Riproduzione</translation>
     </message>
@@ -10197,7 +10043,7 @@ Sei sicuro?</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1035"/>
-        <location filename="../qtractorOptionsForm.ui" line="1873"/>
+        <location filename="../qtractorOptionsForm.ui" line="1841"/>
         <source>Metronome</source>
         <translation>Metronomo</translation>
     </message>
@@ -10293,11 +10139,6 @@ Sei sicuro?</translation>
         <translation>&amp;MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1390"/>
-        <source>Capture / Export / Import</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../qtractorOptionsForm.ui" line="1405"/>
         <source>File &amp;format:</source>
         <translation>&amp;Formato file:</translation>
@@ -10309,534 +10150,524 @@ Sei sicuro?</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1447"/>
-        <source>Change defaults for MIDI import</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorOptionsForm.ui" line="1450"/>
-        <source>&amp;Import Settings...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qtractorOptionsForm.ui" line="1479"/>
         <source>&amp;Quantize:</source>
         <translation>&amp;Quantizzazione:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1504"/>
+        <location filename="../qtractorOptionsForm.ui" line="1472"/>
         <source>MIDI capture (record) quantization</source>
         <translation>Quantizzazione cattura (registrazione) MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1541"/>
+        <location filename="../qtractorOptionsForm.ui" line="1509"/>
         <source>Queue &amp;timer (resolution):</source>
         <translation>&amp;Timer coda (risoluzione)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1557"/>
+        <location filename="../qtractorOptionsForm.ui" line="1525"/>
         <source>Queue timer (resolution)</source>
         <translation>Timer coda (risoluzione)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1599"/>
+        <location filename="../qtractorOptionsForm.ui" line="1567"/>
         <source>Whether to have separate MIDI player output ports</source>
         <translation>Porte di uscita separate per MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1602"/>
+        <location filename="../qtractorOptionsForm.ui" line="1570"/>
         <source>Dedicated MIDI p&amp;layer outputs</source>
         <translation>Porte di uscita dedicate per MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1618"/>
+        <location filename="../qtractorOptionsForm.ui" line="1586"/>
         <source>Control</source>
         <translation>Controllo</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1639"/>
+        <location filename="../qtractorOptionsForm.ui" line="1607"/>
         <source>&amp;MMC:</source>
         <translation>&amp;MMC:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1655"/>
+        <location filename="../qtractorOptionsForm.ui" line="1623"/>
         <source>MIDI Machine Control (MMC) mode</source>
         <translation>Modalità MIDI Machine Control (MMC)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1664"/>
-        <location filename="../qtractorOptionsForm.ui" line="1755"/>
-        <location filename="../qtractorOptionsForm.ui" line="1817"/>
+        <location filename="../qtractorOptionsForm.ui" line="1632"/>
+        <location filename="../qtractorOptionsForm.ui" line="1723"/>
+        <location filename="../qtractorOptionsForm.ui" line="1785"/>
         <source>Input</source>
         <translation>Ingresso</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1669"/>
-        <location filename="../qtractorOptionsForm.ui" line="1760"/>
-        <location filename="../qtractorOptionsForm.ui" line="1822"/>
+        <location filename="../qtractorOptionsForm.ui" line="1637"/>
+        <location filename="../qtractorOptionsForm.ui" line="1728"/>
+        <location filename="../qtractorOptionsForm.ui" line="1790"/>
         <source>Output</source>
         <translation>Uscita</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1674"/>
-        <location filename="../qtractorOptionsForm.ui" line="1765"/>
-        <location filename="../qtractorOptionsForm.ui" line="1827"/>
+        <location filename="../qtractorOptionsForm.ui" line="1642"/>
+        <location filename="../qtractorOptionsForm.ui" line="1733"/>
+        <location filename="../qtractorOptionsForm.ui" line="1795"/>
         <source>Duplex</source>
         <translation>Duplex</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1688"/>
+        <location filename="../qtractorOptionsForm.ui" line="1656"/>
         <source>&amp;Device:</source>
         <translation>&amp;Dispositivo:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1704"/>
+        <location filename="../qtractorOptionsForm.ui" line="1672"/>
         <source>MIDI Machine Control (MMC) device id.</source>
         <translation>ID dispositivo MIDI Machine Control (MMC)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1730"/>
+        <location filename="../qtractorOptionsForm.ui" line="1698"/>
         <source>&amp;SPP:</source>
         <translation>&amp;SPP:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1746"/>
+        <location filename="../qtractorOptionsForm.ui" line="1714"/>
         <source>MIDI Song Position pointer (SPP) control mode</source>
         <translation>Modalità controllo MIDI Song Position pointer (SPP)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1808"/>
+        <location filename="../qtractorOptionsForm.ui" line="1776"/>
         <source>MIDI Clock control mode</source>
         <translation>Modalità controllo clock MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1841"/>
+        <location filename="../qtractorOptionsForm.ui" line="1809"/>
         <source>Whether to have separate MIDI control ports</source>
         <translation>Porte di controllo separate per MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1844"/>
+        <location filename="../qtractorOptionsForm.ui" line="1812"/>
         <source>Dedicated MIDI &amp;control input/output</source>
         <translation>Ingresso/uscita controllo dedicata per MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1888"/>
+        <location filename="../qtractorOptionsForm.ui" line="1856"/>
         <source>Whether to enable the MIDI metronome</source>
         <translation>Abilita metronomo MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1891"/>
+        <location filename="../qtractorOptionsForm.ui" line="1859"/>
         <source>&amp;Enable MIDI metronome</source>
         <translation>Abilita m&amp;etronomo MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1904"/>
+        <location filename="../qtractorOptionsForm.ui" line="1872"/>
         <source>&amp;Channel:</source>
         <translation>&amp;Canale:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1920"/>
+        <location filename="../qtractorOptionsForm.ui" line="1888"/>
         <source>Metronome MIDI channel</source>
         <translation>Canale metronomo MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1955"/>
+        <location filename="../qtractorOptionsForm.ui" line="1923"/>
         <source>&amp;Note (bar):</source>
         <translation>&amp;Nota (barra):</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1977"/>
+        <location filename="../qtractorOptionsForm.ui" line="1945"/>
         <source>Metronome MIDI note (bar)</source>
         <translation>Nota metronomo MIDI (barra)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2003"/>
+        <location filename="../qtractorOptionsForm.ui" line="1971"/>
         <source>&amp;Velocity (bar):</source>
         <translation>Intensità (barra):</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2019"/>
+        <location filename="../qtractorOptionsForm.ui" line="1987"/>
         <source>Metronome MIDI velocity (bar)</source>
         <translation>Intensità metronomo MIDI (barra)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2054"/>
+        <location filename="../qtractorOptionsForm.ui" line="2022"/>
         <source>&amp;Duration (bar):</source>
         <translation>&amp;Durata (barra):</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2070"/>
+        <location filename="../qtractorOptionsForm.ui" line="2038"/>
         <source>Metronome MIDI duration (bar)</source>
         <translation>Durata del metronomo MIDI (barra)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2095"/>
+        <location filename="../qtractorOptionsForm.ui" line="2063"/>
         <source>&amp;Note (beat):</source>
         <translation>&amp;Nota (battito):</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2117"/>
+        <location filename="../qtractorOptionsForm.ui" line="2085"/>
         <source>Metronome MIDI note (beat)</source>
         <translation>Nota metronomo MIDI (battito)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2130"/>
+        <location filename="../qtractorOptionsForm.ui" line="2098"/>
         <source>&amp;Velocity (beat):</source>
         <translation>Intensità (battito):</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2146"/>
+        <location filename="../qtractorOptionsForm.ui" line="2114"/>
         <source>Metronome MIDI velocity (beat)</source>
         <translation>Intensità metronomo MIDI (battito)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2168"/>
+        <location filename="../qtractorOptionsForm.ui" line="2136"/>
         <source>&amp;Duration (beat):</source>
         <translation>&amp;Durata (battito):</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2184"/>
+        <location filename="../qtractorOptionsForm.ui" line="2152"/>
         <source>Metronome MIDI duration (beat)</source>
         <translation>Durata del metronomo MIDI (battito)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2209"/>
+        <location filename="../qtractorOptionsForm.ui" line="2177"/>
         <source>Whether to have separate MIDI metronome output port</source>
         <translation>Porta di uscita separata per metronomo MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2212"/>
+        <location filename="../qtractorOptionsForm.ui" line="2180"/>
         <source>Dedicated M&amp;IDI metronome output</source>
         <translation>Uscita dedicata metronomo M&amp;IDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2244"/>
+        <location filename="../qtractorOptionsForm.ui" line="2212"/>
         <source>Metronome MIDI offset (latency)</source>
         <translation>Offset del metronomo MIDI (latenza)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2267"/>
+        <location filename="../qtractorOptionsForm.ui" line="2235"/>
         <source>&amp;Display</source>
         <translation>Visualizzazione</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2279"/>
+        <location filename="../qtractorOptionsForm.ui" line="2247"/>
         <source>Defaults</source>
         <translation>Predefinite</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2294"/>
+        <location filename="../qtractorOptionsForm.ui" line="2262"/>
         <source>&amp;Time display format:</source>
         <translation>Formato visualizzazione &amp;tempo:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2310"/>
+        <location filename="../qtractorOptionsForm.ui" line="2278"/>
         <source>Time display format</source>
         <translation>&gt;Formato visualizzazione tempo</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2314"/>
+        <location filename="../qtractorOptionsForm.ui" line="2282"/>
         <source>Frames</source>
         <translation>Battute</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2319"/>
+        <location filename="../qtractorOptionsForm.ui" line="2287"/>
         <source>Time</source>
         <translation>Tempo</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2324"/>
+        <location filename="../qtractorOptionsForm.ui" line="2292"/>
         <source>BBT</source>
         <translation>BBT</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2351"/>
+        <location filename="../qtractorOptionsForm.ui" line="2319"/>
         <source>&amp;Base font size:</source>
         <translation>Dimensione &amp;base font:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2370"/>
+        <location filename="../qtractorOptionsForm.ui" line="2338"/>
         <source>Base application font size (pt.)</source>
         <translation>Dimensione base font applicazione (punti)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2377"/>
-        <location filename="../qtractorOptionsForm.ui" line="2564"/>
-        <location filename="../qtractorOptionsForm.ui" line="2655"/>
+        <location filename="../qtractorOptionsForm.ui" line="2345"/>
+        <location filename="../qtractorOptionsForm.ui" line="2532"/>
+        <location filename="../qtractorOptionsForm.ui" line="2623"/>
         <source>(default)</source>
         <translation>(predefinito)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2382"/>
+        <location filename="../qtractorOptionsForm.ui" line="2350"/>
         <source>6</source>
         <translation>6</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2387"/>
+        <location filename="../qtractorOptionsForm.ui" line="2355"/>
         <source>7</source>
         <translation>7</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2392"/>
+        <location filename="../qtractorOptionsForm.ui" line="2360"/>
         <source>8</source>
         <translation>8</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2397"/>
+        <location filename="../qtractorOptionsForm.ui" line="2365"/>
         <source>9</source>
         <translation>9</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2402"/>
+        <location filename="../qtractorOptionsForm.ui" line="2370"/>
         <source>10</source>
         <translation>10</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2407"/>
+        <location filename="../qtractorOptionsForm.ui" line="2375"/>
         <source>11</source>
         <translation>11</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2412"/>
+        <location filename="../qtractorOptionsForm.ui" line="2380"/>
         <source>12</source>
         <translation>12</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2453"/>
+        <location filename="../qtractorOptionsForm.ui" line="2421"/>
         <source>H&amp;old auto-scrolling (follow play-head) on edits</source>
         <translation>Mantieni lo scorrimento automatico (segui la barra di riproduzione) durante le modifiche</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2466"/>
+        <location filename="../qtractorOptionsForm.ui" line="2434"/>
         <source>Whether to use desktop environment native dialogs.</source>
         <translation>Decidi se utilizzare le finestre di dialogo native del tuo ambiente desktop.</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2469"/>
+        <location filename="../qtractorOptionsForm.ui" line="2437"/>
         <source>Use desktop environment &amp;native dialogs</source>
         <translation>Utilizza le finestre di dialogo &amp;native del tuo ambiente desktop</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2485"/>
+        <location filename="../qtractorOptionsForm.ui" line="2453"/>
         <source>A&amp;utomatic mixer strip/grid layout (multi-row)</source>
         <translation>Layout a&amp;utomatico mixer/griglia (righe multiple)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2603"/>
+        <location filename="../qtractorOptionsForm.ui" line="2571"/>
         <source>Manage custom color palette themes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2972"/>
+        <location filename="../qtractorOptionsForm.ui" line="2940"/>
         <source>Whether to show meters on track list/left pane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2975"/>
+        <location filename="../qtractorOptionsForm.ui" line="2943"/>
         <source>Sho&amp;w meters on track list/left pane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3647"/>
+        <location filename="../qtractorOptionsForm.ui" line="3615"/>
         <source>Whether to show audio output meters on MIDI tracks and buses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3650"/>
+        <location filename="../qtractorOptionsForm.ui" line="3618"/>
         <source>Show audio outpu&amp;t monitoring meters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3716"/>
+        <location filename="../qtractorOptionsForm.ui" line="3684"/>
         <source>Whether to select plugin&apos;s editor (GUI) if more than one are available</source>
         <translation>Selezione dell&apos;editor (GUI) per la plugin se più di uno è disponibile.</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3562"/>
+        <location filename="../qtractorOptionsForm.ui" line="3530"/>
         <source>Whether to use out-of-process plugin inventory scan and cache for persistence</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3565"/>
+        <location filename="../qtractorOptionsForm.ui" line="3533"/>
         <source>Ou&amp;t-of-process plugin inventory scan (RECOMMENDED)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2498"/>
+        <location filename="../qtractorOptionsForm.ui" line="2466"/>
         <source>Whether to show plugins on track list/left pane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2501"/>
+        <location filename="../qtractorOptionsForm.ui" line="2469"/>
         <source>Sho&amp;w plugins on track list/left pane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2482"/>
+        <location filename="../qtractorOptionsForm.ui" line="2450"/>
         <source>Whether to allow automatic mixer strip/grid layout (multi-row).</source>
         <translation>Decidi se utilizzare un layout automatico per il mixer/griglia (righe multiple)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2517"/>
+        <location filename="../qtractorOptionsForm.ui" line="2485"/>
         <source>Custom</source>
         <translation>Personalizzato</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2538"/>
+        <location filename="../qtractorOptionsForm.ui" line="2506"/>
         <source>&amp;Color theme:</source>
         <translation>Tema dei &amp;colori:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2557"/>
+        <location filename="../qtractorOptionsForm.ui" line="2525"/>
         <source>Custom color palette theme</source>
         <translation>Palette personalizzata per il tema dei colori</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2574"/>
+        <location filename="../qtractorOptionsForm.ui" line="2542"/>
         <source>KXStudio</source>
         <translation>KXStudio</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2648"/>
+        <location filename="../qtractorOptionsForm.ui" line="2616"/>
         <source>Custom widget style theme</source>
         <translation>Tema personalizzato per lo stile degli oggetti</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2685"/>
+        <location filename="../qtractorOptionsForm.ui" line="2653"/>
         <source>Meters</source>
         <translation>VU Meter</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2700"/>
+        <location filename="../qtractorOptionsForm.ui" line="2668"/>
         <source>&amp;Audio:</source>
         <translation>&amp;Audio:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2722"/>
+        <location filename="../qtractorOptionsForm.ui" line="2690"/>
         <source>Audio meter level</source>
         <translation>Livello VU meter audio</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2726"/>
-        <location filename="../qtractorOptionsForm.ui" line="2860"/>
+        <location filename="../qtractorOptionsForm.ui" line="2694"/>
+        <location filename="../qtractorOptionsForm.ui" line="2828"/>
         <source>Over</source>
         <translation>Sopra</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2731"/>
+        <location filename="../qtractorOptionsForm.ui" line="2699"/>
         <source>0 dB</source>
         <translation>0 dB</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2736"/>
+        <location filename="../qtractorOptionsForm.ui" line="2704"/>
         <source>3 dB</source>
         <translation>3 dB</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2741"/>
+        <location filename="../qtractorOptionsForm.ui" line="2709"/>
         <source>6 dB</source>
         <translation>6 dB</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2746"/>
+        <location filename="../qtractorOptionsForm.ui" line="2714"/>
         <source>10 dB</source>
         <translation>10 dB</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2766"/>
+        <location filename="../qtractorOptionsForm.ui" line="2734"/>
         <source>Audio meter color</source>
         <translation>Colore VU meter audio</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2794"/>
+        <location filename="../qtractorOptionsForm.ui" line="2762"/>
         <source>Select custom audio meter color</source>
         <translation>Seleziona colore personalizzato VU meter audio</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2606"/>
-        <location filename="../qtractorOptionsForm.ui" line="2800"/>
-        <location filename="../qtractorOptionsForm.ui" line="2914"/>
-        <location filename="../qtractorOptionsForm.ui" line="3313"/>
-        <location filename="../qtractorOptionsForm.ui" line="3544"/>
+        <location filename="../qtractorOptionsForm.ui" line="2574"/>
+        <location filename="../qtractorOptionsForm.ui" line="2768"/>
+        <location filename="../qtractorOptionsForm.ui" line="2882"/>
+        <location filename="../qtractorOptionsForm.ui" line="3281"/>
+        <location filename="../qtractorOptionsForm.ui" line="3512"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2826"/>
+        <location filename="../qtractorOptionsForm.ui" line="2794"/>
         <source>&amp;MIDI:</source>
         <translation>&amp;MIDI:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2851"/>
+        <location filename="../qtractorOptionsForm.ui" line="2819"/>
         <source>MIDI meter level</source>
         <translation>Livello VU meter MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2855"/>
+        <location filename="../qtractorOptionsForm.ui" line="2823"/>
         <source>Peak</source>
         <translation>Picco</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2880"/>
+        <location filename="../qtractorOptionsForm.ui" line="2848"/>
         <source>MIDI meter color</source>
         <translation>Colore VU meter MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2908"/>
+        <location filename="../qtractorOptionsForm.ui" line="2876"/>
         <source>Select custom MIDI meter color</source>
         <translation>&gt;Seleziona colore personalizzato VU meter MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2940"/>
+        <location filename="../qtractorOptionsForm.ui" line="2908"/>
         <source>Reset meter colors to default</source>
         <translation>Ripristina colori predefiniti VU meter</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2943"/>
+        <location filename="../qtractorOptionsForm.ui" line="2911"/>
         <source>&amp;Reset</source>
         <translation>&amp;Ripristina</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2991"/>
+        <location filename="../qtractorOptionsForm.ui" line="2959"/>
         <source>Messages</source>
         <translation>Messaggi</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3024"/>
+        <location filename="../qtractorOptionsForm.ui" line="2992"/>
         <source>Sample messages text font display</source>
         <translation>Font messaggi campione</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3049"/>
+        <location filename="../qtractorOptionsForm.ui" line="3017"/>
         <source>Select font for the messages text display</source>
         <translation>Seleziona font messaggi</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3052"/>
+        <location filename="../qtractorOptionsForm.ui" line="3020"/>
         <source>&amp;Font...</source>
         <translation>&amp;Font...</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3081"/>
+        <location filename="../qtractorOptionsForm.ui" line="3049"/>
         <source>Whether to keep a maximum number of lines in the messages window</source>
         <translation>Mantieni numero massimo di linee nella finestra messaggi</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3084"/>
+        <location filename="../qtractorOptionsForm.ui" line="3052"/>
         <source>M&amp;essages limit:</source>
         <translation>Limite m&amp;essaggi:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3097"/>
+        <location filename="../qtractorOptionsForm.ui" line="3065"/>
         <source>The maximum number of message lines to keep in view</source>
         <translation>Il numero massimo di linee da mostrare nella vista</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3100"/>
+        <location filename="../qtractorOptionsForm.ui" line="3068"/>
         <source> lines</source>
         <translation> lines</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2450"/>
+        <location filename="../qtractorOptionsForm.ui" line="2418"/>
         <source>Whether to hold auto-scrolling (follow play-head) on edits.</source>
         <translation>Decidi se mantenere lo scorrimento automatico (segue la barra di riproduzione) durante le modifiche.</translation>
     </message>
@@ -10867,7 +10698,7 @@ Sei sicuro?</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1348"/>
-        <location filename="../qtractorOptionsForm.ui" line="2225"/>
+        <location filename="../qtractorOptionsForm.ui" line="2193"/>
         <source>&amp;Offset (latency):</source>
         <translation>&amp;Offset (latenza)</translation>
     </message>
@@ -10877,253 +10708,253 @@ Sei sicuro?</translation>
         <translation>Offset del metronomo audio (latenza)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1583"/>
+        <location filename="../qtractorOptionsForm.ui" line="1551"/>
         <source>Whether to enable MIDI queue time drift correction</source>
         <translation>Decidi se abilitare una correzione per i tempi della coda MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1586"/>
+        <location filename="../qtractorOptionsForm.ui" line="1554"/>
         <source>E&amp;nable MIDI queue time drift correction</source>
         <translation>Abilita correzione dei tempi della coda MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="1792"/>
+        <location filename="../qtractorOptionsForm.ui" line="1760"/>
         <source>MIDI Cloc&amp;k:</source>
         <translation>Cloc&amp;k MIDI:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2569"/>
+        <location filename="../qtractorOptionsForm.ui" line="2537"/>
         <source>Wonton Soup</source>
         <translation>Zuppa Wonton</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="2632"/>
+        <location filename="../qtractorOptionsForm.ui" line="2600"/>
         <source>&amp;Style theme:</source>
         <translation>&amp;Stile del tema:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3128"/>
+        <location filename="../qtractorOptionsForm.ui" line="3096"/>
         <source>Logging</source>
         <translation>Log</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3161"/>
+        <location filename="../qtractorOptionsForm.ui" line="3129"/>
         <source>Messages log file</source>
         <translation>File messaggi di log</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3192"/>
+        <location filename="../qtractorOptionsForm.ui" line="3160"/>
         <source>Browse for the messages log file location</source>
         <translation>Sfoglia locazione file messaggi di log</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3208"/>
+        <location filename="../qtractorOptionsForm.ui" line="3176"/>
         <source>Whether to activate a messages logging to file.</source>
         <translation>Archivia messaggi di log su file.</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3211"/>
+        <location filename="../qtractorOptionsForm.ui" line="3179"/>
         <source>Messages &amp;log file:</source>
         <translation>File messaggi di &amp;log:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3222"/>
+        <location filename="../qtractorOptionsForm.ui" line="3190"/>
         <source>&amp;Plugins</source>
         <translation>&amp;Plugins</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3240"/>
+        <location filename="../qtractorOptionsForm.ui" line="3208"/>
         <source>Paths</source>
         <translation>Percorsi</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3263"/>
+        <location filename="../qtractorOptionsForm.ui" line="3231"/>
         <source>Plugin type</source>
         <translation>Tipo plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3282"/>
+        <location filename="../qtractorOptionsForm.ui" line="3250"/>
         <source>Plugin path</source>
         <translation>Percorso plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3310"/>
+        <location filename="../qtractorOptionsForm.ui" line="3278"/>
         <source>Browse plugin path</source>
         <translation>Sfoglia percorso plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3341"/>
+        <location filename="../qtractorOptionsForm.ui" line="3309"/>
         <source>Add plugin path</source>
         <translation>Aggiungi percorso plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3344"/>
+        <location filename="../qtractorOptionsForm.ui" line="3312"/>
         <source>&amp;Add</source>
         <translation>&amp;Aggiungi</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3368"/>
+        <location filename="../qtractorOptionsForm.ui" line="3336"/>
         <source>Plugin paths</source>
         <translation>Percorsi plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3402"/>
+        <location filename="../qtractorOptionsForm.ui" line="3370"/>
         <source>Remove plugin path</source>
         <translation>Rimuovi percorso plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3405"/>
+        <location filename="../qtractorOptionsForm.ui" line="3373"/>
         <source>&amp;Remove</source>
         <translation>&amp;Rimuovi</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3433"/>
-        <location filename="../qtractorOptionsForm.ui" line="3464"/>
+        <location filename="../qtractorOptionsForm.ui" line="3401"/>
+        <location filename="../qtractorOptionsForm.ui" line="3432"/>
         <source>Move up path</source>
         <translation>Sposta su percorso</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3436"/>
+        <location filename="../qtractorOptionsForm.ui" line="3404"/>
         <source>&amp;Up</source>
         <translation>S&amp;u</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3467"/>
+        <location filename="../qtractorOptionsForm.ui" line="3435"/>
         <source>&amp;Down</source>
         <translation>Giù</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3485"/>
+        <location filename="../qtractorOptionsForm.ui" line="3453"/>
         <source>&amp;LV2 Presets directory:</source>
         <translation>Directory preset &amp;LV2:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3513"/>
+        <location filename="../qtractorOptionsForm.ui" line="3481"/>
         <source>LV2 Presets directory (default: ~/.lv2)</source>
         <translation>Directory preset LV2 (default: ~/.lv2)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3541"/>
+        <location filename="../qtractorOptionsForm.ui" line="3509"/>
         <source>Browse LV2 Presets directory</source>
         <translation>Sfoglia directory preset LV2</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3581"/>
+        <location filename="../qtractorOptionsForm.ui" line="3549"/>
         <source>Instruments</source>
         <translation>Strumenti</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3602"/>
+        <location filename="../qtractorOptionsForm.ui" line="3570"/>
         <source>Whether to have separate audio output ports</source>
         <translation>Porte audio di uscita separate</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3605"/>
+        <location filename="../qtractorOptionsForm.ui" line="3573"/>
         <source>Dedicated audi&amp;o outputs:</source>
         <translation>Porte audi&amp;o di uscita dedicate:</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3618"/>
+        <location filename="../qtractorOptionsForm.ui" line="3586"/>
         <source>Whether to auto-connect dedicated audio output ports</source>
         <translation>Connessione automatica porte audio di uscita</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3621"/>
+        <location filename="../qtractorOptionsForm.ui" line="3589"/>
         <source>Au&amp;to-connect</source>
         <translation>Connessione au&amp;tomatica</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3679"/>
+        <location filename="../qtractorOptionsForm.ui" line="3647"/>
         <source>Editor</source>
         <translation>Editor</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3700"/>
+        <location filename="../qtractorOptionsForm.ui" line="3668"/>
         <source>Whether to open plugin&apos;s editor (GUI) by default</source>
         <translation>Apri di default la GUI dell&apos;editor delle plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3703"/>
+        <location filename="../qtractorOptionsForm.ui" line="3671"/>
         <source>Open plugin&apos;s &amp;editor (GUI) by default</source>
         <translation>Apri di default la GUI dell&apos;&amp;editor delle plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3719"/>
+        <location filename="../qtractorOptionsForm.ui" line="3687"/>
         <source>&amp;Select plugin&apos;s editor (GUI) if more than one are available</source>
         <translation>&amp;Seleziona l&apos;editor (GUI) per la plugin se più di uno è disponibile</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3735"/>
+        <location filename="../qtractorOptionsForm.ui" line="3703"/>
         <source>Experimental</source>
         <translation>Sperimentale</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3785"/>
+        <location filename="../qtractorOptionsForm.ui" line="3753"/>
         <source>Whether LV2 Dynamic Manifest plugins are supported</source>
         <translation>Decidi se i Manifest dinamici delle plugin LV2 sono supportati</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3788"/>
+        <location filename="../qtractorOptionsForm.ui" line="3756"/>
         <source>LV2 Dy&amp;namic Manifest support</source>
         <translation>Supporto Manifest di&amp;namici plugin LV2</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3756"/>
+        <location filename="../qtractorOptionsForm.ui" line="3724"/>
         <source>Whether to save plugin automation with higher resolution (14-bit)</source>
         <translation>Decidi se salvare l&apos;automazione della plugin con un&apos;alta risoluzione (14 bit)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.ui" line="3759"/>
+        <location filename="../qtractorOptionsForm.ui" line="3727"/>
         <source>&amp;High resolution plugin automation (14-bit)</source>
         <translation>Alta risoluzione dell&apos;automazione della plugin (14 bit)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="142"/>
+        <location filename="../qtractorOptionsForm.cpp" line="137"/>
         <source>Signed 16-Bit</source>
         <translation>16-Bit con segno</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="143"/>
+        <location filename="../qtractorOptionsForm.cpp" line="138"/>
         <source>Signed 24-Bit</source>
         <translation>24-Bit con segno</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="144"/>
+        <location filename="../qtractorOptionsForm.cpp" line="139"/>
         <source>Signed 32-Bit</source>
         <translation>32-Bit con segno</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="145"/>
+        <location filename="../qtractorOptionsForm.cpp" line="140"/>
         <source>Float  32-Bit</source>
         <translation>32-Bit Float</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="146"/>
+        <location filename="../qtractorOptionsForm.cpp" line="141"/>
         <source>Float  64-Bit</source>
         <translation>64-Bit Float</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="150"/>
+        <location filename="../qtractorOptionsForm.cpp" line="145"/>
         <source>SMF Format 0</source>
         <translation>Formato 0 SMF</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="151"/>
+        <location filename="../qtractorOptionsForm.cpp" line="146"/>
         <source>SMF Format 1</source>
         <translation>Formato 1 SMF</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="171"/>
+        <location filename="../qtractorOptionsForm.cpp" line="166"/>
         <source>(Any)</source>
         <translation>(Qualsiasi)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="936"/>
+        <location filename="../qtractorOptionsForm.cpp" line="920"/>
         <source>Warning</source>
         <translation>Attenzione</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="937"/>
+        <location filename="../qtractorOptionsForm.cpp" line="921"/>
         <source>Some settings have been changed.
 
 Do you want to apply the changes?</source>
@@ -11132,63 +10963,63 @@ Do you want to apply the changes?</source>
 Vuoi applicare le modifiche?</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="972"/>
+        <location filename="../qtractorOptionsForm.cpp" line="951"/>
         <source>Metronome Bar Audio File</source>
         <translation>File Audio Barra Metronomo</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="986"/>
+        <location filename="../qtractorOptionsForm.cpp" line="965"/>
         <source>Metronome Beat Audio File</source>
         <translation>File Audio Battito Metronomo</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1150"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1129"/>
         <source>Audio Meter Color</source>
         <translation>Colore del meter audio</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1172"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1151"/>
         <source>MIDI Meter Color</source>
         <translation>Colore del meter MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1268"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1247"/>
         <source>Plug-in Directory</source>
         <translation>Cartella Plug-in</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1508"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1487"/>
         <source>LV2 Presets Directory</source>
         <translation>Directory dei Preset LV2</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1549"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1528"/>
         <source>Messages Font</source>
         <translation>Font dei messaggi</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1577"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1556"/>
         <source>Messages Log</source>
         <translation>Messaggi di Log</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1580"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1559"/>
         <source>Log files (*.%1)</source>
         <translation>File di Log (*.%1)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1581"/>
-        <location filename="../qtractorOptionsForm.cpp" line="1627"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1560"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1606"/>
         <source>All files (*.*)</source>
         <translation type="unfinished">Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1623"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1602"/>
         <source>Session Template</source>
         <translation>Template Sessione</translation>
     </message>
     <message>
-        <location filename="../qtractorOptionsForm.cpp" line="1626"/>
+        <location filename="../qtractorOptionsForm.cpp" line="1605"/>
         <source>Session template files (*.qtr *.qts *.%1)</source>
         <translation>File Template Sessione (*.qtr *.qts *.%1)</translation>
     </message>
@@ -13049,32 +12880,32 @@ Vuoi applicare le modifiche?</translation>
 <context>
     <name>qtractorTrackListHeaderModel</name>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="155"/>
+        <location filename="../qtractorTrackList.cpp" line="154"/>
         <source>Nr</source>
         <translation>Nr</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="156"/>
+        <location filename="../qtractorTrackList.cpp" line="155"/>
         <source>Track Name</source>
         <translation>Nome Traccia</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="157"/>
+        <location filename="../qtractorTrackList.cpp" line="156"/>
         <source>Bus</source>
         <translation>Bus</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="158"/>
+        <location filename="../qtractorTrackList.cpp" line="157"/>
         <source>Ch</source>
         <translation>Can</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="159"/>
+        <location filename="../qtractorTrackList.cpp" line="158"/>
         <source>Patch</source>
         <translation>Patch</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackList.cpp" line="160"/>
+        <location filename="../qtractorTrackList.cpp" line="159"/>
         <source>Instrument</source>
         <translation>Strumento</translation>
     </message>
@@ -13249,180 +13080,180 @@ Lunghezza:   %3</translation>
 <context>
     <name>qtractorTracks</name>
     <message>
-        <location filename="../qtractorTracks.cpp" line="112"/>
+        <location filename="../qtractorTracks.cpp" line="109"/>
         <source>Tracks</source>
         <translation>Tracce</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="517"/>
+        <location filename="../qtractorTracks.cpp" line="514"/>
         <source>new clip</source>
         <translation>nuovo clip</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="640"/>
+        <location filename="../qtractorTracks.cpp" line="637"/>
         <source>split clip</source>
         <translation>dividi clip</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="725"/>
+        <location filename="../qtractorTracks.cpp" line="722"/>
         <source>clip normalize</source>
         <translation>normalizza clip</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="844"/>
+        <location filename="../qtractorTracks.cpp" line="841"/>
         <source>quantize</source>
         <translation>quantizza</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="845"/>
+        <location filename="../qtractorTracks.cpp" line="842"/>
         <source>transpose</source>
         <translation>trasponi</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="846"/>
+        <location filename="../qtractorTracks.cpp" line="843"/>
         <source>normalize</source>
         <translation>normalizza</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="847"/>
+        <location filename="../qtractorTracks.cpp" line="844"/>
         <source>randomize</source>
         <translation>randomizza</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="848"/>
+        <location filename="../qtractorTracks.cpp" line="845"/>
         <source>resize</source>
         <translation>ridimensiona</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="849"/>
+        <location filename="../qtractorTracks.cpp" line="846"/>
         <source>rescale</source>
         <translation>scala</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="850"/>
+        <location filename="../qtractorTracks.cpp" line="847"/>
         <source>timeshift</source>
         <translation>timeshift</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="985"/>
+        <location filename="../qtractorTracks.cpp" line="982"/>
         <source>clip import</source>
         <translation>importa clip</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1012"/>
-        <location filename="../qtractorTracks.cpp" line="2790"/>
+        <location filename="../qtractorTracks.cpp" line="1009"/>
+        <location filename="../qtractorTracks.cpp" line="2787"/>
         <source>Audio file import &quot;%1&quot; on %2 %3.
 </source>
         <translation>Importa file audio &quot;%1&quot; su %2 %3.
 </translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1017"/>
-        <location filename="../qtractorTracks.cpp" line="2795"/>
+        <location filename="../qtractorTracks.cpp" line="1014"/>
+        <location filename="../qtractorTracks.cpp" line="2792"/>
         <source>Audio file import: &quot;%1&quot;.</source>
         <translation>Importa file audio: &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1047"/>
-        <location filename="../qtractorTracks.cpp" line="2999"/>
+        <location filename="../qtractorTracks.cpp" line="1044"/>
+        <location filename="../qtractorTracks.cpp" line="2978"/>
         <source>MIDI file import &quot;%1&quot; track-channel %2 on %3 %4.
 </source>
         <translation>Importa file MIDI &quot;%1&quot; traccia-canale %2 on %3 %4.
 </translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1053"/>
-        <location filename="../qtractorTracks.cpp" line="3005"/>
+        <location filename="../qtractorTracks.cpp" line="1050"/>
+        <location filename="../qtractorTracks.cpp" line="2984"/>
         <source>MIDI file import: &quot;%1&quot;, track-channel: %2.</source>
         <translation>Importa file MIDI: &quot;%1&quot;, traccia-canale: %2.</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1088"/>
+        <location filename="../qtractorTracks.cpp" line="1085"/>
         <source>clip merge</source>
         <translation>fondi clip</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1186"/>
+        <location filename="../qtractorTracks.cpp" line="1183"/>
         <source>Merge/Export Audio Clip</source>
         <translation>Fondi/Esporta Clip Audio</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1459"/>
+        <location filename="../qtractorTracks.cpp" line="1456"/>
         <source>MIDI files (*.mid *.smf *.midi)</source>
         <translation type="unfinished">File MIDI (*.mid *.smf *.midi)</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1460"/>
+        <location filename="../qtractorTracks.cpp" line="1457"/>
         <source>All files (*.*)</source>
         <translation type="unfinished">Tutti i file (*.*)</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1249"/>
+        <location filename="../qtractorTracks.cpp" line="1246"/>
         <source>Audio clip merge/export: &quot;%1&quot; started...</source>
         <translation>Fusione/esportazione clip audio: &quot;%1&quot; in corso...</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1385"/>
+        <location filename="../qtractorTracks.cpp" line="1382"/>
         <source>Audio clip merge/export: &quot;%1&quot; complete.</source>
         <translation>Fusione/esportazione clip audio: &quot;%1&quot; completa.</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1456"/>
+        <location filename="../qtractorTracks.cpp" line="1453"/>
         <source>Merge/Export MIDI Clip</source>
         <translation>Fondi/Esporta Clip MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1523"/>
+        <location filename="../qtractorTracks.cpp" line="1520"/>
         <source>MIDI clip merge/export: &quot;%1&quot; started...</source>
         <translation>Fusione/esportazione clip MIDI: &quot;%1&quot; in corso...</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1646"/>
+        <location filename="../qtractorTracks.cpp" line="1643"/>
         <source>MIDI clip merge/export: &quot;%1&quot; complete.</source>
         <translation>Fusione/esportazione clip MIDI: &quot;%1&quot; completa.</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="1816"/>
+        <location filename="../qtractorTracks.cpp" line="1813"/>
         <source>clip cross-fade</source>
         <translation>cross-fade del clip</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2071"/>
+        <location filename="../qtractorTracks.cpp" line="2068"/>
         <source>Insert Range</source>
         <translation>Inserisci intervallo</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2091"/>
+        <location filename="../qtractorTracks.cpp" line="2088"/>
         <source>insert range</source>
         <translation>inserisci intervallo</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2092"/>
+        <location filename="../qtractorTracks.cpp" line="2089"/>
         <source>insert track range</source>
         <translation>inserisci intervallo traccia</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2296"/>
+        <location filename="../qtractorTracks.cpp" line="2293"/>
         <source>Remove Range</source>
         <translation>Elimina intervallo</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2316"/>
+        <location filename="../qtractorTracks.cpp" line="2313"/>
         <source>remove range</source>
         <translation>elimina intervallo</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2317"/>
+        <location filename="../qtractorTracks.cpp" line="2314"/>
         <source>remove track range</source>
         <translation>elimina intervallo traccia</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2614"/>
+        <location filename="../qtractorTracks.cpp" line="2611"/>
         <source>Warning</source>
         <translation>Attenzione</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2615"/>
+        <location filename="../qtractorTracks.cpp" line="2612"/>
         <source>About to remove track:
 
 &quot;%1&quot;
@@ -13435,14 +13266,14 @@ Are you sure?</source>
 Sei sicuro?</translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2916"/>
+        <location filename="../qtractorTracks.cpp" line="2907"/>
         <source>MIDI file import &quot;%1&quot; on %2 %3.
 </source>
         <translation>Importazione file MIDI &quot;%1&quot; su %2 %3.
 </translation>
     </message>
     <message>
-        <location filename="../qtractorTracks.cpp" line="2921"/>
+        <location filename="../qtractorTracks.cpp" line="2912"/>
         <source>MIDI file import: &quot;%1&quot;.</source>
         <translation>Importazione file MIDI: &quot;%1&quot;.</translation>
     </message>
