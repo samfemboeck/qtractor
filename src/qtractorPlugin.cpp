@@ -1627,6 +1627,9 @@ void qtractorPluginList::resetBuffers (void)
 	// Restore activation count.
 	m_iActivated = iActivated;
 #endif
+
+	// Recalculate total plugin chain latency...
+	updateLatency();
 }
 
 
