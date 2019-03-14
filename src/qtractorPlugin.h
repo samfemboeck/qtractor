@@ -933,16 +933,14 @@ public:
 	void autoDeactivatePlugins(bool bDeactivated, bool bForce = false);
 	bool isAutoDeactivated() const;
 
-<<<<<<< HEAD
 	// Force no sound processing.
 	void forceNoProcessing(bool bForce);
-=======
+
 	// Plugin chain total latency (in frames);
 	unsigned long latency() const
 		{ return m_iLatency; }
 
-	void updateLatency();
->>>>>>> ff666250... - Plugin chain total latency is now re-calculated on each session seek/re-location. (EXPERIMENTAL)
+	void resetLatency();
 
 protected:
 
@@ -997,13 +995,11 @@ private:
 	// Auto-plugin-deactivation
 	bool m_bAutoDeactivated;
 
-<<<<<<< HEAD
 	// Force no sound processing.
 	int m_iForceNoProcessing;
-=======
+
 	// Plugin chain total latency (in frames);
 	unsigned long m_iLatency;
->>>>>>> ff666250... - Plugin chain total latency is now re-calculated on each session seek/re-location. (EXPERIMENTAL)
 };
 
 
