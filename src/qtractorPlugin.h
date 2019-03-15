@@ -936,7 +936,12 @@ public:
 	// Force no sound processing.
 	void forceNoProcessing(bool bForce);
 
-	// Plugin chain total latency (in frames);
+	// Plugin chain total latency (in frames) methods...
+	void setLatency(bool bLatency)
+		{ m_bLatency = bLatency; }
+	bool isLatency() const
+		{ return m_bLatency; }
+
 	unsigned long latency() const
 		{ return m_iLatency; }
 
@@ -999,6 +1004,7 @@ private:
 	int m_iForceNoProcessing;
 
 	// Plugin chain total latency (in frames);
+	bool          m_bLatency;
 	unsigned long m_iLatency;
 };
 
