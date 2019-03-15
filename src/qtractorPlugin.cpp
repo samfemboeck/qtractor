@@ -2058,6 +2058,10 @@ bool qtractorPluginList::loadElement (
 		if (ePlugin.tagName() == "audio-outputs") {
 			qtractorBus::loadConnects(m_audioOutputs, pDocument, &ePlugin);
 		}
+		else
+		if (ePlugin.tagName() == "latency") {
+			m_bLatency = qtractorDocument::boolFromText(ePlugin.text());
+		}
 		// Make up audio output bus ...
 		setAudioOutputBusName(m_sAudioOutputBusName);
 		setAudioOutputAutoConnect(m_bAudioOutputAutoConnect);
@@ -2195,6 +2199,10 @@ bool qtractorPluginList::saveElement ( qtractorDocument *pDocument,
 		}
 	}
 
+	// Plugin delay/latency compensation enablement...
+	if (m_bLatency) pDocument->saveTextElement("latency",
+		qtractorDocument::textFromBool(m_bLatency), pElement);
+
 	return true;
 }
 
@@ -2308,7 +2316,7 @@ bool qtractorPluginList::checkPluginFile (
 }
 
 
-// Recalculate plugin chain total latency (in frames).
+// Recalculate plugin chain total latency (in frames)...
 void qtractorPluginList::resetLatency (void)
 {
 	m_iLatency = 0;
