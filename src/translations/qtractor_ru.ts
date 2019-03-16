@@ -382,44 +382,44 @@ MIDI:	</translation>
         <translation>свойства дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="793"/>
+        <location filename="../qtractorTrackCommand.cpp" line="777"/>
         <source>Track assignment failed:
 
 Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="877"/>
+        <location filename="../qtractorTrackCommand.cpp" line="861"/>
         <source>track record</source>
         <translation>запись дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="880"/>
+        <location filename="../qtractorTrackCommand.cpp" line="864"/>
         <source>track mute</source>
         <translation>приглушение дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="883"/>
+        <location filename="../qtractorTrackCommand.cpp" line="867"/>
         <source>track solo</source>
         <translation>солирование дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1057"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1041"/>
         <source>track monitor</source>
         <translation>мониторинг дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1165"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1149"/>
         <source>track gain</source>
         <translation>усиление дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1254"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1238"/>
         <source>track pan</source>
         <translation>панорама дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1341"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1325"/>
         <source>track instrument</source>
         <translation type="unfinished"></translation>
     </message>

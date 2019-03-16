@@ -20,6 +20,9 @@ ChangeLog
   up of internal curve/automation files when saving
   existing sessions.
 
+- Plugin latency/delay compensation is now intrduced
+  as an option to tracks only. (HIGHLY EXPERIMENTAL)
+
 - Refactored all singleton/unique application instance
   setup logic away from X11/Xcb hackery. (EXPERIMENTAL)
 

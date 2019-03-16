@@ -641,7 +641,7 @@ MIDI:	</translation>
         <translation>propriétés de la piste</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="793"/>
+        <location filename="../qtractorTrackCommand.cpp" line="777"/>
         <source>Track assignment failed:
 
 Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
@@ -650,37 +650,37 @@ Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
 Piste: &quot;%1&quot; Entrée: &quot;%2&quot; Sortie: &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="877"/>
+        <location filename="../qtractorTrackCommand.cpp" line="861"/>
         <source>track record</source>
         <translation>piste enregistrer</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="880"/>
+        <location filename="../qtractorTrackCommand.cpp" line="864"/>
         <source>track mute</source>
         <translation>piste muet</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="883"/>
+        <location filename="../qtractorTrackCommand.cpp" line="867"/>
         <source>track solo</source>
         <translation>piste solo</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1057"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1041"/>
         <source>track monitor</source>
         <translation>piste contrôler</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1165"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1149"/>
         <source>track gain</source>
         <translation>piste gain</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1254"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1238"/>
         <source>track pan</source>
         <translation>piste panoramique</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1341"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1325"/>
         <source>track instrument</source>
         <translation>piste instrument</translation>
     </message>
