@@ -24,15 +24,15 @@ ChangeLog
 
 - Plugin latency/delay compensation is now introduced
   as an option to tracks only (cf. Track/Properties...
-  /Latency compensation). (HIGHLY EXPERIMENTAL)
+  /Latency compensation).
 
 - Refactored all singleton/unique application instance
-  setup logic away from X11/Xcb hackery. (EXPERIMENTAL)
+  setup logic away from X11/Xcb hackery.
 
 - A bit lesser of a naive file-name numbering is now
   in place to avoid as much as possible, the piling
   up of internal curve/automation files when saving
-  existing sessions. (EXPERIMENTAL)
+  existing sessions.
 
 - Maybe just informational but the original MIDI file
   format is now correctly reported across ref-counted
