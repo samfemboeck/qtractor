@@ -1528,6 +1528,9 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 	qtractorAudioBuffer::setDefaultWsolaQuickSeek(
 		m_pOptions->bAudioWsolaQuickSeek);
 
+	// Set default custom spin-box edit mode (deferred)...
+	qtractorSpinBox::setEditMode(qtractorSpinBox::DeferredMode);
+
 	// Load (action) keyboard shortcuts...
 	m_pOptions->loadActionShortcuts(this);
 	m_pOptions->loadActionControl(this);
@@ -3836,7 +3839,7 @@ void qtractorMainForm::trackImportAudio (void)
 		const unsigned long iClipStart = m_pSession->editHead();
 		qtractorTrack *pTrack = m_pTracks->currentTrack();
 		m_pTracks->addAudioTracks(
-			m_pFiles->audioListView()->openFileNames(), iClipStart, pTrack);
+			m_pFiles->audioListView()->openFileNames(), iClipStart, 0, 0, pTrack);
 		m_pTracks->trackView()->ensureVisibleFrame(iClipStart);
 	}
 }
