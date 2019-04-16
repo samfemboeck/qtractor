@@ -669,7 +669,8 @@ void qtractorTrackView::drawContents ( QPainter *pPainter, const QRect& rect )
 									pPainter, headRect, iHeadOffset);
 								pPainter->setBrush(brush);
 							}
-							iClipOffset += (iFrameTime - iPlayHead);
+							if (iPlayHead < iFrameTime)
+								iClipOffset += (iFrameTime - iPlayHead);
 							iClipStart = iLoopStart;
 						}
 					}

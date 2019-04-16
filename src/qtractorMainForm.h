@@ -472,8 +472,8 @@ private:
 	int m_iUntitled;
 	int m_iDirtyCount;
 	int m_iBackupCount;
-	QSocketNotifier *m_pUsr1Notifier;
-	QSocketNotifier *m_pTermNotifier;
+	QSocketNotifier *m_pSigusr1Notifier;
+	QSocketNotifier *m_pSigtermNotifier;
 	QActionGroup *m_pSelectModeActionGroup;
 	QToolButton *m_pSelectModeToolButton;
 	QActionGroup *m_pTransportModeActionGroup;
@@ -507,6 +507,7 @@ private:
 	int m_iAutoSaveTimer;
 	int m_iAutoSavePeriod;
 	int m_iAudioPropertyChange;
+	int m_iStabilizeTimer;
 
 	// Status bar item indexes
 	enum {

@@ -4,6 +4,20 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+0.9.7  2019-04-16  Spring-Break'19 Release.
+
+- Re-defined all main application UNIX signal handling.
+
+- Fixed possible crash in drawing clips while rare
+  loop-recording/takes situations.
+
+- Main window stabilizing is now kind of asynchronous
+  re. menus, tools and status bars.
+
+- MIDI Controller's Latch mode attribute on tracks and
+  plugins are now properly saved/loaded as meant to be.
+
+
 0.9.6  2019-03-20  Pre-LAC2019 Release Frenzy.
 
 - Fixed LV2 UI Touch feature/interface implementation.
@@ -25,7 +39,7 @@ ChangeLog
   linked MIDI clips.
 
 
-0.9.5  2019-02-14  Venntines'19 Hotfix.
+0.9.5  2019-02-14  Valentines'19 Hotfix.
 
 - HiDPI display screen support (Qt >= 5.6; patch by
   Hubert Figuiere, thanks).
