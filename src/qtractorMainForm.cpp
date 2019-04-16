@@ -170,31 +170,31 @@ const WindowFlags WindowCloseButtonHint = WindowFlags(0x08000000);
 
 #include <QSocketNotifier>
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
 #include <signal.h>
 
 // File descriptor for SIGUSR1 notifier.
-static int g_fdUsr1[2];
+static int g_fdSigusr1[2] = { -1, -1 };
 
 // Unix SIGUSR1 signal handler.
 static void qtractor_sigusr1_handler ( int /* signo */ )
 {
 	char c = 1;
 
-	(::write(g_fdUsr1[0], &c, sizeof(c)) > 0);
+	(::write(g_fdSigusr1[0], &c, sizeof(c)) > 0);
 }
 
 // File descriptor for SIGTERM notifier.
-static int g_fdTerm[2];
+static int g_fdSigterm[2] = { -1, -1 };
 
 // Unix SIGTERM signal handler.
 static void qtractor_sigterm_handler ( int /* signo */ )
 {
 	char c = 1;
 
-	(::write(g_fdTerm[0], &c, sizeof(c)) > 0);
+	(::write(g_fdSigterm[0], &c, sizeof(c)) > 0);
 }
 
 #endif	// HAVE_SIGNAL_H
@@ -298,6 +298,8 @@ qtractorMainForm::qtractorMainForm (
 
 	m_iAudioPropertyChange = 0;
 
+	m_iStabilizeTimer = 0;
+
 	// Configure the audio file peak factory...
 	qtractorAudioPeakFactory *pAudioPeakFactory
 		= m_pSession->audioPeakFactory();
@@ -368,52 +370,49 @@ qtractorMainForm::qtractorMainForm (
 
 	// LADISH Level 1 suport.
 	// Initialize file descriptors for SIGUSR1 socket notifier.
-	::socketpair(AF_UNIX, SOCK_STREAM, 0, g_fdUsr1);
-	m_pUsr1Notifier
-		= new QSocketNotifier(g_fdUsr1[1], QSocketNotifier::Read, this);
+	::socketpair(AF_UNIX, SOCK_STREAM, 0, g_fdSigusr1);
+	m_pSigusr1Notifier
+		= new QSocketNotifier(g_fdSigusr1[1], QSocketNotifier::Read, this);
 
-	QObject::connect(m_pUsr1Notifier,
+	QObject::connect(m_pSigusr1Notifier,
 		SIGNAL(activated(int)),
 		SLOT(handle_sigusr1()));
 
 	// Install SIGUSR1 signal handler.
-	struct sigaction usr1;
-	usr1.sa_handler = qtractor_sigusr1_handler;
-	::sigemptyset(&usr1.sa_mask);
-	usr1.sa_flags = 0;
-	usr1.sa_flags |= SA_RESTART;
-	::sigaction(SIGUSR1, &usr1, NULL);
+	struct sigaction sigusr1;
+	sigusr1.sa_handler = qtractor_sigusr1_handler;
+	::sigemptyset(&sigusr1.sa_mask);
+	sigusr1.sa_flags = 0;
+	sigusr1.sa_flags |= SA_RESTART;
+	::sigaction(SIGUSR1, &sigusr1, NULL);
 
 	// LADISH termination suport.
 	// Initialize file descriptors for SIGTERM socket notifier.
-	::socketpair(AF_UNIX, SOCK_STREAM, 0, g_fdTerm);
-	m_pTermNotifier
-		= new QSocketNotifier(g_fdTerm[1], QSocketNotifier::Read, this);
+	::socketpair(AF_UNIX, SOCK_STREAM, 0, g_fdSigterm);
+	m_pSigtermNotifier
+		= new QSocketNotifier(g_fdSigterm[1], QSocketNotifier::Read, this);
 
-	QObject::connect(m_pTermNotifier,
+	QObject::connect(m_pSigtermNotifier,
 		SIGNAL(activated(int)),
 		SLOT(handle_sigterm()));
 
-	// Install SIGTERM signal handler.
-	struct sigaction term;
-	term.sa_handler = qtractor_sigterm_handler;
-	::sigemptyset(&term.sa_mask);
-	term.sa_flags = 0;
-	term.sa_flags |= SA_RESTART;
-	::sigaction(SIGTERM, &term, NULL);
+	// Install SIGTERM/SIGQUIT signal handlers.
+	struct sigaction sigterm;
+	sigterm.sa_handler = qtractor_sigterm_handler;
+	::sigemptyset(&sigterm.sa_mask);
+	sigterm.sa_flags = 0;
+	sigterm.sa_flags |= SA_RESTART;
+	::sigaction(SIGTERM, &sigterm, NULL);
+	::sigaction(SIGQUIT, &sigterm, NULL);
 
-	// Ignore SIGHUP signal.
-	struct sigaction hup;
-	hup.sa_handler = SIG_IGN;
-	::sigemptyset(&hup.sa_mask);
-	hup.sa_flags = 0;
-	hup.sa_flags |= SA_RESTART;
-	::sigaction(SIGHUP, &hup, NULL);
+	// Ignore SIGHUP/SIGINT signals.
+	::signal(SIGHUP, SIG_IGN);
+	::signal(SIGINT, SIG_IGN);
 
 #else	// HAVE_SIGNAL_H
 
-	m_pUsr1Notifier = NULL;
-	m_pTermNotifier = NULL;
+	m_pSigusr1Notifier = NULL;
+	m_pSigtermNotifier = NULL;
 	
 #endif	// !HAVE_SIGNAL_H
 
@@ -1229,8 +1228,10 @@ qtractorMainForm::qtractorMainForm (
 qtractorMainForm::~qtractorMainForm (void)
 {
 #ifdef HAVE_SIGNAL_H
-	if (m_pUsr1Notifier)
-		delete m_pUsr1Notifier;
+	if (m_pSigtermNotifier)
+		delete m_pSigtermNotifier;
+	if (m_pSigusr1Notifier)
+		delete m_pSigusr1Notifier;
 #endif
 
 	// View/Snap-to-beat actions termination...
@@ -1676,7 +1677,7 @@ void qtractorMainForm::handle_sigusr1 (void)
 
 	char c;
 
-	if (::read(g_fdUsr1[1], &c, sizeof(c)) > 0)
+	if (::read(g_fdSigusr1[1], &c, sizeof(c)) > 0)
 		saveSession(false);
 
 #endif
@@ -1690,7 +1691,7 @@ void qtractorMainForm::handle_sigterm (void)
 
 	char c;
 
-	if (::read(g_fdTerm[1], &c, sizeof(c)) > 0)
+	if (::read(g_fdSigterm[1], &c, sizeof(c)) > 0)
 		close();
 
 #endif
@@ -2381,7 +2382,7 @@ bool qtractorMainForm::loadSessionFile ( const QString& sFilename )
 		m_pSession->setSessionDir(m_pNsmClient->path_name());
 		m_sNsmExt = QFileInfo(sFilename).suffix();
 		updateDirtyCount(true);
-		stabilizeForm();
+		++m_iStabilizeTimer;
 	}
 #endif
 
@@ -2644,7 +2645,7 @@ bool qtractorMainForm::saveSessionFileEx (
 	appendMessages(tr("Save session: \"%1\".").arg(sessionName(sFilename)));
 
 	// Show static results...
-	stabilizeForm();
+	++m_iStabilizeTimer;
 
 	return bResult;
 }
@@ -3115,7 +3116,7 @@ void qtractorMainForm::editCopy (void)
 	if (m_pTracks)
 		m_pTracks->copyClipboard();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3183,7 +3184,7 @@ void qtractorMainForm::editSelectModeClip (void)
 	if (m_pOptions)
 		m_pOptions->iTrackViewSelectMode = 0;
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3204,7 +3205,7 @@ void qtractorMainForm::editSelectModeRange (void)
 	if (m_pOptions)
 		m_pOptions->iTrackViewSelectMode = 1;
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3225,7 +3226,7 @@ void qtractorMainForm::editSelectModeRect (void)
 	if (m_pOptions)
 		m_pOptions->iTrackViewSelectMode = 2;
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3252,7 +3253,7 @@ void qtractorMainForm::editSelectAll (void)
 	if (m_pTracks)
 		m_pTracks->selectAll();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3267,7 +3268,7 @@ void qtractorMainForm::editSelectNone (void)
 	if (m_pTracks)
 		m_pTracks->selectNone();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3282,7 +3283,7 @@ void qtractorMainForm::editSelectInvert (void)
 	if (m_pTracks)
 		m_pTracks->selectInvert();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3297,7 +3298,7 @@ void qtractorMainForm::editSelectTrack (void)
 	if (m_pTracks)
 		m_pTracks->selectCurrentTrack();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3312,7 +3313,7 @@ void qtractorMainForm::editSelectTrackRange (void)
 	if (m_pTracks)
 		m_pTracks->selectCurrentTrackRange();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3327,7 +3328,7 @@ void qtractorMainForm::editSelectRange (void)
 	if (m_pTracks)
 		m_pTracks->selectEditRange();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3342,7 +3343,7 @@ void qtractorMainForm::editInsertRange (void)
 	if (m_pTracks)
 		m_pTracks->insertEditRange();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3357,7 +3358,7 @@ void qtractorMainForm::editInsertTrackRange (void)
 	if (m_pTracks)
 		m_pTracks->insertEditRange(m_pTracks->currentTrack());
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3372,7 +3373,7 @@ void qtractorMainForm::editRemoveRange (void)
 	if (m_pTracks)
 		m_pTracks->removeEditRange();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3387,7 +3388,7 @@ void qtractorMainForm::editRemoveTrackRange (void)
 	if (m_pTracks)
 		m_pTracks->removeEditRange(m_pTracks->currentTrack());
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -3402,7 +3403,7 @@ void qtractorMainForm::editSplit (void)
 	if (m_pTracks)
 		m_pTracks->splitSelect();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -4003,7 +4004,7 @@ void qtractorMainForm::trackCurveLocked ( bool bOn )
 	m_pTracks->updateTrackView();
 
 	updateDirtyCount(true);
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -4160,7 +4161,7 @@ void qtractorMainForm::trackCurveLockedAll ( bool bOn )
 	m_pTracks->updateTrackView();
 
 	updateDirtyCount(true);
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -4944,7 +4945,7 @@ void qtractorMainForm::viewRefresh (void)
 	// We're formerly done.
 	QApplication::restoreOverrideCursor();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5256,7 +5257,7 @@ void qtractorMainForm::viewOptions (void)
 	}
 
 	// This makes it.
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5285,7 +5286,7 @@ void qtractorMainForm::transportBackward (void)
 	}
 	++m_iTransportUpdate;
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5318,7 +5319,7 @@ void qtractorMainForm::transportRewind (void)
 			qtractorMmcEvent::REWIND);
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5351,7 +5352,7 @@ void qtractorMainForm::transportFastForward (void)
 			qtractorMmcEvent::FAST_FORWARD);
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5377,7 +5378,7 @@ void qtractorMainForm::transportForward (void)
 	}
 	++m_iTransportUpdate;
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5447,7 +5448,7 @@ void qtractorMainForm::transportStop (void)
 			m_pSession->setPlayHead(playHeadBackward());
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5491,7 +5492,7 @@ void qtractorMainForm::transportPlay (void)
 			m_pSession->setPlayHead(playHeadBackward());
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5518,7 +5519,7 @@ void qtractorMainForm::transportRecord (void)
 			qtractorMmcEvent::RECORD_STROBE : qtractorMmcEvent::RECORD_EXIT);
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5585,7 +5586,7 @@ void qtractorMainForm::transportMetro (void)
 			pMidiEngine->setMetronome(!pMidiEngine->isMetronome());
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5601,7 +5602,7 @@ void qtractorMainForm::transportFollow (void)
 		m_pTracks->trackView()->setSyncViewHoldOn(false);
 
 	// Toggle follow-playhead...
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5613,7 +5614,7 @@ void qtractorMainForm::transportAutoBackward (void)
 #endif
 
 	// Toggle auto-backward...
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5660,7 +5661,7 @@ void qtractorMainForm::transportModeMaster (void)
 		updateTransportModePost();
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5687,7 +5688,7 @@ void qtractorMainForm::transportContinue (void)
 #endif
 
 	// Toggle continue-past-end...
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -5721,7 +5722,7 @@ void qtractorMainForm::transportPanic (void)
 	// All (MIDI) tracks shut-off (panic)...
 	pMidiEngine->shutOffAllTracks();
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -6080,7 +6081,7 @@ void qtractorMainForm::setTrack ( int scmd, int iTrack, bool bOn )
 				break;
 			}
 			// Done.
-			stabilizeForm();
+			++m_iStabilizeTimer;
 		}
 	}
 }
@@ -6397,6 +6398,8 @@ bool qtractorMainForm::startSession (void)
 
 	m_iAudioPropertyChange = 0;
 
+	m_iStabilizeTimer = 0;
+
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	const bool bResult = m_pSession->init();
 	QApplication::restoreOverrideCursor();
@@ -6442,7 +6445,7 @@ bool qtractorMainForm::checkRestartSession (void)
 		// Bail out if can't start it...
 		if (!startSession()) {
 			// Can go on with no-business...
-			stabilizeForm();
+			++m_iStabilizeTimer;
 			return false;
 		}
 		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -7538,9 +7541,9 @@ void qtractorMainForm::fastTimerSlot (void)
 		if (m_iTransportUpdate > 0) {
 			updateTransportTime(iPlayHead);
 			m_pThumbView->updateThumb();
-		} else {
-			stabilizeForm();
 		}
+		// Ensure the amin form is stable later on...
+		++m_iStabilizeTimer;
 		// Done with transport tricks.
 	}
 
@@ -7548,7 +7551,8 @@ void qtractorMainForm::fastTimerSlot (void)
 	qtractorMeterValue::refreshAll();
 
 	// Asynchronous observer update...
-	qtractorSubject::flushQueue(true);
+	if (qtractorSubject::flushQueue(true))
+		++m_iStabilizeTimer;
 
 #ifdef CONFIG_LV2
 #ifdef CONFIG_LV2_TIME
@@ -7709,7 +7713,7 @@ void qtractorMainForm::slowTimerSlot (void)
 			tr("XRUN(%1): some frames might have been lost.")
 			.arg(m_iXrunCount), "#cc0033");
 		// Let the XRUN status item get an update...
-		stabilizeForm();
+		++m_iStabilizeTimer;
 	}
 
 	// Check if its time to refresh some tracks...
@@ -7783,6 +7787,12 @@ void qtractorMainForm::slowTimerSlot (void)
 		}
 	}
 
+	// Check if its time to stabilize main form...
+	if (m_iStabilizeTimer > 0 && --m_iStabilizeTimer < 1) {
+		m_iStabilizeTimer = 0;
+		stabilizeForm();
+	}
+
 	// Register the next slow-timer slot.
 	QTimer::singleShot(QTRACTOR_TIMER_DELAY, this, SLOT(slowTimerSlot()));
 }
@@ -7843,7 +7853,7 @@ void qtractorMainForm::audioShutNotify (void)
 	checkRestartSession();
 
 	// Make things just bearable...
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -7960,7 +7970,7 @@ void qtractorMainForm::audioBuffNotify ( unsigned int iBufferSize )
 	updateDirtyCount(true);
 #endif
 	// Make things just bearable...
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8152,7 +8162,7 @@ void qtractorMainForm::midiMmcNotify ( const qtractorMmcEvent& mmce )
 	}
 
 	appendMessages(sMmcText);
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8287,7 +8297,7 @@ void qtractorMainForm::midiSppNotify ( int iSppCmd, unsigned short iSongPos )
 		sSppText.toUtf8().constData());
 	appendMessages(sSppText);
 #endif
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8320,8 +8330,7 @@ void qtractorMainForm::midiClkNotify ( float fTempo )
 	++m_iTransportUpdate;
 
 	updateContents(NULL, true);
-
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8335,7 +8344,7 @@ void qtractorMainForm::addAudioFile ( const QString& sFilename )
 	if (m_pFiles)
 		m_pFiles->addAudioFile(sFilename);
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8354,7 +8363,7 @@ void qtractorMainForm::selectAudioFile (
 			qtractorTrack::Audio, sFilename, iTrackChannel, bSelect);
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8381,7 +8390,7 @@ void qtractorMainForm::activateAudioFile (
 	// Try updating player status anyway...
 	++m_iPlayerTimer;
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8392,7 +8401,7 @@ void qtractorMainForm::addMidiFile ( const QString& sFilename )
 	if (m_pFiles)
 		m_pFiles->addMidiFile(sFilename);
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8411,7 +8420,7 @@ void qtractorMainForm::selectMidiFile (
 			qtractorTrack::Midi, sFilename, iTrackChannel, bSelect);
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8438,7 +8447,7 @@ void qtractorMainForm::activateMidiFile (
 	// Try updating player status anyway...
 	++m_iPlayerTimer;
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8504,7 +8513,7 @@ void qtractorMainForm::trackSelectionChanged (void)
 			m_pSession->setCurrentTrack(pTrack);
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8524,7 +8533,7 @@ void qtractorMainForm::mixerSelectionChanged (void)
 		m_pTracks->trackList()->setCurrentTrack(pTrack);
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8560,7 +8569,7 @@ void qtractorMainForm::selectionNotifySlot ( qtractorMidiEditor *pMidiEditor )
 	}
 
 	// Normal status ahead...
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8743,7 +8752,7 @@ void qtractorMainForm::transportTimeFormatChanged ( int iDisplayFormat )
 		updateDisplayFormat();
 	}
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 
@@ -8760,7 +8769,7 @@ void qtractorMainForm::transportTimeChanged ( unsigned long iPlayHead )
 	m_pSession->setPlayHead(iPlayHead);
 	++m_iTransportUpdate;
 
-	stabilizeForm();
+	++m_iStabilizeTimer;
 }
 
 void qtractorMainForm::transportTimeFinished (void)
