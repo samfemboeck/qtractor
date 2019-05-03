@@ -2045,7 +2045,7 @@ void qtractorTrackView::mousePressEvent ( QMouseEvent *pMouseEvent )
 				qtractorScrollView::setCursor(QCursor(Qt::PointingHandCursor));
 				// Make it (un)selected, right on the file view too...
 				if (!m_bCurveEdit && m_selectMode == SelectClip)
-					selectClipFile(!bModifier);
+					selectClip(!bModifier);
 			}
 			// Something got it started?...
 			if (m_pClipDrag == NULL
@@ -2314,7 +2314,7 @@ void qtractorTrackView::mouseReleaseEvent ( QMouseEvent *pMouseEvent )
 			if (m_pClipDrag) {
 				// Make it right on the file view now...
 				if (!m_bCurveEdit && m_selectMode != SelectClip)
-					selectClipFile(!bModifier);
+					selectClip(!bModifier);
 				// Nothing more has been deferred...
 			}
 			// As long we're editing curve/automation...
@@ -2487,7 +2487,7 @@ bool qtractorTrackView::eventFilter ( QObject *pObject, QEvent *pEvent )
 
 
 // Clip file(item) selection convenience method.
-void qtractorTrackView::selectClipFile ( bool bReset )
+void qtractorTrackView::selectClip ( bool bReset )
 {
 	if (m_pClipDrag == NULL)
 		return;
@@ -2498,8 +2498,9 @@ void qtractorTrackView::selectClipFile ( bool bReset )
 
 	// Do the selection dance, first...
 	qtractorClipSelect::Item *pClipItem = m_pClipSelect->findItem(m_pClipDrag);
-	bool bSelect = !(pClipItem && pClipItem->rect.contains(m_posDrag));
+	const bool bSelect = !(pClipItem && pClipItem->rect.contains(m_posDrag));
 	if (!bReset) {
+		m_pClipDrag->setClipSelected(false);
 		m_pClipSelect->selectItem(m_pClipDrag, m_rectDrag, bSelect);
 		++iUpdate;
 	} else if (bSelect || m_selectMode != SelectClip) {
