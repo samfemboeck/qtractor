@@ -170,6 +170,7 @@ public:
 	QString sInstrumentDir;
 	QString sMidiControlDir;
 	QString sMidiSysexDir;
+	QString sPluginsDir;
 
 	// Session options.
 	QString sSessionExt;
