@@ -104,7 +104,6 @@ HEADERS += config.h \
 	qtractorSession.h \
 	qtractorSessionCommand.h \
 	qtractorSessionCursor.h \
-	qtractorSessionDocument.h \
 	qtractorSpinBox.h \
 	qtractorTempoCurve.h \
 	qtractorTempoCurveCommand.h \
@@ -231,7 +230,6 @@ SOURCES += \
 	qtractorSession.cpp \
 	qtractorSessionCommand.cpp \
 	qtractorSessionCursor.cpp \
-	qtractorSessionDocument.cpp \
 	qtractorSpinBox.cpp \
 	qtractorTempoCurve.cpp \
 	qtractorTempoCurveCommand.cpp \
