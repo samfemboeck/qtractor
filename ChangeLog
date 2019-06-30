@@ -6,6 +6,8 @@ ChangeLog
 
 0.9.8  2019-05-31  Spring'19 Beta.
 
+- Updated for the newer Qt5 translation tools (>= 5.13).
+
 - Plugin-lists and respective plugins state may now be
   exported and/or imported as XML files.
 
