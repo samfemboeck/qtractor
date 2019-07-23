@@ -134,15 +134,17 @@
 
 #include <QStyleFactory>
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QMimeData>
 #endif
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #if !defined(QT_NO_STYLE_GTK)
 #include <QGtkStyle>
 #endif
 #endif
+
+#include <algorithm>
 
 #include <math.h>
 
@@ -150,10 +152,14 @@
 #define QTRACTOR_TIMER_MSECS    66
 #define QTRACTOR_TIMER_DELAY    233
 
-#if QT_VERSION < 0x040500
+#if QT_VERSION < QT_VERSION_CHECK(4, 5, 0)
 namespace Qt {
 const WindowFlags WindowCloseButtonHint = WindowFlags(0x08000000);
 }
+#endif
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#define horizontalAdvance  width
 #endif
 
 #if defined(__WIN32__) || defined(_WIN32) || defined(WIN32)
@@ -250,7 +256,7 @@ qtractorMainForm::qtractorMainForm (
 	// FIXME: This gotta go, somwhere in time...
 	m_pSession = new qtractorSession();
 	m_pTempoCursor = new qtractorTempoCursor();
-	m_pMessageList = new qtractorMessageList();;
+	m_pMessageList = new qtractorMessageList();
 	m_pAudioFileFactory = new qtractorAudioFileFactory();
 	m_pPluginFactory = new qtractorPluginFactory();
 
@@ -496,7 +502,7 @@ qtractorMainForm::qtractorMainForm (
 	// Editable toolbar widgets special palette.
 	QPalette pal;
 	// Outrageous HACK: GTK+ ppl won't see green on black thing...
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #if !defined(QT_NO_STYLE_GTK)
 	if (qobject_cast<QGtkStyle *> (style()) == NULL) {
 #endif
@@ -506,7 +512,7 @@ qtractorMainForm::qtractorMainForm (
 		pal.setColor(QPalette::Text, Qt::green);
 	//	pal.setColor(QPalette::Button, Qt::darkGray);
 	//	pal.setColor(QPalette::ButtonText, Qt::green);
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #if !defined(QT_NO_STYLE_GTK)
 	}
 #endif
@@ -524,7 +530,7 @@ qtractorMainForm::qtractorMainForm (
 	m_pTimeSpinBox->setTimeScale(m_pSession->timeScale());
 	m_pTimeSpinBox->setFont(font);
 	m_pTimeSpinBox->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-	m_pTimeSpinBox->setMinimumSize(QSize(fm.width(sTime) + d, d) + pad);
+	m_pTimeSpinBox->setMinimumSize(QSize(fm.horizontalAdvance(sTime) + d, d) + pad);
 	m_pTimeSpinBox->setPalette(pal);
 //	m_pTimeSpinBox->setAutoFillBackground(true);
 	m_pTimeSpinBox->setToolTip(tr("Current time (play-head)"));
@@ -539,7 +545,7 @@ qtractorMainForm::qtractorMainForm (
 //	m_pTempoSpinBox->setMinimum(1.0f);
 //	m_pTempoSpinBox->setMaximum(1000.0f);
 	m_pTempoSpinBox->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-	m_pTempoSpinBox->setMinimumSize(QSize(fm.width(sTempo) + d, d) + pad);
+	m_pTempoSpinBox->setMinimumSize(QSize(fm.horizontalAdvance(sTempo) + d, d) + pad);
 	m_pTempoSpinBox->setPalette(pal);
 //	m_pTempoSpinBox->setAutoFillBackground(true);
 	m_pTempoSpinBox->setToolTip(tr("Current tempo (BPM)"));
@@ -1332,15 +1338,13 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 		m_pOptions->sMessagesLogPath);
 
 	// What style do we create tool childs?
-	QWidget *pParent = NULL;
 	Qt::WindowFlags wflags = Qt::Window;
-	if (m_pOptions->bKeepToolsOnTop) {
+	if (m_pOptions->bKeepToolsOnTop)
 		wflags |= Qt::Tool;
-		pParent = this;
-	}
+
 	// Other child/tools forms are also created right away...
-	m_pConnections = new qtractorConnections(pParent, wflags);
-	m_pMixer = new qtractorMixer(pParent, wflags);
+	m_pConnections = new qtractorConnections(this, wflags);
+	m_pMixer = new qtractorMixer(this, wflags);
 
 	// Make those primordially docked...
 	addDockWidget(Qt::LeftDockWidgetArea, m_pFileSystem, Qt::Vertical);
@@ -2028,7 +2032,7 @@ bool qtractorMainForm::openSession (void)
 		options |= QFileDialog::DontUseNativeDialog;
 		pParentWidget = QWidget::window();
 	}
-#if 1//QT_VERSION < 0x040400
+#if 1//QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
 	sFilename = QFileDialog::getOpenFileName(pParentWidget,
 		sTitle, m_pOptions->sSessionDir, sFilter, NULL, options);
 #else
@@ -2122,7 +2126,7 @@ bool qtractorMainForm::saveSession ( bool bPrompt )
 		}
 		// Try to rename as if a backup is about...
 		sFilename = sessionBackupPath(sFilename);
-	#if 1//QT_VERSION < 0x040400
+	#if 1//QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
 		sFilename = QFileDialog::getSaveFileName(pParentWidget,
 			sTitle, sFilename, sFilter, NULL, options);
 	#else
@@ -5794,6 +5798,9 @@ void qtractorMainForm::helpAbout (void)
 #ifndef CONFIG_LIBRUBBERBAND
 	list << tr("Pitch-shifting support (librubberband) disabled.");
 #endif
+#ifndef CONFIG_LIBAUBIO
+	list << tr("Beat-detection support (libaubio) disabled.");
+#endif
 #ifndef CONFIG_LIBLO
 	list << tr("OSC service support (liblo) disabled.");
 #endif
@@ -5872,7 +5879,7 @@ void qtractorMainForm::helpAbout (void)
 #ifndef CONFIG_LV2_UI_SHOW
 	list << tr("LV2 Plug-in UI Show interface support disabled.");
 #endif
-#if QT_VERSION >= 0x050100
+#if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
 #ifndef CONFIG_LV2_UI_GTK2
 #ifndef CONFIG_LIBSUIL_GTK2_IN_QT5
 	list << tr("LV2 Plug-in UI GTK2 native support disabled.");
@@ -6151,7 +6158,7 @@ unsigned long qtractorMainForm::playHeadBackward (void) const
 		pMarker = pMarker->prev();
 	if (pMarker && iPlayHead > pMarker->frame)
 		list.append(pMarker->frame);
-	qSort(list.begin(), list.end());
+	std::sort(list.begin(), list.end());
 	return list.last();
 }
 
@@ -6182,7 +6189,7 @@ unsigned long qtractorMainForm::playHeadForward (void) const
 		pMarker = pMarker->next();
 	if (pMarker && iPlayHead < pMarker->frame)
 		list.append(pMarker->frame);
-	qSort(list.begin(), list.end());
+	std::sort(list.begin(), list.end());
 	return list.first();
 }
 
@@ -6258,7 +6265,7 @@ void qtractorMainForm::stabilizeForm (void)
 
 //	m_ui.editCutAction->setEnabled(bSelected);
 //	m_ui.editCopyAction->setEnabled(bSelected);
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	const QMimeData *pMimeData
 	    = QApplication::clipboard()->mimeData();
 	m_ui.editPasteAction->setEnabled(bClipboard
@@ -6546,6 +6553,9 @@ void qtractorMainForm::updateSessionPost (void)
 		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 		m_pSession->updateSampleRate(iSampleRate);
 		QApplication::restoreOverrideCursor();
+		// Prompt for a brand new filename (ie. Save As...)
+		// whenever session Save is invoked next time.
+		m_sFilename.clear();
 		updateDirtyCount(true);
 	}
 
@@ -6567,8 +6577,12 @@ void qtractorMainForm::updateSessionPost (void)
 			.arg(qtractorMessageList::items().join("\n")),
 			QMessageBox::Save | QMessageBox::Ignore) == QMessageBox::Save) {
 			saveSession(true);
+		} else {
+			// Prompt for a brand new filename (ie. Save As...)
+			// whenever session Save is invoked next time.
+			m_sFilename.clear();
+			updateDirtyCount(true);
 		}
-		else updateDirtyCount(true);
 		qtractorMessageList::clear();
 	}
 
