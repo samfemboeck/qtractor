@@ -43,6 +43,10 @@
 
 #include <QToolTip>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#define horizontalAdvance  width
+#endif
+
 
 //----------------------------------------------------------------------------
 // qtractorMidiEditTime -- MIDI sequence time scale widget.
@@ -106,7 +110,7 @@ void qtractorMidiEditTime::updatePixmap ( int cx, int /*cy*/)
 		return;
 
 	QPainter painter(&m_pixmap);
-	painter.begin(this);
+//	painter.initFrom(this);
 
 	//
 	// Draw the time scale...

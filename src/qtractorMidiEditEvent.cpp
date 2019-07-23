@@ -44,6 +44,10 @@
 #include <QLinearGradient>
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#define horizontalAdvance  width
+#endif
+
 
 //----------------------------------------------------------------------------
 // qtractorMidiEditEventScale -- MIDI event scale widget.
@@ -306,7 +310,7 @@ void qtractorMidiEditEvent::updatePixmap ( int cx, int /*cy*/ )
 		return;
 
 	QPainter painter(&m_pixmap);
-	painter.begin(this);
+//	painter.initFrom(this);
 
 	// Show that we may have clip limits...
 	if (m_pEditor->length() > 0) {
@@ -547,6 +551,9 @@ void qtractorMidiEditEvent::drawEvents ( QPainter& painter,
 			else
 			if (eventType == qtractorMidiEvent::PITCHBEND)
 				y = y0 - (y0 * pEvent->pitchBend()) / 8192;
+			else
+			if (eventType == qtractorMidiEvent::PGMCHANGE)
+				y = y0 - (y0 * pEvent->param()) / 128;
 			else
 				y = y0 - (y0 * pEvent->value()) / 128;
 			pNode = cursor.seekTick(t1);

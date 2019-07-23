@@ -28,7 +28,6 @@ HEADERS += config.h \
 	qtractorAudioVorbisFile.h \
 	qtractorClip.h \
 	qtractorClipCommand.h \
-	qtractorClipFadeFunctor.h \
 	qtractorClipSelect.h \
 	qtractorCommand.h \
 	qtractorConnect.h \
@@ -161,7 +160,6 @@ SOURCES += \
 	qtractorAudioVorbisFile.cpp \
 	qtractorClip.cpp \
 	qtractorClipCommand.cpp \
-	qtractorClipFadeFunctor.cpp \
 	qtractorClipSelect.cpp \
 	qtractorCommand.cpp \
 	qtractorConnect.cpp \
