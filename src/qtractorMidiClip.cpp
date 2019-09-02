@@ -35,6 +35,7 @@
 #include "qtractorMidiEditorForm.h"
 
 #include "qtractorMainForm.h"
+
 #if 0//QTRACTOR_MIDI_EDITOR_TOOL
 #include "qtractorOptions.h"
 #endif
@@ -171,24 +172,24 @@ qtractorMidiClip::FileHash qtractorMidiClip::g_hashFiles;
 qtractorMidiClip::qtractorMidiClip ( qtractorTrack *pTrack )
 	: qtractorClip(pTrack)
 {
-	m_pFile = NULL;
-	m_pKey  = NULL;
-	m_pData = NULL;
+	m_pFile = nullptr;
+	m_pKey  = nullptr;
+	m_pData = nullptr;
 
 	m_iTrackChannel = 0;
 	m_bSessionFlag = false;
 	m_iRevision = 0;
 
-	m_pMidiEditorForm = NULL;
+	m_pMidiEditorForm = nullptr;
 }
 
 // Copy constructor.
 qtractorMidiClip::qtractorMidiClip ( const qtractorMidiClip& clip )
 	: qtractorClip(clip.track())
 {
-	m_pFile = NULL;
-	m_pKey  = NULL;
-	m_pData = NULL;
+	m_pFile = nullptr;
+	m_pKey  = nullptr;
+	m_pData = nullptr;
 
 	setFilename(clip.filename());
 	setTrackChannel(clip.trackChannel());
@@ -199,7 +200,7 @@ qtractorMidiClip::qtractorMidiClip ( const qtractorMidiClip& clip )
 	m_bSessionFlag = false;
 	m_iRevision = clip.revision();
 
-	m_pMidiEditorForm = NULL;
+	m_pMidiEditorForm = nullptr;
 }
 
 
@@ -219,11 +220,11 @@ bool qtractorMidiClip::createMidiFile (
 	closeMidiFile();
 
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 #ifdef CONFIG_DEBUG_0
@@ -257,7 +258,7 @@ bool qtractorMidiClip::createMidiFile (
 	m_pFile = new qtractorMidiFile();
 	if (!m_pFile->open(sFilename, qtractorMidiFile::Write)) {
 		delete m_pFile;
-		m_pFile = NULL;
+		m_pFile = nullptr;
 		return false;
 	}
 
@@ -289,14 +290,14 @@ bool qtractorMidiClip::createMidiFile (
 		}
 		// Sure this is a brand new file...
 		if (iFormat == 1)
-			m_pFile->writeTrack(NULL);
+			m_pFile->writeTrack(nullptr);
 		m_pFile->writeTrack(pSeq);
 		m_pFile->close();
 	}
 
 	// It's there now.
 	delete m_pFile;
-	m_pFile = NULL;
+	m_pFile = nullptr;
 
 	// Clip name should be clear about it all.
 	if (clipName().isEmpty())
@@ -319,11 +320,11 @@ bool qtractorMidiClip::openMidiFile (
 	closeMidiFile();
 
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 #ifdef CONFIG_DEBUG_0
@@ -344,7 +345,7 @@ bool qtractorMidiClip::openMidiFile (
 	// New key-data sequence...
 	if (!bWrite) {
 		m_pKey  = new Key(this);
-		m_pData = g_hashTable.value(*m_pKey, NULL);
+		m_pData = g_hashTable.value(*m_pKey, nullptr);
 		if (m_pData) {
 			m_pData->attach(this);
 			qtractorMidiSequence *pSeq = m_pData->sequence();
@@ -367,7 +368,7 @@ bool qtractorMidiClip::openMidiFile (
 	m_pFile = new qtractorMidiFile();
 	if (!m_pFile->open(sFilename, iMode)) {
 		delete m_pFile;
-		m_pFile = NULL;
+		m_pFile = nullptr;
 		return false;
 	}
 
@@ -435,12 +436,12 @@ bool qtractorMidiClip::openMidiFile (
 			// Import eventual SysEx setup...
 			// - take care that given track might not be currently open,
 			//   so that we'll resolve MIDI output bus somehow...
-			qtractorMidiBus *pMidiBus = NULL;
+			qtractorMidiBus *pMidiBus = nullptr;
 			qtractorMidiEngine *pMidiEngine = pSession->midiEngine();
 			if (pMidiEngine) {
 				pMidiBus = static_cast<qtractorMidiBus *> (
 					pMidiEngine->findOutputBus(pTrack->outputBusName()));
-				if (pMidiBus == NULL) {
+				if (pMidiBus == nullptr) {
 					for (qtractorBus *pBus = pMidiEngine->buses().first();
 							pBus; pBus = pBus->next()) {
 						if (pBus->busMode() & qtractorBus::Output) {
@@ -517,7 +518,7 @@ void qtractorMidiClip::closeMidiFile (void)
 			removeHashKey();
 			delete m_pData;
 		}
-		m_pData = NULL;
+		m_pData = nullptr;
 		// Unregister file path...
 		qtractorSession *pSession = qtractorSession::getInstance();
 		if (pSession)
@@ -526,12 +527,12 @@ void qtractorMidiClip::closeMidiFile (void)
 
 	if (m_pKey) {
 		delete m_pKey;
-		m_pKey = NULL;
+		m_pKey = nullptr;
 	}
 
 	if (m_pFile) {
 		delete m_pFile;
-		m_pFile = NULL;
+		m_pFile = nullptr;
 	}
 }
 
@@ -573,14 +574,14 @@ void qtractorMidiClip::setFilenameEx (
 	const QString& sFilename, bool bUpdate )
 {
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
-	if (m_pData == NULL)
+	if (m_pData == nullptr)
 		return;
 
 	removeHashKey();
@@ -605,7 +606,7 @@ void qtractorMidiClip::setFilenameEx (
 // Sync all ref-counted clip-lengths.
 void qtractorMidiClip::setClipLengthEx ( unsigned long iClipLength )
 {
-	if (m_pData == NULL)
+	if (m_pData == nullptr)
 		return;
 
 	removeHashKey();
@@ -624,7 +625,7 @@ void qtractorMidiClip::setClipLengthEx ( unsigned long iClipLength )
 // Sync all ref-counted clip editors.
 void qtractorMidiClip::updateEditorEx ( bool bSelectClear )
 {
-	if (m_pData == NULL)
+	if (m_pData == nullptr)
 		return;
 
 	QListIterator<qtractorMidiClip *> iter(m_pData->clips());
@@ -636,7 +637,7 @@ void qtractorMidiClip::updateEditorEx ( bool bSelectClear )
 // Sync all ref-counted clip-dirtyness.
 void qtractorMidiClip::setDirtyEx ( bool bDirty )
 {
-	if (m_pData == NULL)
+	if (m_pData == nullptr)
 		return;
 
 	QListIterator<qtractorMidiClip *> iter(m_pData->clips());
@@ -663,7 +664,7 @@ void qtractorMidiClip::insertHashKey (void)
 
 void qtractorMidiClip::updateHashKey (void)
 {
-	if (m_pKey == NULL)
+	if (m_pKey == nullptr)
 		m_pKey = new Key(this);
 	else
 		m_pKey->update(this);
@@ -689,7 +690,7 @@ void qtractorMidiClip::removeHashKey (void)
 // Unlink (clone) local hash data.
 void qtractorMidiClip::unlinkHashData (void)
 {
-	if (m_pData == NULL)
+	if (m_pData == nullptr)
 		return;
 	if (m_pData->count() < 2)
 		return;
@@ -725,7 +726,7 @@ void qtractorMidiClip::unlinkHashData (void)
 // Relink local hash data.
 void qtractorMidiClip::relinkHashData (void)
 {
-	if (m_pData == NULL)
+	if (m_pData == nullptr)
 		return;
 	if (m_pData->count() > 1)
 		return;
@@ -733,10 +734,10 @@ void qtractorMidiClip::relinkHashData (void)
 	removeHashKey();
 	updateHashKey();
 
-	Data *pNewData = g_hashTable.value(*m_pKey, NULL);
-	if (pNewData == NULL) {
+	Data *pNewData = g_hashTable.value(*m_pKey, nullptr);
+	if (pNewData == nullptr) {
 		delete m_pKey;
-		m_pKey = NULL;
+		m_pKey = nullptr;
 	} else {
 		m_pData->detach(this);
 		delete m_pData;
@@ -790,15 +791,15 @@ void qtractorMidiClip::seek ( unsigned long iFrame )
 #endif
 
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	qtractorMidiSequence *pSeq = sequence();
-	if (pSeq == NULL)
+	if (pSeq == nullptr)
 		return;
 
 	const unsigned long t0 = pSession->tickFromFrame(clipStart());
@@ -813,7 +814,7 @@ void qtractorMidiClip::seek ( unsigned long iFrame )
 void qtractorMidiClip::reset ( bool /* bLooping */ )
 {
 	qtractorMidiSequence *pSeq = sequence();
-	if (pSeq == NULL)
+	if (pSeq == nullptr)
 		return;
 
 	// Reset to the first sequence event...
@@ -837,11 +838,11 @@ void qtractorMidiClip::close (void)
 #endif
 
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	// Take pretended clip-length...
@@ -868,7 +869,7 @@ void qtractorMidiClip::close (void)
 	if (bNewFile && iClipLength > 0 && pSeq) {
 		// Write channel tracks...
 		if (m_pFile->format() == 1)
-			m_pFile->writeTrack(NULL);	// Setup track (SMF format 1).
+			m_pFile->writeTrack(nullptr);	// Setup track (SMF format 1).
 		m_pFile->writeTrack(pSeq);		// Channel track.
 		m_pFile->close();
 	}
@@ -877,7 +878,7 @@ void qtractorMidiClip::close (void)
 	if (m_pMidiEditorForm) {
 		m_pMidiEditorForm->close();
 		delete m_pMidiEditorForm;
-		m_pMidiEditorForm = NULL;
+		m_pMidiEditorForm = nullptr;
 	}
 
 	// Just to be sure things get deallocated..
@@ -907,19 +908,19 @@ void qtractorMidiClip::process (
 #endif
 
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	qtractorMidiEngine *pMidiEngine = pSession->midiEngine();
-	if (pMidiEngine == NULL)
+	if (pMidiEngine == nullptr)
 		return;
 
 	qtractorMidiSequence *pSeq = sequence();
-	if (pSeq == NULL)
+	if (pSeq == nullptr)
 		return;
 
 	// Track mute state...
@@ -953,15 +954,15 @@ void qtractorMidiClip::process_export (
 	unsigned long iFrameStart, unsigned long iFrameEnd )
 {
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	qtractorMidiSequence *pSeq = sequence();
-	if (pSeq == NULL)
+	if (pSeq == nullptr)
 		return;
 
 	// Track mute state...
@@ -996,15 +997,15 @@ void qtractorMidiClip::draw (
 	QPainter *pPainter, const QRect& clipRect, unsigned long iClipOffset )
 {
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	qtractorMidiSequence *pSeq = sequence();
-	if (pSeq == NULL)
+	if (pSeq == nullptr)
 		return;
 
 	// Check min/maximum note span...
@@ -1108,20 +1109,20 @@ void qtractorMidiClip::update (void)
 bool qtractorMidiClip::startEditor ( QWidget *pParent )
 {
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
-	if (m_pMidiEditorForm == NULL) {
+	if (m_pMidiEditorForm == nullptr) {
 		// Build up the editor form...
-		// Make sure it has a parent...
-		if (pParent == NULL)
-			pParent = qtractorMainForm::getInstance();
 		// What style do we create tool childs?
 		Qt::WindowFlags wflags = Qt::Window;
 	#if 0//QTRACTOR_MIDI_EDITOR_TOOL
 		qtractorOptions *pOptions = qtractorOptions::getInstance();
 		if (pOptions && pOptions->bKeepToolsOnTop) {
 			wflags |= Qt::Tool;
+			// Make sure it has a parent...
+			if (pParent == nullptr)
+				pParent = qtractorMainForm::getInstance();
 		}
 	#endif
 		// Do it...
@@ -1133,13 +1134,6 @@ bool qtractorMidiClip::startEditor ( QWidget *pParent )
 		m_pMidiEditorForm->setup();
 		m_pMidiEditorForm->show();
 	}
-
-	// Set its most standing properties...
-	if (!m_posEditor.isNull()
-		&& m_posEditor.x() >= 0 && m_posEditor.y() >= 0)
-		m_pMidiEditorForm->move(m_posEditor);
-	if (!m_sizeEditor.isNull() && m_sizeEditor.isValid())
-		m_pMidiEditorForm->resize(m_sizeEditor);
 
 	// Get it up any way...
 	m_pMidiEditorForm->raise();
@@ -1154,7 +1148,7 @@ void qtractorMidiClip::updateEditor ( bool bSelectClear )
 {
 	update();
 
-	if (m_pMidiEditorForm == NULL)
+	if (m_pMidiEditorForm == nullptr)
 		return;
 
 	qtractorMidiEditor *pMidiEditor = m_pMidiEditorForm->editor();
@@ -1179,7 +1173,7 @@ void qtractorMidiClip::updateEditor ( bool bSelectClear )
 // Clip editor update.
 void qtractorMidiClip::updateEditorContents (void)
 {
-	if (m_pMidiEditorForm == NULL)
+	if (m_pMidiEditorForm == nullptr)
 		return;
 
 	qtractorMidiEditor *pMidiEditor = m_pMidiEditorForm->editor();
@@ -1248,7 +1242,7 @@ QString qtractorMidiClip::toolTip (void) const
 bool qtractorMidiClip::saveCopyFile ( bool bUpdate )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Have a new filename revision...
@@ -1313,12 +1307,6 @@ bool qtractorMidiClip::loadClipElement (
 bool qtractorMidiClip::saveClipElement (
 	qtractorDocument *pDocument, QDomElement *pElement )
 {
-	// Freeze current MIDI clip editor, if up and visible...
-	if (m_pMidiEditorForm && m_pMidiEditorForm->isVisible()) {
-		m_posEditor = m_pMidiEditorForm->pos();
-		m_sizeEditor = m_pMidiEditorForm->size();
-	}
-
 	QDomElement eMidiClip = pDocument->document()->createElement("midi-clip");
 	pDocument->saveTextElement("filename",
 		qtractorMidiClip::relativeFilename(pDocument), &eMidiClip);
@@ -1352,15 +1340,15 @@ bool qtractorMidiClip::clipExport (
 	unsigned long iOffset, unsigned long iLength ) const
 {
 	qtractorTrack *pTrack = track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	qtractorMidiSequence *pSeq = sequence();
-	if (pSeq == NULL)
+	if (pSeq == nullptr)
 		return false;
 
 	if (iLength < 1)
@@ -1414,7 +1402,7 @@ void qtractorMidiClip::enqueue_export ( qtractorTrack *pTrack,
 	qtractorMidiEvent *pEvent, unsigned long iTime, float fGain ) const
 {
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	snd_seq_event_t ev;
