@@ -1,7 +1,7 @@
 // qtractorMidiImportExtender.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2017, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -20,17 +20,20 @@
 *****************************************************************************/
 
 #include "qtractorMidiImportExtender.h"
+
 #include "qtractorSession.h"
-#include "qtractorPlugin.h"
 #include "qtractorOptions.h"
+#include "qtractorPlugin.h"
 #include "qtractorPluginListDocument.h"
 #include "qtractorAudioEngine.h"
 #include "qtractorMidiEngine.h"
 #include "qtractorMidiManager.h"
-#include "qtractorTrackCommand.h"
 #include "qtractorMidiClip.h"
+#include "qtractorTrackCommand.h"
+
 #include <QDomDocument>
 #include <QElapsedTimer>
+
 
 //----------------------------------------------------------------------
 // class qtractorMidiImportExtender -- MIDI import extender class.
@@ -49,7 +52,7 @@
 
 
 // Pointer to singleton plugin list for display.
-qtractorPluginList *qtractorMidiImportExtender::m_pPluginList = NULL;
+qtractorPluginList *qtractorMidiImportExtender::m_pPluginList = nullptr;
 // Keep info that plugin list was empied.
 bool qtractorMidiImportExtender::m_bPluginListIsEmpty = true;
 
@@ -70,7 +73,7 @@ qtractorMidiImportExtender::qtractorMidiImportExtender()
 		m_extendedSettings.pPluginDomDocument = new QDomDocument("qtractorMidiImport");
 		m_extendedSettings.pPluginDomDocument->setContent(pOptions->sMidiImportPlugins);
 	} else
-		m_extendedSettings.pPluginDomDocument = NULL;
+		m_extendedSettings.pPluginDomDocument = nullptr;
 	m_extendedSettings.sMidiImportInstInst = pOptions->sMidiImportInstInst;
 	m_extendedSettings.sMidiImportDrumInst = pOptions->sMidiImportDrumInst;
 	m_extendedSettings.iMidiImportInstBank = pOptions->iMidiImportInstBank;
@@ -78,7 +81,7 @@ qtractorMidiImportExtender::qtractorMidiImportExtender()
 	m_extendedSettings.eMidiImportTrackNameType = (TrackNameType) pOptions->iMidiImportTrackName;
 
 	// Get reference of the last command before dialog.
-	m_pLastUndoCommand = NULL;
+	m_pLastUndoCommand = nullptr;
 	qtractorCommandList *pCommands = pSession->commands();
 	if (pCommands)
 		m_pLastUndoCommand = pCommands->lastCommand();
@@ -159,7 +162,7 @@ qtractorPluginList *qtractorMidiImportExtender::pluginListForGui()
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
 	if (!pSession)
-		return NULL;
+		return nullptr;
 
 	// Create plugin list.
 	if (!m_pPluginList) {
@@ -184,7 +187,7 @@ qtractorPluginList *qtractorMidiImportExtender::pluginListForGui()
 		// plugin selection dialog are disabled. Try same channel count as
 		// master output audio bus. That is default connection for imported
 		// tracks.
-		qtractorAudioBus *pAudioBus = NULL;
+		qtractorAudioBus *pAudioBus = nullptr;
 		qtractorAudioEngine *pAudioEngine = pSession->audioEngine();
 		for (qtractorBus *pBus = (pAudioEngine->buses()).first();
 				pBus; pBus = pBus->next()) {
@@ -212,7 +215,7 @@ void qtractorMidiImportExtender::clearPluginList()
 {
 	if (m_pPluginList) {
 		delete m_pPluginList;
-		m_pPluginList = NULL;
+		m_pPluginList = nullptr;
 	}
 	m_bPluginListIsEmpty = true;
 }
@@ -257,7 +260,7 @@ void qtractorMidiImportExtender::prepareTrackForExtension(qtractorTrack *pTrack)
 		{
 			// Move plugins to target.
 			while (m_pPluginList->count())
-				pPluginList->movePlugin(m_pPluginList->first(), NULL);
+				pPluginList->movePlugin(m_pPluginList->first(), nullptr);
 			m_bPluginListIsEmpty = true;
 		}
 		// All further are cloned by our document - if there is one.
@@ -446,7 +449,7 @@ void qtractorMidiImportExtender::pluginListToDocument()
 	// Remove old plugin list document.
 	if (m_extendedSettings.pPluginDomDocument) {
 		delete m_extendedSettings.pPluginDomDocument;
-		m_extendedSettings.pPluginDomDocument = NULL;
+		m_extendedSettings.pPluginDomDocument = nullptr;
 	}
 
 	if (m_pPluginList && m_pPluginList->count()) {

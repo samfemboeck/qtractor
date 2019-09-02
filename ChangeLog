@@ -4,6 +4,31 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+GIT HEAD
+
+- All items in the MIDI clip editor's event list are
+  now enabled, selectable and editable, no matter the
+  filter settings for the event views. (EXPERIMENTAL)
+
+- Changing the main time display format (frames, time
+  or BBT) now takes immediate effect to all MIDI clip
+  editor's event lists. (EXPERIMENTAL)
+
+- Added alternate yet non-official CMake build option.
+  (EXPERIMENTAL)
+
+- Improved MIDI clip editor (aka. piano-roll) position
+  and size persistence across session state.
+
+- Fix HiDPI display screen effective support (Qt >= 5.6).
+
+- Mixer, Connections and MIDI clip editor top-level
+  windows shall have no parent, unless when set as
+  always-on-top tool windows. (REGRESSION)
+
+- Make sure compiler flags comply to c++11 as standard.
+
+
 0.9.9  2019-07-24  Summer'19 Beta.
 
 - Fixed editing and display of 'Pgm Change' events on

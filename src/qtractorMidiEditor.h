@@ -246,9 +246,6 @@ public:
 	// Retrieve current selection.
 	QList<qtractorMidiEvent *> selectedEvents() const;
 
-	// Selectable event predicate.
-	bool isEventSelectable(qtractorMidiEvent *pEvent) const;
-
 	// Whether there's any events beyond the insertion point (edit-tail).
 	bool isInsertable() const;
 
@@ -278,7 +275,7 @@ public:
 
 	// Get event from given contents position.
 	qtractorMidiEvent *eventAt(qtractorScrollView *pScrollView,
-		const QPoint& pos, QRect *pRect = NULL);
+		const QPoint& pos, QRect *pRect = nullptr);
 
 	// Start immediate some drag-edit mode...
 	qtractorMidiEvent *dragEditEvent(qtractorScrollView *pScrollView,
@@ -475,7 +472,7 @@ protected:
 	// Apply the event drag-resize (also editing).
 	void resizeEvent(qtractorMidiEvent *pEvent,
 		long iTimeDelta, int iValueDelta,
-		qtractorMidiEditCommand *pEditCommand = NULL);
+		qtractorMidiEditCommand *pEditCommand = nullptr);
 
 	// Update event selection rectangle.
 	void updateEvent(qtractorMidiEvent *pEvent);

@@ -1,7 +1,7 @@
-// qtractorMidiListView.cpp
+// qtractorMidiImportForm.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2017, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -20,14 +20,17 @@
 *****************************************************************************/
 
 #include "qtractorMidiImportForm.h"
-#include "qtractorSession.h"
 #include "qtractorMidiImportExtender.h"
-#include "qtractorMainForm.h"
-#include "qtractorPlugin.h"
+
+#include "qtractorSession.h"
 #include "qtractorMidiManager.h"
+#include "qtractorPlugin.h"
 #include "qtractorFiles.h"
 #include "qtractorCommand.h"
 #include "qtractorInstrument.h"
+
+#include "qtractorMainForm.h"
+
 #include <QPushButton>
 #include <QButtonGroup>
 
@@ -61,7 +64,7 @@ qtractorMidiImportForm::qtractorMidiImportForm(qtractorMidiImportExtender *pMidi
 	QDialog::setWindowModality(Qt::WindowModal);
 
 	// Get reference of the last command before dialog.
-	m_pLastCommand = NULL;
+	m_pLastCommand = nullptr;
 	qtractorCommandList *pCommands = pSession->commands();
 	m_pLastCommand = pCommands->lastCommand();
 
@@ -222,7 +225,7 @@ void qtractorMidiImportForm::stabilizeListButtons()
 	// Stabilize current plugin list state.
 	const int iPluginItemCount = m_ui.PluginListView->count();
 	int iPluginItem = -1;
-	qtractorPlugin *pPlugin = NULL;
+	qtractorPlugin *pPlugin = nullptr;
 	qtractorPluginListItem *pPluginItem
 		= static_cast<qtractorPluginListItem *> (
 			m_ui.PluginListView->currentItem());
@@ -230,7 +233,7 @@ void qtractorMidiImportForm::stabilizeListButtons()
 		iPluginItem = m_ui.PluginListView->row(pPluginItem);
 		pPlugin = pPluginItem->plugin();
 	}
-	m_ui.RemovePluginToolButton->setEnabled(pPlugin != NULL);
+	m_ui.RemovePluginToolButton->setEnabled(pPlugin != nullptr);
 	m_ui.MoveUpPluginToolButton->setEnabled(pPluginItem && iPluginItem > 0);
 	m_ui.MoveDownPluginToolButton->setEnabled(pPluginItem && iPluginItem < iPluginItemCount - 1);
 }
@@ -307,11 +310,11 @@ void qtractorMidiImportForm::changed()
 void qtractorMidiImportForm::updateInstruments()
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	qtractorInstrumentList *pInstruments = pSession->instruments();
-	if (pInstruments == NULL)
+	if (pInstruments == nullptr)
 		return;
 
 	++m_iDirtySetup;
@@ -359,7 +362,7 @@ void qtractorMidiImportForm::updateInstruments()
 void qtractorMidiImportForm::updateInstrumentsAdd( const QIcon &icon,
 	qtractorMidiManager *pMidiManager )
 {
-	if (pMidiManager == NULL)
+	if (pMidiManager == nullptr)
 		return;
 
 	pMidiManager->updateInstruments();
@@ -379,16 +382,16 @@ void qtractorMidiImportForm::updateBanks(
 		const QString &sInstrumentName, int iBank, enum BankType bankType )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	qtractorInstrumentList *pInstruments = pSession->instruments();
-	if (pInstruments == NULL)
+	if (pInstruments == nullptr)
 		return;
 
 	// Default (none) patch bank list...
-	QComboBox *pComboBox = NULL;
-	QMap<int, int> *pBankMap = NULL;
+	QComboBox *pComboBox = nullptr;
+	QMap<int, int> *pBankMap = nullptr;
 	switch (bankType) {
 	case Instruments:
 		pComboBox = m_ui.InstBankComboBox;
@@ -467,7 +470,7 @@ bool qtractorMidiImportForm::updateBanksAdd( const QIcon &icon,
 		int &iBankIndex,
 		QComboBox *pComboBox, QMap<int, int> *pBankMap)
 {
-	if (pMidiManager == NULL)
+	if (pMidiManager == nullptr)
 		return false;
 
 	// It is possible that bank layout has changed - e.g for fluidsynth-dssi
@@ -513,7 +516,7 @@ void qtractorMidiImportForm::commonCleanup()
 	}
 
 	// Unlink plugin list from view.
-	m_ui.PluginListView->setPluginList(NULL);
+	m_ui.PluginListView->setPluginList(nullptr);
 }
 
 

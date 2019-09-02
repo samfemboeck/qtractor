@@ -111,7 +111,7 @@ public:
 			}
 			QPushButton::setPalette(pal);
 			QString sToolTip(QObject::tr("Automation (%1)"));
-			qtractorSubject *pSubject = NULL;
+			qtractorSubject *pSubject = nullptr;
 			qtractorCurve *pCurrentCurve = pCurveList->currentCurve();
 			if (pCurrentCurve)
 				pSubject = pCurrentCurve->subject();
@@ -291,7 +291,7 @@ qtractorTrackList::qtractorTrackList ( qtractorTracks *pTracks, QWidget *pParent
 	m_iDragTrack = -1;
 	m_iDragY     = 0;
 
-	m_pRubberBand = NULL;
+	m_pRubberBand = nullptr;
 
 	m_iUpdateContents = 0;
 
@@ -380,7 +380,7 @@ QHeaderView *qtractorTrackList::header (void) const
 
 // Track-list model item constructor
 qtractorTrackList::Item::Item ( qtractorTrack *pTrack )
-	: track(pTrack), flags(0), buttons(NULL), plugins(NULL), meters(NULL)
+	: track(pTrack), flags(0), buttons(nullptr), plugins(nullptr), meters(nullptr)
 {
 	const QString s;
 
@@ -402,7 +402,7 @@ bool qtractorTrackList::Item::updateBankProgNames (
 	qtractorMidiManager *pMidiManager, const QString& sInstrumentName,
 	QString& sBankName, QString& sProgName ) const
 {
-	if (pMidiManager == NULL)
+	if (pMidiManager == nullptr)
 		return false;
 
 	const qtractorMidiManager::Instruments& list
@@ -432,28 +432,28 @@ bool qtractorTrackList::Item::updateBankProgNames (
 void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 {
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
-	if (pOptions == NULL)
+	if (pOptions == nullptr)
 		return;
 
 	text.clear();
 
 	// Default initialization?
-	if (track == NULL)
+	if (track == nullptr)
 		return;
 
-	if (buttons == NULL) {
+	if (buttons == nullptr) {
 		buttons = new qtractorTrackListButtons(track, pTrackList->viewport());
 		buttons->lower();
 	}
 
 	if (!pOptions->bTrackListPlugins && plugins) {
 		delete plugins;
-		plugins = NULL;
+		plugins = nullptr;
 	}
 
 	if (meters) {
 		delete meters;
-		meters = NULL;
+		meters = nullptr;
 	}
 
 	updateIcon(pTrackList);
@@ -479,7 +479,7 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 			// Fillers...
 			text << s << s;
 			// Re-create the audio meter...
-			if (pOptions->bTrackListMeters && meters == NULL) {
+			if (pOptions->bTrackListMeters && meters == nullptr) {
 				qtractorAudioMonitor *pAudioMonitor
 					= static_cast<qtractorAudioMonitor *> (track->monitor());
 				if (pAudioMonitor) {
@@ -534,7 +534,7 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 							sInstrumentName, sBankName, sProgName);
 					}
 					if (!bMidiManager) {
-						qtractorInstrumentList *pInstruments = NULL;
+						qtractorInstrumentList *pInstruments = nullptr;
 						qtractorSession *pSession
 							= qtractorSession::getInstance();
 						if (pSession)
@@ -556,7 +556,7 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 			// This is it, MIDI Patch/Bank...
 			text << sProgName + '\n' + sBankName << sInstrumentName;
 			// Re-create the MIDI meter...
-			if (pOptions->bTrackListMeters && meters == NULL) {
+			if (pOptions->bTrackListMeters && meters == nullptr) {
 				qtractorMidiMonitor *pMidiMonitor
 					= static_cast<qtractorMidiMonitor *> (track->monitor());
 				if (pMidiMonitor) {
@@ -583,7 +583,7 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 		}
 	}
 
-	if (pOptions->bTrackListPlugins && plugins == NULL) {
+	if (pOptions->bTrackListPlugins && plugins == nullptr) {
 		const QFont& font = pTrackList->font();
 		plugins = new qtractorPluginListView(pTrackList->viewport());
 		plugins->setFont(QFont(font.family(), font.pointSize() - 2));
@@ -671,7 +671,7 @@ int qtractorTrackList::trackColumnAt ( const QPoint& pos )
 qtractorTrack *qtractorTrackList::track ( int iTrack ) const
 {
 	if (iTrack < 0 || iTrack >= m_items.count())
-		return NULL;
+		return nullptr;
 
 	return m_items.at(iTrack)->track;
 }
@@ -791,7 +791,7 @@ void qtractorTrackList::setCurrentTrack ( qtractorTrack *pTrack )
 qtractorTrack *qtractorTrackList::currentTrack (void) const
 {
 	if (m_iCurrentTrack < 0 || m_iCurrentTrack >= m_items.count())
-		return NULL;
+		return nullptr;
 
 	return m_items.at(m_iCurrentTrack)->track;
 }
@@ -800,7 +800,7 @@ qtractorTrack *qtractorTrackList::currentTrack (void) const
 // Find the list view item from track pointer reference.
 void qtractorTrackList::updateTrack ( qtractorTrack *pTrack )
 {
-	Item *pItem = m_tracks.value(pTrack, NULL);
+	Item *pItem = m_tracks.value(pTrack, nullptr);
 	if (pItem)
 		pItem->updateItem(this);
 
@@ -825,7 +825,7 @@ void qtractorTrackList::updateMidiTrackItem ( qtractorMidiManager *pMidiManager 
 						pMidiComboMeter->setAudioOutputMonitor(
 							pMidiManager->audioOutputMonitor());
 					} else {
-						pMidiComboMeter->setAudioOutputMonitor(NULL);
+						pMidiComboMeter->setAudioOutputMonitor(nullptr);
 					}
 				}
 				break;
@@ -881,7 +881,7 @@ void qtractorTrackList::clear (void)
 
 	if (m_pRubberBand)
 		delete m_pRubberBand;
-	m_pRubberBand = NULL;
+	m_pRubberBand = nullptr;
 
 	qDeleteAll(m_items);
 	m_items.clear();
@@ -1170,14 +1170,14 @@ void qtractorTrackList::drawCell (
 		}
 	} else if (iCol == Channel) {
 		if ((pItem->track)->trackType() == qtractorTrack::Midi
-			|| pItem->meters == NULL) {
+			|| pItem->meters == nullptr) {
 			pPainter->drawText(rectText,
 				Qt::AlignHCenter | Qt::AlignTop,
 				pItem->text.at(iCol - 1));
 		}
 	} else {
 		if (iCol == Bus) {
-			const QPixmap *pPixmap = NULL;
+			const QPixmap *pPixmap = nullptr;
 			switch ((pItem->track)->trackType()) {
 			case qtractorTrack::Audio:
 				pPixmap = m_pPixmap[IconAudio];
@@ -1369,7 +1369,7 @@ void qtractorTrackList::contextMenuEvent (
 // Handle mouse double-clicks.
 void qtractorTrackList::mouseDoubleClickEvent ( QMouseEvent *pMouseEvent )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 
 	if (pMouseEvent->button() == Qt::LeftButton) {
 		const QPoint& pos
@@ -1484,7 +1484,7 @@ void qtractorTrackList::mouseMoveEvent ( QMouseEvent *pMouseEvent )
 			if (pTrack) {
 				const int iZoomHeight = y - m_iDragY;
 				pTrack->setZoomHeight(iZoomHeight);
-				Item *pItem = m_tracks.value(pTrack, NULL);
+				Item *pItem = m_tracks.value(pTrack, nullptr);
 				if (pItem)
 					pItem->updateIcon(this);
 				m_pTracks->trackView()->updateContents();
@@ -1614,7 +1614,7 @@ void qtractorTrackList::mouseReleaseEvent ( QMouseEvent *pMouseEvent )
 
 	// We'll need a reference for issuing commands...
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	const QPoint& pos
@@ -1627,12 +1627,12 @@ void qtractorTrackList::mouseReleaseEvent ( QMouseEvent *pMouseEvent )
 		if (m_iDragTrack >= 0) {
 			qtractorTrack *pTrack = track(m_iDragTrack);
 			if (pTrack) {
-				qtractorTrack *pTrackDrop = NULL;
+				qtractorTrack *pTrackDrop = nullptr;
 				const int iTrack = trackRowAt(pos);
 				if (iTrack >= 0)
 					pTrackDrop = track(iTrack);
 				if (pTrack != pTrackDrop
-					&& (pTrackDrop == NULL || pTrack != pTrackDrop->prev())) {
+					&& (pTrackDrop == nullptr || pTrack != pTrackDrop->prev())) {
 					clearSelect();
 					pSession->execute(
 						new qtractorMoveTrackCommand(pTrack, pTrackDrop));
@@ -1712,7 +1712,7 @@ void qtractorTrackList::dropEvent ( QDropEvent *pDropEvent )
 {
 	// Can we decode it as Audio/MIDI files?
 	const QMimeData *pMimeData = pDropEvent->mimeData();
-	if (pMimeData == NULL || !pMimeData->hasUrls())
+	if (pMimeData == nullptr || !pMimeData->hasUrls())
 		return;
 
 	// Let's see how many files there are
@@ -1774,7 +1774,7 @@ void qtractorTrackList::moveRubberBand ( const QPoint& posDrag )
 		= qtractorScrollView::contentsToViewport(posDrag);
 
 	// Create the rubber-band if there's none...
-	if (m_pRubberBand == NULL) {
+	if (m_pRubberBand == nullptr) {
 		m_pRubberBand = new qtractorRubberBand(
 			QRubberBand::Line, qtractorScrollView::viewport());
 	#if 0
@@ -1803,7 +1803,7 @@ void qtractorTrackList::moveRubberBand ( const QRect& rectDrag )
 	rect.moveTopLeft(qtractorScrollView::contentsToViewport(rect.topLeft()));
 
 	// Create the rubber-band if there's none...
-	if (m_pRubberBand == NULL) {
+	if (m_pRubberBand == nullptr) {
 		m_pRubberBand = new qtractorRubberBand(
 			QRubberBand::Rectangle, qtractorScrollView::viewport());
 	#if 0
@@ -1855,7 +1855,7 @@ void qtractorTrackList::resetDragState (void)
 	if (m_pRubberBand) {
 	//	m_pRubberBand->hide();
 		delete m_pRubberBand;
-		m_pRubberBand = NULL;
+		m_pRubberBand = nullptr;
 	}
 
 	// Should fallback mouse cursor...

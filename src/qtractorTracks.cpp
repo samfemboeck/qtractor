@@ -167,7 +167,7 @@ qtractorTrackView *qtractorTracks::trackView (void) const
 void qtractorTracks::horizontalZoomStep ( int iZoomStep )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	int iHorizontalZoom = pSession->horizontalZoom() + iZoomStep;
@@ -193,7 +193,7 @@ void qtractorTracks::horizontalZoomStep ( int iZoomStep )
 void qtractorTracks::verticalZoomStep ( int iZoomStep )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 		
 	int iVerticalZoom = pSession->verticalZoom() + iZoomStep;
@@ -255,7 +255,7 @@ void qtractorTracks::zoomOut (void)
 void qtractorTracks::zoomReset (void)
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	ZoomCenter zc;
@@ -328,7 +328,7 @@ void qtractorTracks::verticalZoomOutSlot (void)
 void qtractorTracks::viewZoomResetSlot (void)
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	ZoomCenter zc;
@@ -346,7 +346,7 @@ void qtractorTracks::viewZoomResetSlot (void)
 void qtractorTracks::zoomCenterPre ( ZoomCenter& zc ) const
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	QWidget *pViewport = m_pTrackView->viewport();
@@ -375,7 +375,7 @@ void qtractorTracks::zoomCenterPre ( ZoomCenter& zc ) const
 void qtractorTracks::zoomCenterPost ( const ZoomCenter& zc )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	int cx = pSession->pixelFromFrame(zc.frame);
@@ -399,7 +399,7 @@ void qtractorTracks::zoomCenterPost ( const ZoomCenter& zc )
 void qtractorTracks::updateContents ( bool bRefresh )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG_0
@@ -449,22 +449,22 @@ qtractorClip *qtractorTracks::currentClip (void) const
 bool qtractorTracks::newClip (void)
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
-	if (pMainForm == NULL)
+	if (pMainForm == nullptr)
 		return false;
 
 	// Create on current track, or take the first...
 	qtractorTrack *pTrack = currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		pTrack = pSession->tracks().first();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	// Create the clip prototype...
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	switch (pTrack->trackType()) {
 	case qtractorTrack::Audio:
 		pClip = new qtractorAudioClip(pTrack);
@@ -478,7 +478,7 @@ bool qtractorTracks::newClip (void)
 	}
 
 	// Correct so far?
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		return false;
 
 	// Set initial default clip parameters...
@@ -539,9 +539,9 @@ bool qtractorTracks::newClip (void)
 // Edit given(current) clip.
 bool qtractorTracks::editClip ( qtractorClip *pClip )
 {
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		pClip = m_pTrackView->currentClip();
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		return false;
 
 	// All else hasn't fail.
@@ -552,21 +552,21 @@ bool qtractorTracks::editClip ( qtractorClip *pClip )
 // Unlink given(current) clip.
 bool qtractorTracks::unlinkClip ( qtractorClip *pClip )
 {
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		pClip = m_pTrackView->currentClip();
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		return false;
 
 	qtractorMidiClip *pMidiClip
 		= static_cast<qtractorMidiClip *> (pClip);
-	if (pMidiClip == NULL)
+	if (pMidiClip == nullptr)
 		return false;
 
 	if (!pMidiClip->isHashLinked())
 		return false;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Have a new filename revision...
@@ -607,14 +607,14 @@ bool qtractorTracks::unlinkClip ( qtractorClip *pClip )
 bool qtractorTracks::splitClip ( qtractorClip *pClip )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	const unsigned long iPlayHead  = pSession->playHead();
 
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		pClip = m_pTrackView->currentClip();
-	if (pClip == NULL) {
+	if (pClip == nullptr) {
 		qtractorTrack *pTrack = m_pTrackList->currentTrack();
 		if (pTrack) {
 			pClip = pTrack->clips().first();
@@ -623,7 +623,7 @@ bool qtractorTracks::splitClip ( qtractorClip *pClip )
 		}
 	}
 
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		return false;
 
 	if (!pClip->queryEditor())
@@ -717,7 +717,7 @@ static void midiClipNormalize (
 bool qtractorTracks::normalizeClip ( qtractorClip *pClip )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Make it as an undoable command...
@@ -758,13 +758,13 @@ bool qtractorTracks::normalizeClip ( qtractorClip *pClip )
 bool qtractorTracks::normalizeClipCommand (
 	qtractorClipCommand *pClipCommand, qtractorClip *pClip )
 {
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		pClip = m_pTrackView->currentClip();
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		return false;
 
 	qtractorTrack *pTrack = pClip->track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
@@ -784,13 +784,13 @@ bool qtractorTracks::normalizeClipCommand (
 		// Normalize audio clip...
 		qtractorAudioClip *pAudioClip
 			= static_cast<qtractorAudioClip *> (pClip);
-		if (pAudioClip == NULL)
+		if (pAudioClip == nullptr)
 			return false;
 		qtractorAudioBus *pAudioBus
 			= static_cast<qtractorAudioBus *> (pTrack->outputBus());
-		if (pAudioBus == NULL)
+		if (pAudioBus == nullptr)
 			return false;
-		QProgressBar *pProgressBar = NULL;
+		QProgressBar *pProgressBar = nullptr;
 		if (pMainForm)
 			pProgressBar = pMainForm->progressBar();
 		if (pProgressBar) {
@@ -810,7 +810,7 @@ bool qtractorTracks::normalizeClipCommand (
 		// Normalize MIDI clip...
 		qtractorMidiClip *pMidiClip
 			= static_cast<qtractorMidiClip *> (pClip);
-		if (pMidiClip == NULL)
+		if (pMidiClip == nullptr)
 			return false;
 		unsigned char max = 0;
 		pMidiClip->clipExport(midiClipNormalize, &max, iOffset, iLength);
@@ -835,7 +835,7 @@ bool qtractorTracks::executeClipTool ( int iTool, qtractorClip *pClip )
 		return false;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 	
 	// Make it as an undoable named command...
@@ -888,22 +888,22 @@ bool qtractorTracks::executeClipToolCommand (
 	qtractorMidiToolsForm *pMidiToolsForm )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		pClip = m_pTrackView->currentClip();
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		return false;
 
 	qtractorTrack *pTrack = pClip->track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 	if (pTrack->trackType() != qtractorTrack::Midi)
 		return false;
 
 	qtractorMidiClip *pMidiClip = static_cast<qtractorMidiClip *> (pClip);
-	if (pMidiClip == NULL)
+	if (pMidiClip == nullptr)
 		return false;
 
 	if (pClipToolCommand->isLinkedMidiClip(pMidiClip))
@@ -966,14 +966,14 @@ bool qtractorTracks::importClips (
 		return false;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Create on current track, or take the first...
 	qtractorTrack *pTrack = currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		pTrack = pSession->tracks().first();
-	if (pTrack == NULL) // || pTrack->trackType() != qtractorTrack::Audio)
+	if (pTrack == nullptr) // || pTrack->trackType() != qtractorTrack::Audio)
 		return addAudioTracks(files, iClipStart);
 
 	// To log this import into session description.
@@ -1072,7 +1072,7 @@ bool qtractorTracks::importClips (
 // Export selected clips.
 bool qtractorTracks::exportClips (void)
 {
-	return mergeExportClips(NULL);
+	return mergeExportClips(nullptr);
 }
 
 
@@ -1080,7 +1080,7 @@ bool qtractorTracks::exportClips (void)
 bool qtractorTracks::mergeClips (void)
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Make it as an undoable command...
@@ -1110,7 +1110,7 @@ bool qtractorTracks::mergeExportClips ( qtractorClipCommand *pClipCommand )
 
 	// Should be one single track...
 	qtractorTrack *pTrack = pClipSelect->singleTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	// Dispatch to specialized method...
@@ -1166,28 +1166,28 @@ bool qtractorTracks::mergeExportAudioClips ( qtractorClipCommand *pClipCommand )
 	// Should be one single MIDI track...
 	qtractorClipSelect *pClipSelect = m_pTrackView->clipSelect();
 	qtractorTrack *pTrack = pClipSelect->singleTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 	if (pTrack->trackType() != qtractorTrack::Audio)
 		return false;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	qtractorAudioBus *pAudioBus
 		= static_cast<qtractorAudioBus *> (pTrack->outputBus());
-	if (pAudioBus == NULL)
+	if (pAudioBus == nullptr)
 		return false;
 
 	const QString& sExt
 		= qtractorAudioFileFactory::defaultExt();
 	const QString& sTitle
-		= tr("Merge/Export Audio Clip") + " - " QTRACTOR_TITLE;
+		= tr("Merge/Export Audio Clip");
 	const QString& sFilter
 		= qtractorAudioFileFactory::filters().join(";;");
 
-	QWidget *pParentWidget = NULL;
+	QWidget *pParentWidget = nullptr;
 	QFileDialog::Options options = 0;
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
 	if (pOptions && pOptions->bDontUseNativeDialogs) {
@@ -1197,7 +1197,7 @@ bool qtractorTracks::mergeExportAudioClips ( qtractorClipCommand *pClipCommand )
 #if 1//QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
 	// Ask for the filename to save...
 	QString sFilename = QFileDialog::getSaveFileName(pParentWidget, sTitle,
-		pSession->createFilePath(pTrack->trackName(), sExt), sFilter, NULL, options);
+		pSession->createFilePath(pTrack->trackName(), sExt), sFilter, nullptr, options);
 #else
 	// Construct save-file dialog...
 	QFileDialog fileDialog(pParentWidget, sTitle,
@@ -1230,7 +1230,7 @@ bool qtractorTracks::mergeExportAudioClips ( qtractorClipCommand *pClipCommand )
 	qtractorAudioFile *pAudioFile
 		= qtractorAudioFileFactory::createAudioFile(sFilename,
 			pAudioBus->channels(), pSession->sampleRate());
-	if (pAudioFile == NULL) {
+	if (pAudioFile == nullptr) {
 		QApplication::restoreOverrideCursor();
 		return false;
 	}
@@ -1278,7 +1278,7 @@ bool qtractorTracks::mergeExportAudioClips ( qtractorClipCommand *pClipCommand )
 	}
 
 	// A progress indication might be friendly...
-	QProgressBar *pProgressBar = NULL;
+	QProgressBar *pProgressBar = nullptr;
 	if (pMainForm)
 		pProgressBar = pMainForm->progressBar();
 	if (pProgressBar) {
@@ -1441,26 +1441,26 @@ bool qtractorTracks::mergeExportMidiClips ( qtractorClipCommand *pClipCommand )
 	// Should be one single MIDI track...
 	qtractorClipSelect *pClipSelect = m_pTrackView->clipSelect();
 	qtractorTrack *pTrack = pClipSelect->singleTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 	if (pTrack->trackType() != qtractorTrack::Midi)
 		return false;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Merge MIDI Clip filename requester...
 	const QString  sExt("mid");
 	const QString& sTitle
-		= tr("Merge/Export MIDI Clip") + " - " QTRACTOR_TITLE;
+		= tr("Merge/Export MIDI Clip");
 
 	QStringList filters;
 	filters.append(tr("MIDI files (*.mid *.smf *.midi)"));
 	filters.append(tr("All files (*.*)"));
 	const QString& sFilter = filters.join(";;");
 
-	QWidget *pParentWidget = NULL;
+	QWidget *pParentWidget = nullptr;
 	QFileDialog::Options options = 0;
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
 	if (pOptions && pOptions->bDontUseNativeDialogs) {
@@ -1470,7 +1470,7 @@ bool qtractorTracks::mergeExportMidiClips ( qtractorClipCommand *pClipCommand )
 #if 1//QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
 	// Ask for the filename to save...
 	QString sFilename = QFileDialog::getSaveFileName(pParentWidget, sTitle,
-		pSession->createFilePath(pTrack->trackName(), sExt), sFilter, NULL, options);
+		pSession->createFilePath(pTrack->trackName(), sExt), sFilter, nullptr, options);
 #else
 	// Construct save-file dialog...
 	QFileDialog fileDialog(pParentWidget, sTitle,
@@ -1556,7 +1556,7 @@ bool qtractorTracks::mergeExportMidiClips ( qtractorClipCommand *pClipCommand )
 
 	// Setup track (SMF format 1).
 	if (iFormat == 1)
-		file.writeTrack(NULL);
+		file.writeTrack(nullptr);
 
 	// Setup merge sequence...
 	qtractorMidiSequence seq(pTrack->trackName(), 0, iTicksPerBeat);
@@ -1681,14 +1681,14 @@ bool qtractorTracks::loopClip ( qtractorClip *pClip )
 bool qtractorTracks::rangeClipEx ( qtractorClip *pClip, bool bLoopSet )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	unsigned long iEditHead = 0;
 	unsigned long iEditTail = 0;
 
 	// Multiple clip selection...
-	if (pClip == NULL && isClipSelected()) {
+	if (pClip == nullptr && isClipSelected()) {
 		// Multi-selection extents (in frames)...
 		iEditHead = pSession->sessionEnd();
 		iEditTail = pSession->sessionStart();
@@ -1709,7 +1709,7 @@ bool qtractorTracks::rangeClipEx ( qtractorClip *pClip, bool bLoopSet )
 			}
 		}
 	} else {
-		if (pClip == NULL)
+		if (pClip == nullptr)
 			pClip = m_pTrackView->currentClip();
 		if (pClip) {
 			iEditHead = pClip->clipStart();
@@ -1734,13 +1734,13 @@ bool qtractorTracks::rangeClipEx ( qtractorClip *pClip, bool bLoopSet )
 bool qtractorTracks::tempoClip ( qtractorClip *pClip )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	unsigned long iRangeStart  = pSession->editHead();
 	unsigned long iRangeLength = pSession->editTail() - iRangeStart;
 
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		pClip = m_pTrackView->currentClip();
 	if (pClip) {
 		if (pClip->isClipSelected()) {
@@ -1799,17 +1799,17 @@ bool qtractorTracks::tempoClip ( qtractorClip *pClip )
 // Auto-crossfade a give clip.
 bool qtractorTracks::crossFadeClip ( qtractorClip *pClip )
 {
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		pClip = m_pTrackView->currentClip();
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		return false;
 
 	qtractorTrack *pTrack = pClip->track();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// We'll build a command...
@@ -1897,7 +1897,7 @@ void qtractorTracks::clipSelectedRange (
 	unsigned long& iSelectEnd ) const
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	iSelectStart = pSession->sessionEnd();
@@ -1981,9 +1981,9 @@ void qtractorTracks::splitSelect (void)
 void qtractorTracks::selectEditRange ( bool bReset )
 {
 	if (m_pTrackView->isCurveEdit())
-		m_pTrackView->selectCurveTrackRange(NULL, bReset);
+		m_pTrackView->selectCurveTrackRange(nullptr, bReset);
 	else
-		m_pTrackView->selectClipTrackRange(NULL, bReset);
+		m_pTrackView->selectClipTrackRange(nullptr, bReset);
 }
 
 
@@ -1991,7 +1991,7 @@ void qtractorTracks::selectEditRange ( bool bReset )
 void qtractorTracks::selectCurrentTrack ( bool bReset )
 {
 	qtractorTrack *pTrack = currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	if (m_pTrackView->isCurveEdit())
@@ -2005,7 +2005,7 @@ void qtractorTracks::selectCurrentTrack ( bool bReset )
 void qtractorTracks::selectCurrentTrackRange ( bool bReset )
 {
 	qtractorTrack *pTrack = currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	if (m_pTrackView->isCurveEdit())
@@ -2048,11 +2048,11 @@ void qtractorTracks::selectInvert (void)
 bool qtractorTracks::insertEditRange ( qtractorTrack *pTrack )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	qtractorTimeScale *pTimeScale = pSession->timeScale();
-	if (pTimeScale == NULL)
+	if (pTimeScale == nullptr)
 		return false;
 
 	unsigned long iInsertStart = pSession->editHead();
@@ -2067,9 +2067,9 @@ bool qtractorTracks::insertEditRange ( qtractorTrack *pTrack )
 	iInsertOptions |= qtractorEditRangeForm::Clips;
 	iInsertOptions |= qtractorEditRangeForm::Automation;
 
-	if (pTrack == NULL) {
+	if (pTrack == nullptr) {
 		qtractorEditRangeForm rangeForm(this);
-		rangeForm.setWindowTitle(tr("Insert Range") + " - " QTRACTOR_TITLE);
+		rangeForm.setWindowTitle(tr("Insert Range"));
 		if (isClipSelected())
 			clipSelectedRange(iInsertStart, iInsertEnd);
 		rangeForm.setSelectionRange(iInsertStart, iInsertEnd);
@@ -2088,7 +2088,7 @@ bool qtractorTracks::insertEditRange ( qtractorTrack *pTrack )
 	int iUpdate = 0;
 
 	qtractorClipRangeCommand *pClipRangeCommand
-		= new qtractorClipRangeCommand(pTrack == NULL
+		= new qtractorClipRangeCommand(pTrack == nullptr
 			? tr("insert range")
 			: tr("insert track range"));
 
@@ -2273,11 +2273,11 @@ int qtractorTracks::insertEditRangeTrack (
 bool qtractorTracks::removeEditRange ( qtractorTrack *pTrack )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	qtractorTimeScale *pTimeScale = pSession->timeScale();
-	if (pTimeScale == NULL)
+	if (pTimeScale == nullptr)
 		return false;
 
 	unsigned long iRemoveStart = pSession->editHead();
@@ -2292,9 +2292,9 @@ bool qtractorTracks::removeEditRange ( qtractorTrack *pTrack )
 	iRemoveOptions |= qtractorEditRangeForm::Clips;
 	iRemoveOptions |= qtractorEditRangeForm::Automation;
 
-	if (pTrack == NULL) {
+	if (pTrack == nullptr) {
 		qtractorEditRangeForm rangeForm(this);
-		rangeForm.setWindowTitle(tr("Remove Range") + " - " QTRACTOR_TITLE);
+		rangeForm.setWindowTitle(tr("Remove Range"));
 		if (isClipSelected())
 			clipSelectedRange(iRemoveStart, iRemoveEnd);
 		rangeForm.setSelectionRange(iRemoveStart, iRemoveEnd);
@@ -2313,7 +2313,7 @@ bool qtractorTracks::removeEditRange ( qtractorTrack *pTrack )
 	int iUpdate = 0;
 
 	qtractorClipRangeCommand *pClipRangeCommand
-		= new qtractorClipRangeCommand(pTrack == NULL
+		= new qtractorClipRangeCommand(pTrack == nullptr
 			? tr("remove range")
 			: tr("remove track range"));
 
@@ -2550,11 +2550,11 @@ int qtractorTracks::removeEditRangeTrack (
 bool qtractorTracks::addTrack (void)
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
-	if (pMainForm == NULL)
+	if (pMainForm == nullptr)
 		return false;
 
 	// Create a new track right away...
@@ -2595,13 +2595,13 @@ bool qtractorTracks::addTrack (void)
 bool qtractorTracks::removeTrack ( qtractorTrack *pTrack )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Get the list view item reference of the intended track...
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		pTrack = currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	// Don't remove tracks engaged in recording...
@@ -2612,7 +2612,7 @@ bool qtractorTracks::removeTrack ( qtractorTrack *pTrack )
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
 	if (pOptions && pOptions->bConfirmRemove) {
 		if (QMessageBox::warning(this,
-			tr("Warning") + " - " QTRACTOR_TITLE,
+			tr("Warning"),
 			tr("About to remove track:\n\n"
 			"\"%1\"\n\n"
 			"Are you sure?")
@@ -2639,17 +2639,17 @@ bool qtractorTracks::removeTrack ( qtractorTrack *pTrack )
 bool qtractorTracks::editTrack ( qtractorTrack *pTrack )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
-	if (pMainForm == NULL)
+	if (pMainForm == nullptr)
 		return false;
 
 	// Get the list view item reference of the intended track...
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		pTrack = currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	// Don't edit tracks engaged in recording...
@@ -2679,13 +2679,13 @@ bool qtractorTracks::editTrack ( qtractorTrack *pTrack )
 bool qtractorTracks::copyTrack ( qtractorTrack *pTrack )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Get the list view item reference of the intended track...
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		pTrack = currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	// Might take a while...
@@ -2723,7 +2723,7 @@ bool qtractorTracks::addAudioTracks ( const QStringList& files,
 		return false;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 //	pSession->lock();
@@ -2746,7 +2746,7 @@ bool qtractorTracks::addAudioTracks ( const QStringList& files,
 	// Needed whether we'll span to one single track
 	// or will have each clip intto several tracks...
 	const bool bDropSpan = m_pTrackView->isDropSpan();
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	int iTrackClip = 0;
 
 	// For each one of those files...
@@ -2756,7 +2756,7 @@ bool qtractorTracks::addAudioTracks ( const QStringList& files,
 		// This is one of the selected filenames....
 		const QString& sPath = iter.next();
 		// Create a new track right away...
-		if (pTrack == NULL || !bDropSpan) {
+		if (pTrack == nullptr || !bDropSpan) {
 			const QColor& color = qtractorTrack::trackColor(++iTrack);
 			pTrack = new qtractorTrack(pSession, qtractorTrack::Audio);
 			pTrack->setBackground(color);
@@ -2824,7 +2824,7 @@ bool qtractorTracks::addMidiTracks (const QStringList& files,
 		return false;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Tell the world we'll take some time...
@@ -2957,7 +2957,7 @@ bool qtractorTracks::addMidiTrackChannel ( const QString& sPath,
 	int iTrackChannel, unsigned long iClipStart, qtractorTrack *pAfterTrack )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// To log this import into session description.
@@ -3029,7 +3029,7 @@ void qtractorTracks::updateTrack ( qtractorTrack *pTrack )
 void qtractorTracks::updateMidiTrack ( qtractorTrack *pMidiTrack )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	const QString& sBusName = pMidiTrack->outputBusName();
@@ -3060,12 +3060,12 @@ void qtractorTracks::updateMidiTrack ( qtractorTrack *pMidiTrack )
 
 	// Update MIDI bus patch...
 	qtractorMidiEngine *pMidiEngine = pSession->midiEngine();
-	if (pMidiEngine == NULL)
+	if (pMidiEngine == nullptr)
 		return;
 
 	qtractorMidiBus *pMidiBus
 		= static_cast<qtractorMidiBus *> (pMidiTrack->outputBus());
-	if (pMidiBus == NULL)
+	if (pMidiBus == nullptr)
 		return;
 
 	const qtractorMidiBus::Patch& patch = pMidiBus->patch(iChannel);
@@ -3089,7 +3089,7 @@ void qtractorTracks::selectionChangeNotify (void)
 {
 	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
 	if (pMainForm)
-		pMainForm->selectionNotifySlot(NULL);
+		pMainForm->selectionNotifySlot(nullptr);
 }
 
 
@@ -3098,7 +3098,7 @@ void qtractorTracks::contentsChangeNotify (void)
 {
 	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
 	if (pMainForm)
-		pMainForm->changeNotifySlot(NULL);
+		pMainForm->changeNotifySlot(nullptr);
 }
 
 void qtractorTracks::dirtyChangeNotify (void)
