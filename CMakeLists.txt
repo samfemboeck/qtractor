@@ -168,7 +168,7 @@ endif ()
 # Check for Qt
 find_package (Qt5 REQUIRED COMPONENTS Core Gui Widgets Xml)
 
-if (CONFIG_XUNIQUE)
+if (CONFIG_LIBLO OR CONFIG_XUNIQUE)
   find_package (Qt5 REQUIRED COMPONENTS Network)
 endif ()
 
@@ -604,9 +604,9 @@ show_option ("  LADSPA plug-in support . . . . . . . . . . . . . ." CONFIG_LADSP
 show_option ("  DSSI plug-in support . . . . . . . . . . . . . . ." CONFIG_DSSI)
 show_option ("  VST plug-in support  . . . . . . . . . . . . . . ." CONFIG_VST)
 show_option ("  LV2 plug-in support  . . . . . . . . . . . . . . ." CONFIG_LV2)
-show_option ("  LV2 plug-in support (liblilv)  . . . . . . . . . ." CONFIG_LILV)
+show_option ("  LV2 plug-in support (liblilv)  . . . . . . . . . ." CONFIG_LIBLILV)
 show_option ("  LV2 plug-in UI support . . . . . . . . . . . . . ." CONFIG_LV2_UI)
-show_option ("  LV2 plug-in UI support (libsuil) . . . . . . . . ." CONFIG_SUIL)
+show_option ("  LV2 plug-in UI support (libsuil) . . . . . . . . ." CONFIG_LIBSUIL)
 show_option ("  LV2 plug-in External UI support  . . . . . . . . ." CONFIG_LV2_EXTERNAL_UI)
 show_option ("  LV2 plug-in MIDI/Event support (DEPRECATED)  . . ." CONFIG_LV2_EVENT)
 show_option ("  LV2 plug-in MIDI/Atom support  . . . . . . . . . ." CONFIG_LV2_ATOM)

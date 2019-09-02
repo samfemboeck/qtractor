@@ -89,6 +89,7 @@ set (HEADERS
   qtractorNsmClient.h
   qtractorObserver.h
   qtractorObserverWidget.h
+  qtractorOscControl.h
   qtractorOptions.h
   qtractorPlugin.h
   qtractorPluginFactory.h
@@ -214,6 +215,7 @@ set (SOURCES
   qtractorNsmClient.cpp
   qtractorObserver.cpp
   qtractorObserverWidget.cpp
+  qtractorOscControl.cpp
   qtractorOptions.cpp
   qtractorPlugin.cpp
   qtractorPluginFactory.cpp
@@ -359,7 +361,7 @@ endif ()
 target_link_libraries (${NAME} PRIVATE Qt5::Widgets Qt5::Xml)
 target_link_libraries (${NAME}_plugin_scan PRIVATE Qt5::Core)
 
-if (CONFIG_XUNIQUE)
+if (CONFIG_LIBLO OR CONFIG_XUNIQUE)
   target_link_libraries (${NAME} PRIVATE Qt5::Network)
 endif ()
 
