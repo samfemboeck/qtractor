@@ -99,7 +99,7 @@ qtractorTempoCurveProcessCommand::qtractorTempoCurveProcessCommand (
 // Virtual command methods.
 bool qtractorTempoCurveProcessCommand::execute ( bool bRedo )
 {
-	if (m_pTempoCurve == NULL)
+	if (m_pTempoCurve == nullptr)
 		return false;
 
 	const bool bProcess = m_pTempoCurve->isProcess();
@@ -126,7 +126,7 @@ qtractorTempoCurveColorCommand::qtractorTempoCurveColorCommand (
 // Virtual command methods.
 bool qtractorTempoCurveColorCommand::execute ( bool /*bRedo*/ )
 {
-	if (m_pTempoCurve == NULL)
+	if (m_pTempoCurve == nullptr)
 		return false;
 
 	const QColor color = m_pTempoCurve->color();
@@ -182,7 +182,7 @@ void qtractorTempoCurveEditCommand::moveNode ( qtractorTimeScale::Node *pNode,
 #endif
 
 	qtractorSession *pSession = qtractorSession::getInstance();
-	qtractorTimeScale *pTimeScale = NULL;
+	qtractorTimeScale *pTimeScale = nullptr;
 	if (pSession)
 		pTimeScale = pSession->timeScale();
 

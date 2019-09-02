@@ -212,10 +212,10 @@ class qtractorTempoCursor
 public:
 
 	// Constructor.
-	qtractorTempoCursor() : m_pNode(NULL) {}
+	qtractorTempoCursor() : m_pNode(nullptr) {}
 
 	// Reset method.
-	void clear() { m_pNode = NULL; }
+	void clear() { m_pNode = nullptr; }
 
 	// Predicate method.
 	qtractorTimeScale::Node *seek(
@@ -223,7 +223,7 @@ public:
 	{
 		qtractorTimeScale::Cursor& cursor = pSession->timeScale()->cursor();
 		qtractorTimeScale::Node *pNode = cursor.seekFrame(iFrame);
-		return (m_pNode == pNode ? NULL : m_pNode = pNode);
+		return (m_pNode == pNode ? nullptr : m_pNode = pNode);
 	}
 
 private:
@@ -237,7 +237,7 @@ private:
 // qtractorMainForm -- Main window form implementation.
 
 // Kind of singleton reference.
-qtractorMainForm *qtractorMainForm::g_pMainForm = NULL;
+qtractorMainForm *qtractorMainForm::g_pMainForm = nullptr;
 
 // Constructor.
 qtractorMainForm::qtractorMainForm (
@@ -251,7 +251,7 @@ qtractorMainForm::qtractorMainForm (
 	g_pMainForm = this;
 
 	// Initialize some pointer references.
-	m_pOptions = NULL;
+	m_pOptions = nullptr;
 
 	// FIXME: This gotta go, somwhere in time...
 	m_pSession = new qtractorSession();
@@ -264,12 +264,12 @@ qtractorMainForm::qtractorMainForm (
 	m_pInstrumentMenu = new qtractorInstrumentMenu(this);
 
 	// All child forms are to be created later, not earlier than setup.
-	m_pMessages    = NULL;
-	m_pFileSystem  = NULL;
-	m_pFiles       = NULL;
-	m_pMixer       = NULL;
-	m_pConnections = NULL;
-	m_pTracks      = NULL;
+	m_pMessages    = nullptr;
+	m_pFileSystem  = nullptr;
+	m_pFiles       = nullptr;
+	m_pMixer       = nullptr;
+	m_pConnections = nullptr;
+	m_pTracks      = nullptr;
 
 	// To remember last time we've shown the playhead.
 	m_iPlayHead = 0;
@@ -297,7 +297,7 @@ qtractorMainForm::qtractorMainForm (
 
 	m_iPlayerTimer = 0;
 
-	m_pNsmClient = NULL;
+	m_pNsmClient = nullptr;
 	m_bNsmDirty  = false;
 
 	m_iAudioPropertyChange = 0;
@@ -314,7 +314,7 @@ qtractorMainForm::qtractorMainForm (
 	}
 
 	// Configure the audio engine event handling...
-	const qtractorAudioEngineProxy *pAudioEngineProxy = NULL;
+	const qtractorAudioEngineProxy *pAudioEngineProxy = nullptr;
 	qtractorAudioEngine *pAudioEngine = m_pSession->audioEngine();
 	if (pAudioEngine)
 		pAudioEngineProxy = pAudioEngine->proxy();
@@ -343,7 +343,7 @@ qtractorMainForm::qtractorMainForm (
 	}
 
 	// Configure the MIDI engine event handling...
-	const qtractorMidiEngineProxy *pMidiEngineProxy = NULL;
+	const qtractorMidiEngineProxy *pMidiEngineProxy = nullptr;
 	qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
 	if (pMidiEngine)
 		pMidiEngineProxy = pMidiEngine->proxy();
@@ -385,10 +385,10 @@ qtractorMainForm::qtractorMainForm (
 	// Install SIGUSR1 signal handler.
 	struct sigaction sigusr1;
 	sigusr1.sa_handler = qtractor_sigusr1_handler;
-	::sigemptyset(&sigusr1.sa_mask);
+	sigemptyset(&sigusr1.sa_mask);
 	sigusr1.sa_flags = 0;
 	sigusr1.sa_flags |= SA_RESTART;
-	::sigaction(SIGUSR1, &sigusr1, NULL);
+	::sigaction(SIGUSR1, &sigusr1, nullptr);
 
 	// LADISH termination suport.
 	// Initialize file descriptors for SIGTERM socket notifier.
@@ -403,11 +403,11 @@ qtractorMainForm::qtractorMainForm (
 	// Install SIGTERM/SIGQUIT signal handlers.
 	struct sigaction sigterm;
 	sigterm.sa_handler = qtractor_sigterm_handler;
-	::sigemptyset(&sigterm.sa_mask);
+	sigemptyset(&sigterm.sa_mask);
 	sigterm.sa_flags = 0;
 	sigterm.sa_flags |= SA_RESTART;
-	::sigaction(SIGTERM, &sigterm, NULL);
-	::sigaction(SIGQUIT, &sigterm, NULL);
+	::sigaction(SIGTERM, &sigterm, nullptr);
+	::sigaction(SIGQUIT, &sigterm, nullptr);
 
 	// Ignore SIGHUP/SIGINT signals.
 	::signal(SIGHUP, SIG_IGN);
@@ -415,8 +415,8 @@ qtractorMainForm::qtractorMainForm (
 
 #else	// HAVE_SIGNAL_H
 
-	m_pSigusr1Notifier = NULL;
-	m_pSigtermNotifier = NULL;
+	m_pSigusr1Notifier = nullptr;
+	m_pSigtermNotifier = nullptr;
 	
 #endif	// !HAVE_SIGNAL_H
 
@@ -504,7 +504,7 @@ qtractorMainForm::qtractorMainForm (
 	// Outrageous HACK: GTK+ ppl won't see green on black thing...
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #if !defined(QT_NO_STYLE_GTK)
-	if (qobject_cast<QGtkStyle *> (style()) == NULL) {
+	if (qobject_cast<QGtkStyle *> (style()) == nullptr) {
 #endif
 #endif
 	//	pal.setColor(QPalette::Window, Qt::black);
@@ -1308,7 +1308,7 @@ qtractorMainForm::~qtractorMainForm (void)
 		delete m_pSession;
 
 	// Pseudo-singleton reference shut-down.
-	g_pMainForm = NULL;
+	g_pMainForm = nullptr;
 }
 
 
@@ -1338,13 +1338,15 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 		m_pOptions->sMessagesLogPath);
 
 	// What style do we create tool childs?
+	QWidget *pParent = nullptr;
 	Qt::WindowFlags wflags = Qt::Window;
-	if (m_pOptions->bKeepToolsOnTop)
+	if (m_pOptions->bKeepToolsOnTop) {
 		wflags |= Qt::Tool;
-
+		pParent = this;
+	}
 	// Other child/tools forms are also created right away...
-	m_pConnections = new qtractorConnections(this, wflags);
-	m_pMixer = new qtractorMixer(this, wflags);
+	m_pConnections = new qtractorConnections(pParent, wflags);
+	m_pMixer = new qtractorMixer(pParent, wflags);
 
 	// Make those primordially docked...
 	addDockWidget(Qt::LeftDockWidgetArea, m_pFileSystem, Qt::Vertical);
@@ -1636,7 +1638,8 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 		m_iDirtyCount = 0;
 		// Just load the prabable startup session...
 		const int iFlags = qtractorDocument::Default;
-		if (loadSessionFileEx(m_pOptions->sSessionFile, iFlags, !bSessionId)) {
+		const QFileInfo info(m_pOptions->sSessionFile);
+		if (loadSessionFileEx(info.absoluteFilePath(), iFlags, !bSessionId)) {
 			m_pOptions->sSessionFile.clear();
 			// Take appropriate action when session is loaded from
 			// some foreign session manager (eg. JACK session)...
@@ -1806,7 +1809,7 @@ void qtractorMainForm::closeEvent ( QCloseEvent *pCloseEvent )
 void qtractorMainForm::dragEnterEvent ( QDragEnterEvent *pDragEnterEvent )
 {
 	// Accept external drags only...
-	if (pDragEnterEvent->source() == NULL
+	if (pDragEnterEvent->source() == nullptr
 		&& pDragEnterEvent->mimeData()->hasUrls()) {
 		pDragEnterEvent->accept();
 	} else {
@@ -1960,7 +1963,7 @@ bool qtractorMainForm::newSession (void)
 	m_iDirtyCount = 0;
 
 #ifdef CONFIG_NSM
-	if (m_pNsmClient == NULL || !m_pNsmClient->is_active()) {
+	if (m_pNsmClient == nullptr || !m_pNsmClient->is_active()) {
 #endif
 	// Check whether we start the new session
 	// based on existing template...
@@ -1995,7 +1998,7 @@ bool qtractorMainForm::newSession (void)
 // Open an existing sampler session.
 bool qtractorMainForm::openSession (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return false;
 
 	// Ask for the filename to open...
@@ -2022,11 +2025,11 @@ bool qtractorMainForm::openSession (void)
 	sExt = m_pOptions->sSessionExt; // Default session file format...
 
 	const QString& sTitle
-		= tr("Open Session") + " - " QTRACTOR_TITLE;
+		= tr("Open Session");
 	const QString& sFilter
 		= filters.join(";;");
 
-	QWidget *pParentWidget = NULL;
+	QWidget *pParentWidget = nullptr;
 	QFileDialog::Options options = 0;
 	if (m_pOptions->bDontUseNativeDialogs) {
 		options |= QFileDialog::DontUseNativeDialog;
@@ -2034,7 +2037,7 @@ bool qtractorMainForm::openSession (void)
 	}
 #if 1//QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
 	sFilename = QFileDialog::getOpenFileName(pParentWidget,
-		sTitle, m_pOptions->sSessionDir, sFilter, NULL, options);
+		sTitle, m_pOptions->sSessionDir, sFilter, nullptr, options);
 #else
 	// Construct open-file session/template dialog...
 	QFileDialog fileDialog(pParentWidget,
@@ -2077,7 +2080,7 @@ bool qtractorMainForm::openSession (void)
 // Save current sampler session with another name.
 bool qtractorMainForm::saveSession ( bool bPrompt )
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return false;
 
 	// It must be a session name...
@@ -2115,10 +2118,10 @@ bool qtractorMainForm::saveSession ( bool bPrompt )
 		filters.append(tr("All files (*.*)"));
 		sExt = m_pOptions->sSessionExt; // Default session  file format...
 		const QString& sTitle
-			= tr("Save Session") + " - " QTRACTOR_TITLE;
+			= tr("Save Session");
 		const QString& sFilter
 			= filters.join(";;");
-		QWidget *pParentWidget = NULL;
+		QWidget *pParentWidget = nullptr;
 		QFileDialog::Options options = 0;
 		if (m_pOptions->bDontUseNativeDialogs) {
 			options |= QFileDialog::DontUseNativeDialog;
@@ -2128,7 +2131,7 @@ bool qtractorMainForm::saveSession ( bool bPrompt )
 		sFilename = sessionBackupPath(sFilename);
 	#if 1//QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
 		sFilename = QFileDialog::getSaveFileName(pParentWidget,
-			sTitle, sFilename, sFilter, NULL, options);
+			sTitle, sFilename, sFilter, nullptr, options);
 	#else
 		// Construct save-file session/template dialog...
 		QFileDialog fileDialog(pParentWidget,
@@ -2172,7 +2175,7 @@ bool qtractorMainForm::saveSession ( bool bPrompt )
 			// Check if already exists...
 			if (sFilename != m_sFilename && QFileInfo(sFilename).exists()) {
 				if (QMessageBox::warning(this,
-					tr("Warning") + " - " QTRACTOR_TITLE,
+					tr("Warning"),
 					tr("The file already exists:\n\n"
 					"\"%1\"\n\n"
 					"Do you want to replace it?")
@@ -2261,7 +2264,7 @@ bool qtractorMainForm::closeSession (void)
 	// Are we dirty enough to prompt it?
 	if (bClose && m_iDirtyCount > 0) {
 		switch (QMessageBox::warning(this,
-			tr("Warning") + " - " QTRACTOR_TITLE,
+			tr("Warning"),
 			tr("The current session has been changed:\n\n"
 			"\"%1\"\n\n"
 			"Do you want to save the changes?")
@@ -2316,7 +2319,7 @@ bool qtractorMainForm::closeSession (void)
 				bConfirmArchive = false;
 		#endif
 			if (bConfirmArchive) {
-				const QString& sTitle = tr("Warning") + " - " QTRACTOR_TITLE;
+				const QString& sTitle = tr("Warning");
 				const QString& sText = tr(
 					"About to remove archive directory:\n\n"
 					"\"%1\"\n\n"
@@ -2420,10 +2423,9 @@ bool qtractorMainForm::loadSessionFileEx (
 			info.setFile(info.path() + QDir::separator() + info.completeBaseName());
 			if (info.exists() && info.isDir()) {
 				bool bArchiveRemove = true;
-				bool bConfirmArchive = (m_pOptions && m_pOptions->bConfirmArchive);
-				if (bConfirmArchive) {
+				if  (m_pOptions && m_pOptions->bConfirmArchive) {
 					const QString& sTitle
-						= tr("Warning") + " - " QTRACTOR_TITLE;
+						= tr("Warning");
 					const QString& sText = tr(
 						"The directory already exists:\n\n"
 						"\"%1\"\n\n"
@@ -2688,7 +2690,7 @@ void qtractorMainForm::openNsmSession (void)
 {
 #ifdef CONFIG_NSM
 
-	if (m_pNsmClient == NULL)
+	if (m_pNsmClient == nullptr)
 		return;
 
 	if (!m_pNsmClient->is_active())
@@ -2766,7 +2768,7 @@ void qtractorMainForm::saveNsmSession (void)
 {
 #ifdef CONFIG_NSM
 
-	if (m_pNsmClient == NULL)
+	if (m_pNsmClient == nullptr)
 		return;
 
 	if (!m_pNsmClient->is_active())
@@ -2829,7 +2831,7 @@ void qtractorMainForm::showNsmSession (void)
 {
 #ifdef CONFIG_NSM
 
-	if (m_pNsmClient == NULL)
+	if (m_pNsmClient == nullptr)
 		return;
 
 	if (!m_pNsmClient->is_active())
@@ -2851,7 +2853,7 @@ void qtractorMainForm::hideNsmSession (void)
 {
 #ifdef CONFIG_NSM
 
-	if (m_pNsmClient == NULL)
+	if (m_pNsmClient == nullptr)
 		return;
 
 	if (!m_pNsmClient->is_active())
@@ -2935,7 +2937,7 @@ bool qtractorMainForm::autoSaveOpen (void)
 	if (!sAutoSavePathname.isEmpty()
 		&& QFileInfo(sAutoSavePathname).exists()) {
 		if (QMessageBox::warning(this,
-			tr("Warning") + " - " QTRACTOR_TITLE,
+			tr("Warning"),
 			tr("Oops!\n\n"
 			"Looks like it crashed or did not close "
 			"properly last time it was run... however, "
@@ -3472,12 +3474,12 @@ void qtractorMainForm::trackProperties (void)
 // Show current track input bus connections.
 void qtractorMainForm::trackInputs (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
-	if (pTrack->inputBus() == NULL)
+	if (pTrack->inputBus() == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3495,12 +3497,12 @@ void qtractorMainForm::trackInputs (void)
 // Show current track output bus connections.
 void qtractorMainForm::trackOutputs (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
-	if (pTrack->outputBus() == NULL)
+	if (pTrack->outputBus() == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3518,10 +3520,10 @@ void qtractorMainForm::trackOutputs (void)
 // Arm current track for recording.
 void qtractorMainForm::trackStateRecord ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3536,10 +3538,10 @@ void qtractorMainForm::trackStateRecord ( bool bOn )
 // Mute current track.
 void qtractorMainForm::trackStateMute ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3554,10 +3556,10 @@ void qtractorMainForm::trackStateMute ( bool bOn )
 // Solo current track.
 void qtractorMainForm::trackStateSolo (  bool bOn  )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3572,10 +3574,10 @@ void qtractorMainForm::trackStateSolo (  bool bOn  )
 // Monitor current track.
 void qtractorMainForm::trackStateMonitor ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3668,13 +3670,13 @@ void qtractorMainForm::trackNavigateNone (void)
 // Move current track to top of list.
 void qtractorMainForm::trackMoveTop (void)
 {
-	if (m_pSession == NULL)
+	if (m_pSession == nullptr)
 		return;
 
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3689,14 +3691,14 @@ void qtractorMainForm::trackMoveTop (void)
 // Move current track up towards the top of list.
 void qtractorMainForm::trackMoveUp (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorTrack *pNextTrack = pTrack->prev();
-	if (pNextTrack == NULL)
+	if (pNextTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3711,14 +3713,14 @@ void qtractorMainForm::trackMoveUp (void)
 // Move current track down towards the bottom of list
 void qtractorMainForm::trackMoveDown (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorTrack *pNextTrack = pTrack->next();
-	if (pNextTrack == NULL)
+	if (pNextTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3733,10 +3735,10 @@ void qtractorMainForm::trackMoveDown (void)
 // Move current track to bottom of list.
 void qtractorMainForm::trackMoveBottom (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3744,17 +3746,17 @@ void qtractorMainForm::trackMoveBottom (void)
 #endif
 
 	m_pSession->execute(
-		new qtractorMoveTrackCommand(pTrack, NULL));
+		new qtractorMoveTrackCommand(pTrack, nullptr));
 }
 
 
 // Increase current track height.
 void qtractorMainForm::trackHeightUp (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3770,10 +3772,10 @@ void qtractorMainForm::trackHeightUp (void)
 // Decreate current track height.
 void qtractorMainForm::trackHeightDown (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3789,10 +3791,10 @@ void qtractorMainForm::trackHeightDown (void)
 // Reset current track height.
 void qtractorMainForm::trackHeightReset (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -3813,7 +3815,7 @@ void qtractorMainForm::trackAutoMonitor ( bool bOn )
 	qDebug("qtractorMainForm::trackAutoMonitor(%d)", int(bOn));
 #endif
 
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (bOn && m_pTracks)
 		pTrack = m_pTracks->currentTrack();
 	m_pSession->setCurrentTrack(pTrack);
@@ -3904,10 +3906,10 @@ void qtractorMainForm::trackExportMidi (void)
 
 void qtractorMainForm::trackTempoCurveShow(void)
 {
-	qtractorSubject *pSubject = NULL;
-//	qtractorCurveList *pCurveList = NULL;
+	qtractorSubject *pSubject = nullptr;
+//	qtractorCurveList *pCurveList = nullptr;
 	qtractorMidiControlObserver *pMidiObserver;
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
 
@@ -3916,15 +3918,15 @@ void qtractorMainForm::trackTempoCurveShow(void)
 		pSubject = pMidiObserver->subject();
 	}
 
-	qtractorTempoCurve *pTempoCurve = NULL;
+	qtractorTempoCurve *pTempoCurve = nullptr;
 	if (pSubject) {
 		pTempoCurve = pSubject->tempoCurve();
 
-		if (pTempoCurve == NULL) {
+		if (pTempoCurve == nullptr) {
 			pTempoCurve = new qtractorTempoCurve(m_pSession->timeScale(), pSubject);
 		}
 		pTrack->setTrackTempoCurve(pTempoCurve);
-		pTrack->setCurrentCurve(NULL);
+		pTrack->setCurrentCurve(nullptr);
 
 		m_pSession->execute(new qtractorTempoCurveEditCommand(pTempoCurve));
 	}
@@ -3940,28 +3942,28 @@ Q_DECLARE_METATYPE(qtractorMidiControlObserver *);
 
 void qtractorMainForm::trackCurveSelect ( QAction *pAction, bool bOn )
 {
-	qtractorSubject *pSubject = NULL;
-	qtractorCurveList *pCurveList = NULL;
+	qtractorSubject *pSubject = nullptr;
+	qtractorCurveList *pCurveList = nullptr;
 	qtractorMidiControlObserver *pMidiObserver
 		= pAction->data().value<qtractorMidiControlObserver *> ();
 	if (pMidiObserver) {
 		pCurveList = pMidiObserver->curveList();
 		pSubject = pMidiObserver->subject();
 	} else {
-		qtractorTrack *pTrack = NULL;
+		qtractorTrack *pTrack = nullptr;
 		if (m_pTracks)
 			pTrack = m_pTracks->currentTrack();
 		if (pTrack)
 			pCurveList = pTrack->curveList();
 	}
 
-	if (pCurveList == NULL)
+	if (pCurveList == nullptr)
 		return;
 
-	qtractorCurve *pCurve = NULL;
+	qtractorCurve *pCurve = nullptr;
 	if (bOn && pSubject) {
 		pCurve = pSubject->curve();
-		if (pCurve == NULL) {
+		if (pCurve == nullptr) {
 			qtractorCurve::Mode mode = qtractorCurve::Hold;
 			if (m_pOptions && pSubject->isDecimal())
 				mode = qtractorCurve::Mode(m_pOptions->iCurveMode);
@@ -3991,14 +3993,14 @@ void qtractorMainForm::trackCurveMode ( QAction *pAction )
 	if (iMode < 0)
 		return;
 
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurve *pCurrentCurve = pTrack->currentCurve();
-	if (pCurrentCurve == NULL)
+	if (pCurrentCurve == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -4018,14 +4020,14 @@ void qtractorMainForm::trackCurveMode ( QAction *pAction )
 // Track automation curve lock toggle.
 void qtractorMainForm::trackCurveLocked ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurve *pCurrentCurve = pTrack->currentCurve();
-	if (pCurrentCurve == NULL)
+	if (pCurrentCurve == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -4044,14 +4046,14 @@ void qtractorMainForm::trackCurveLocked ( bool bOn )
 // Track automation curve playback toggle.
 void qtractorMainForm::trackCurveProcess ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurve *pCurrentCurve = pTrack->currentCurve();
-	if (pCurrentCurve == NULL)
+	if (pCurrentCurve == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -4065,14 +4067,14 @@ void qtractorMainForm::trackCurveProcess ( bool bOn )
 // Track automation curve record toggle.
 void qtractorMainForm::trackCurveCapture ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurve *pCurrentCurve = pTrack->currentCurve();
-	if (pCurrentCurve == NULL)
+	if (pCurrentCurve == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -4086,14 +4088,14 @@ void qtractorMainForm::trackCurveCapture ( bool bOn )
 // Track automation curve logarithmic toggle.
 void qtractorMainForm::trackCurveLogarithmic ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurve *pCurrentCurve = pTrack->currentCurve();
-	if (pCurrentCurve == NULL)
+	if (pCurrentCurve == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -4107,21 +4109,21 @@ void qtractorMainForm::trackCurveLogarithmic ( bool bOn )
 // Track automation curve color picker.
 void qtractorMainForm::trackCurveColor (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurve *pCurrentCurve = pTrack->currentCurve();
-	if (pCurrentCurve == NULL)
+	if (pCurrentCurve == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
 	qDebug("qtractorMainForm::trackCurveColor()");
 #endif
 
-	QWidget *pParentWidget = NULL;
+	QWidget *pParentWidget = nullptr;
 	QColorDialog::ColorDialogOptions options = 0;
 	if (m_pOptions && m_pOptions->bDontUseNativeDialogs) {
 		options |= QColorDialog::DontUseNativeDialog;
@@ -4130,7 +4132,7 @@ void qtractorMainForm::trackCurveColor (void)
 	const QString& sTitle = pCurrentCurve->subject()->name();
 	const QColor& color = QColorDialog::getColor(
 		pCurrentCurve->color(), pParentWidget,
-		sTitle + " - " QTRACTOR_TITLE, options);
+		sTitle, options);
 	if (!color.isValid())
 		return;
 
@@ -4141,14 +4143,14 @@ void qtractorMainForm::trackCurveColor (void)
 // Track automation curve clear.
 void qtractorMainForm::trackCurveClear (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurve *pCurrentCurve = pTrack->currentCurve();
-	if (pCurrentCurve == NULL)
+	if (pCurrentCurve == nullptr)
 		return;
 	if (pCurrentCurve->isEmpty())
 		return;
@@ -4159,7 +4161,7 @@ void qtractorMainForm::trackCurveClear (void)
 
 	if (m_pOptions && m_pOptions->bConfirmRemove) {
 		if (QMessageBox::warning(this,
-			tr("Warning") + " - " QTRACTOR_TITLE,
+			tr("Warning"),
 			tr("About to clear automation:\n\n"
 			"\"%1\"\n\n"
 			"Are you sure?")
@@ -4175,14 +4177,14 @@ void qtractorMainForm::trackCurveClear (void)
 // Track automation all curves lock toggle.
 void qtractorMainForm::trackCurveLockedAll ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurveList *pCurveList = pTrack->curveList();
-	if (pCurveList == NULL)
+	if (pCurveList == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -4201,14 +4203,14 @@ void qtractorMainForm::trackCurveLockedAll ( bool bOn )
 // Track automation all curves playback toggle.
 void qtractorMainForm::trackCurveProcessAll ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurveList *pCurveList = pTrack->curveList();
-	if (pCurveList == NULL)
+	if (pCurveList == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -4222,14 +4224,14 @@ void qtractorMainForm::trackCurveProcessAll ( bool bOn )
 // Track automation all curves record toggle.
 void qtractorMainForm::trackCurveCaptureAll ( bool bOn )
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurveList *pCurveList = pTrack->curveList();
-	if (pCurveList == NULL)
+	if (pCurveList == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -4243,14 +4245,14 @@ void qtractorMainForm::trackCurveCaptureAll ( bool bOn )
 // Track automation all curves clear.
 void qtractorMainForm::trackCurveClearAll (void)
 {
-	qtractorTrack *pTrack = NULL;
+	qtractorTrack *pTrack = nullptr;
 	if (m_pTracks)
 		pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return;
 
 	qtractorCurveList *pCurveList = pTrack->curveList();
-	if (pCurveList == NULL)
+	if (pCurveList == nullptr)
 		return;
 	if (pCurveList->isEmpty())
 		return;
@@ -4261,7 +4263,7 @@ void qtractorMainForm::trackCurveClearAll (void)
 
 	if (m_pOptions && m_pOptions->bConfirmRemove) {
 		if (QMessageBox::warning(this,
-			tr("Warning") + " - " QTRACTOR_TITLE,
+			tr("Warning"),
 			tr("About to clear all automation:\n\n"
 			"\"%1\"\n\n"
 			"Are you sure?")
@@ -4441,7 +4443,7 @@ void qtractorMainForm::clipImport (void)
 		const unsigned long iClipStart = m_pSession->editHead();
 		QStringList files;
 		qtractorTrack *pTrack = m_pTracks->currentTrack();
-		if (pTrack == NULL)
+		if (pTrack == nullptr)
 			pTrack = m_pSession->tracks().first();
 		if (pTrack && pTrack->trackType() == qtractorTrack::Midi)
 			files = m_pFiles->midiListView()->openFileNames();
@@ -4566,11 +4568,11 @@ void qtractorMainForm::clipTakeSelect ( QAction *pAction )
 	qDebug("qtractorMainForm::clipTakeSelect(%d)", iTake);
 #endif
 
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	if (m_pTracks)
 		pClip = m_pTracks->currentClip();
 
-	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : NULL);
+	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : nullptr);
 	if (pTakeInfo && pTakeInfo->currentTake() != iTake) {
 		m_pSession->execute(
 			new qtractorClipTakeCommand(pTakeInfo, pClip->track(), iTake));
@@ -4585,11 +4587,11 @@ void qtractorMainForm::clipTakeFirst (void)
 	qDebug("qtractorMainForm::clipTakeFirst()");
 #endif
 
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	if (m_pTracks)
 		pClip = m_pTracks->currentClip();
 
-	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : NULL);
+	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : nullptr);
 	if (pTakeInfo) {
 		m_pSession->execute(
 			new qtractorClipTakeCommand(pTakeInfo, pClip->track(), 0));
@@ -4604,11 +4606,11 @@ void qtractorMainForm::clipTakePrev (void)
 	qDebug("qtractorMainForm::clipTakePrev()");
 #endif
 
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	if (m_pTracks)
 		pClip = m_pTracks->currentClip();
 
-	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : NULL);
+	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : nullptr);
 	if (pTakeInfo) {
 		int iTake = pTakeInfo->currentTake() - 1;
 		if (iTake < 0)
@@ -4626,11 +4628,11 @@ void qtractorMainForm::clipTakeNext (void)
 	qDebug("qtractorMainForm::clipTakeNext()");
 #endif
 
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	if (m_pTracks)
 		pClip = m_pTracks->currentClip();
 
-	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : NULL);
+	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : nullptr);
 	if (pTakeInfo) {
 		int iTake = pTakeInfo->currentTake() + 1;
 		if (iTake >= pTakeInfo->takeCount())
@@ -4648,11 +4650,11 @@ void qtractorMainForm::clipTakeLast (void)
 	qDebug("qtractorMainForm::clipTakeLast()");
 #endif
 
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	if (m_pTracks)
 		pClip = m_pTracks->currentClip();
 
-	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : NULL);
+	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : nullptr);
 	if (pTakeInfo) {
 		const int iTake = pTakeInfo->takeCount() - 1;
 		m_pSession->execute(
@@ -4668,11 +4670,11 @@ void qtractorMainForm::clipTakeReset (void)
 	qDebug("qtractorMainForm::clipTakeReset()");
 #endif
 
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	if (m_pTracks)
 		pClip = m_pTracks->currentClip();
 
-	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : NULL);
+	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : nullptr);
 	if (pTakeInfo) {
 		m_pSession->execute(
 			new qtractorClipTakeCommand(pTakeInfo));
@@ -4687,12 +4689,12 @@ void qtractorMainForm::clipTakeRange (void)
 	qDebug("qtractorMainForm::clipTakeRange()");
 #endif
 
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	if (m_pTracks)
 		pClip = m_pTracks->currentClip();
 
-	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : NULL);
-	if (pClip && pTakeInfo == NULL) {
+	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : nullptr);
+	if (pClip && pTakeInfo == nullptr) {
 		qtractorTakeRangeForm form(this);
 		form.setClip(pClip);
 		if (form.exec()) {
@@ -4711,7 +4713,7 @@ void qtractorMainForm::clipTakeRange (void)
 			if (m_pSession->execute(pClipCommand)) {
 				m_pSession->setEditHead(iTakeStart);
 				m_pSession->setEditTail(iTakeEnd);
-				selectionNotifySlot(NULL);
+				selectionNotifySlot(nullptr);
 			}
 		}
 	}
@@ -5017,7 +5019,7 @@ void qtractorMainForm::viewTempoMap (void)
 // Show options dialog.
 void qtractorMainForm::viewOptions (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Check out some initial nullities(tm)...
@@ -5280,7 +5282,7 @@ void qtractorMainForm::viewOptions (void)
 			}
 			// Show restart needed message...
 			QMessageBox::information(this,
-				tr("Information") + " - " QTRACTOR_TITLE,
+				tr("Information"),
 				tr("Some settings may be only effective\n"
 				"next time you start this %1.")
 				.arg(sNeedRestart));
@@ -5733,11 +5735,11 @@ void qtractorMainForm::transportPanic (void)
 #endif
 
 	qtractorAudioEngine *pAudioEngine = m_pSession->audioEngine();
-	if (pAudioEngine == NULL)
+	if (pAudioEngine == nullptr)
 		return;
 
 	qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
-	if (pMidiEngine == NULL)
+	if (pMidiEngine == nullptr)
 		return;
 
 	// All players must end now...
@@ -5765,7 +5767,7 @@ void qtractorMainForm::transportPanic (void)
 // Show (and edit) keyboard shortcuts.
 void qtractorMainForm::helpShortcuts (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	qtractorShortcutForm shortcutForm(findChildren<QAction *> (), this);
@@ -5928,7 +5930,7 @@ void qtractorMainForm::helpAbout (void)
 	sText += "</small>";
 	sText += "</p>\n";
 
-	QMessageBox::about(this, tr("About") + " " QTRACTOR_TITLE, sText);
+	QMessageBox::about(this, tr("About"), sText);
 }
 
 
@@ -5964,13 +5966,13 @@ bool qtractorMainForm::setPlaying ( bool bPlaying )
 		// Stop transport rolling, immediately...
 		setRolling(0);
 		// Session tracks automation recording.
-		qtractorCurveCaptureListCommand *pCurveCommand = NULL;
+		qtractorCurveCaptureListCommand *pCurveCommand = nullptr;
 		for (qtractorTrack *pTrack = m_pSession->tracks().first();
 				pTrack; pTrack = pTrack->next()) {
 			qtractorCurveList *pCurveList = pTrack->curveList();
 			if (pCurveList && pCurveList->isCapture()
 				&& !pCurveList->isEditListEmpty()) {
-				if (pCurveCommand == NULL)
+				if (pCurveCommand == nullptr)
 					pCurveCommand = new qtractorCurveCaptureListCommand();
 				pCurveCommand->addCurveList(pCurveList);
 			}
@@ -6227,21 +6229,21 @@ void qtractorMainForm::stabilizeForm (void)
 	QString sSessionName = sessionName(m_sFilename);
 	if (m_iDirtyCount > 0)
 		sSessionName += ' ' + tr("[modified]");
-	setWindowTitle(sSessionName + " - " QTRACTOR_TITLE);
+	setWindowTitle(sSessionName);
 
 	// Update the main menu state...
 	m_ui.fileSaveAction->setEnabled(m_iDirtyCount > 0);
 #ifdef CONFIG_NSM
-	m_ui.fileSaveAsAction->setEnabled(m_pNsmClient == NULL);
+	m_ui.fileSaveAsAction->setEnabled(m_pNsmClient == nullptr);
 #endif
 
 	const unsigned long iPlayHead = m_pSession->playHead();
 	const unsigned long iSessionEnd = m_pSession->sessionEnd();
 
 	const bool bTracks = (m_pTracks && m_pSession->tracks().count() > 0);
-	qtractorTrack *pTrack = (bTracks ? m_pTracks->currentTrack() : NULL);
+	qtractorTrack *pTrack = (bTracks ? m_pTracks->currentTrack() : nullptr);
 
-	const bool bEnabled    = (pTrack != NULL);
+	const bool bEnabled    = (pTrack != nullptr);
 	const bool bSelected   = (m_pTracks && m_pTracks->isSelected())
 		|| (m_pFiles && m_pFiles->hasFocus() && m_pFiles->isFileSelected());
 	const bool bSelectable = (m_pSession->editHead() < m_pSession->editTail());
@@ -6571,7 +6573,7 @@ void qtractorMainForm::updateSessionPost (void)
 	// Check for any pending nested messages...
 	if (!qtractorMessageList::isEmpty()) {
 		if (QMessageBox::warning(this,
-			tr("Warning") + " - " QTRACTOR_TITLE,
+			tr("Warning"),
 			tr("The following issues were detected:\n\n%1\n\n"
 			"Saving into another session file is highly recommended.")
 			.arg(qtractorMessageList::items().join("\n")),
@@ -6629,7 +6631,7 @@ void qtractorMainForm::updateExportMenu (void)
 // Update the recent files list and menu.
 void qtractorMainForm::updateRecentFiles ( const QString& sFilename )
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Remove from list if already there (avoid duplicates)
@@ -6644,7 +6646,7 @@ void qtractorMainForm::updateRecentFiles ( const QString& sFilename )
 // Update the recent files list and menu.
 void qtractorMainForm::updateRecentFilesMenu (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Time to keep the list under limits.
@@ -6657,7 +6659,7 @@ void qtractorMainForm::updateRecentFilesMenu (void)
 	// Rebuild the recent files menu...
 	m_ui.fileOpenRecentMenu->clear();
 	for (int i = 0; i < iRecentFiles; ++i) {
-		const QString& sFilename = m_pOptions->recentFiles[i];
+		const QString& sFilename = m_pOptions->recentFiles.at(i);
 		if (QFileInfo(sFilename).exists()) {
 			QAction *pAction = m_ui.fileOpenRecentMenu->addAction(
 				QString("&%1 %2").arg(i + 1).arg(sessionName(sFilename)),
@@ -6674,7 +6676,7 @@ void qtractorMainForm::updateRecentFilesMenu (void)
 // Force update of the peak-files auto-remove mode.
 void qtractorMainForm::updatePeakAutoRemove (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	qtractorAudioPeakFactory *pPeakFactory
@@ -6687,7 +6689,7 @@ void qtractorMainForm::updatePeakAutoRemove (void)
 // Update main transport-time display format.
 void qtractorMainForm::updateDisplayFormat (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Main transport display format is due...
@@ -6707,18 +6709,26 @@ void qtractorMainForm::updateDisplayFormat (void)
 
 	m_pSession->timeScale()->setDisplayFormat(displayFormat);
 	m_pTimeSpinBox->setDisplayFormat(displayFormat);
+
+	// Update other open editors as well...
+	QListIterator<qtractorMidiEditorForm *> iter(m_editors);
+	while (iter.hasNext()) {
+		qtractorMidiEditorForm *pForm = iter.next();
+		pForm->timeScale()->setDisplayFormat(displayFormat);
+		pForm->updateEventList();
+	}
 }
 
 
 // Update audio player parameters.
 void qtractorMainForm::updateAudioPlayer (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the Audio engine player handling...
 	qtractorAudioEngine *pAudioEngine = m_pSession->audioEngine();
-	if (pAudioEngine == NULL)
+	if (pAudioEngine == nullptr)
 		return;
 
 	pAudioEngine->setPlayerAutoConnect(m_pOptions->bAudioPlayerAutoConnect);
@@ -6729,7 +6739,7 @@ void qtractorMainForm::updateAudioPlayer (void)
 // Update Audio engine control mode settings.
 void qtractorMainForm::updateTransportModePre (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	switch (qtractorBus::BusMode(m_pOptions->iTransportMode)) {
@@ -6756,12 +6766,12 @@ void qtractorMainForm::updateTransportModePre (void)
 
 void qtractorMainForm::updateTransportModePost (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the Audio engine handling...
 	qtractorAudioEngine *pAudioEngine = m_pSession->audioEngine();
-	if (pAudioEngine == NULL)
+	if (pAudioEngine == nullptr)
 		return;
 
 	pAudioEngine->setTransportMode(
@@ -6772,12 +6782,12 @@ void qtractorMainForm::updateTransportModePost (void)
 // Update JACK Timebase master mode.
 void qtractorMainForm::updateTimebase (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the Audio engine handling...
 	qtractorAudioEngine *pAudioEngine = m_pSession->audioEngine();
-	if (pAudioEngine == NULL)
+	if (pAudioEngine == nullptr)
 		return;
 
 	pAudioEngine->setTimebase(m_pOptions->bTimebase);
@@ -6788,12 +6798,12 @@ void qtractorMainForm::updateTimebase (void)
 // Update MIDI engine control mode settings.
 void qtractorMainForm::updateMidiControlModes (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the MIDI engine handling...
 	qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
-	if (pMidiEngine == NULL)
+	if (pMidiEngine == nullptr)
 		return;
 
 	pMidiEngine->setCaptureQuantize(
@@ -6808,7 +6818,7 @@ void qtractorMainForm::updateMidiControlModes (void)
 // Update MIDI playback queue timersetting.
 void qtractorMainForm::updateMidiQueueTimer (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the MIDI engine queue timer...
@@ -6819,7 +6829,7 @@ void qtractorMainForm::updateMidiQueueTimer (void)
 // Update MIDI playback drift correction.
 void qtractorMainForm::updateMidiDriftCorrect (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the MIDI engine drift correction...
@@ -6830,7 +6840,7 @@ void qtractorMainForm::updateMidiDriftCorrect (void)
 // Update MIDI player parameters.
 void qtractorMainForm::updateMidiPlayer (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the MIDI engine player handling...
@@ -6841,7 +6851,7 @@ void qtractorMainForm::updateMidiPlayer (void)
 // Update MIDI control parameters.
 void qtractorMainForm::updateMidiControl (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the MIDI engine control handling...
@@ -6852,12 +6862,12 @@ void qtractorMainForm::updateMidiControl (void)
 // Update audio metronome parameters.
 void qtractorMainForm::updateAudioMetronome (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the Audio engine metronome handling...
 	qtractorAudioEngine *pAudioEngine = m_pSession->audioEngine();
-	if (pAudioEngine == NULL)
+	if (pAudioEngine == nullptr)
 		return;
 
 	pAudioEngine->setMetroBarFilename(m_pOptions->sMetroBarFilename);
@@ -6881,12 +6891,12 @@ void qtractorMainForm::updateAudioMetronome (void)
 // Update MIDI metronome parameters.
 void qtractorMainForm::updateMidiMetronome (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	// Configure the MIDI engine metronome handling...
 	qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
-	if (pMidiEngine == NULL)
+	if (pMidiEngine == nullptr)
 		return;
 
 	pMidiEngine->setMetroChannel(m_pOptions->iMetroChannel);
@@ -6921,7 +6931,7 @@ void qtractorMainForm::updateMixerAutoGridLayout (void)
 // Update transport display options.
 void qtractorMainForm::updateSyncViewHold (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	if (m_pTracks)
@@ -6938,9 +6948,9 @@ void qtractorMainForm::updateSyncViewHold (void)
 void qtractorMainForm::updateTrackMenu (void)
 {
 	const bool bTracks = (m_pTracks && m_pSession->tracks().count() > 0);
-	qtractorTrack *pTrack = (bTracks ? m_pTracks->currentTrack() : NULL);
+	qtractorTrack *pTrack = (bTracks ? m_pTracks->currentTrack() : nullptr);
 
-	const bool bEnabled   = (pTrack != NULL);
+	const bool bEnabled   = (pTrack != nullptr);
 	const bool bPlaying   = m_pSession->isPlaying();
 	const bool bRecording = m_pSession->isRecording();
 	const bool bRolling   = (bPlaying && bRecording);
@@ -6952,9 +6962,9 @@ void qtractorMainForm::updateTrackMenu (void)
 	m_ui.trackPropertiesAction->setEnabled(
 		bEnabled && (!bRolling || !pTrack->isRecord()));
 	m_ui.trackInputsAction->setEnabled(
-		bEnabled && pTrack->inputBus() != NULL);
+		bEnabled && pTrack->inputBus() != nullptr);
 	m_ui.trackOutputsAction->setEnabled(
-		bEnabled && pTrack->outputBus() != NULL);
+		bEnabled && pTrack->outputBus() != nullptr);
 	m_ui.trackStateMenu->setEnabled(bEnabled);
 	m_ui.trackNavigateMenu->setEnabled(bTracks);
 	m_ui.trackNavigateFirstAction->setEnabled(bTracks);
@@ -6963,15 +6973,15 @@ void qtractorMainForm::updateTrackMenu (void)
 	m_ui.trackNavigateLastAction->setEnabled(bTracks);
 	m_ui.trackNavigateNoneAction->setEnabled(bEnabled);
 	m_ui.trackMoveMenu->setEnabled(bEnabled);
-	m_ui.trackMoveTopAction->setEnabled(bEnabled && pTrack->prev() != NULL);
-	m_ui.trackMoveUpAction->setEnabled(bEnabled && pTrack->prev() != NULL);
-	m_ui.trackMoveDownAction->setEnabled(bEnabled && pTrack->next() != NULL);
-	m_ui.trackMoveBottomAction->setEnabled(bEnabled && pTrack->next() != NULL);
+	m_ui.trackMoveTopAction->setEnabled(bEnabled && pTrack->prev() != nullptr);
+	m_ui.trackMoveUpAction->setEnabled(bEnabled && pTrack->prev() != nullptr);
+	m_ui.trackMoveDownAction->setEnabled(bEnabled && pTrack->next() != nullptr);
+	m_ui.trackMoveBottomAction->setEnabled(bEnabled && pTrack->next() != nullptr);
 	m_ui.trackHeightMenu->setEnabled(bEnabled);
 	m_ui.trackCurveMenu->setEnabled(bEnabled);
-//	m_ui.trackImportAudioAction->setEnabled(m_pTracks != NULL);
-//	m_ui.trackImportMidiAction->setEnabled(m_pTracks != NULL);
-//	m_ui.trackAutoMonitorAction->setEnabled(m_pTracks != NULL);
+//	m_ui.trackImportAudioAction->setEnabled(m_pTracks != nullptr);
+//	m_ui.trackImportMidiAction->setEnabled(m_pTracks != nullptr);
+//	m_ui.trackAutoMonitorAction->setEnabled(m_pTracks != nullptr);
 	m_ui.trackInstrumentMenu->setEnabled(
 		bEnabled && pTrack->trackType() == qtractorTrack::Midi);
 
@@ -6989,11 +6999,11 @@ void qtractorMainForm::updateTrackMenu (void)
 void qtractorMainForm::updateCurveMenu (void)
 {
 	qtractorTrack *pTrack
-		= (m_pTracks ? m_pTracks->currentTrack(): NULL);
+		= (m_pTracks ? m_pTracks->currentTrack(): nullptr);
 	qtractorCurveList *pCurveList
-		= (pTrack ? pTrack->curveList() : NULL);
+		= (pTrack ? pTrack->curveList() : nullptr);
 	qtractorCurve *pCurrentCurve
-		= (pCurveList ? pCurveList->currentCurve() : NULL);
+		= (pCurveList ? pCurveList->currentCurve() : nullptr);
 
 	if (pTrack->trackType() == qtractorTrack::Tempo) {
 		m_ui.trackTempoCurveShowAction->setEnabled(true);
@@ -7006,7 +7016,7 @@ void qtractorMainForm::updateCurveMenu (void)
 	if (bEnabled)
 		bEnabled = (pCurveList && !pCurveList->isEmpty());
 
-	const bool bCurveEnabled = bEnabled && pCurrentCurve != NULL;
+	const bool bCurveEnabled = bEnabled && pCurrentCurve != nullptr;
 
 	m_ui.trackCurveModeMenu->setEnabled(bCurveEnabled);
 
@@ -7058,7 +7068,7 @@ void qtractorMainForm::trackCurveSelectMenuAction ( QMenu *pMenu,
 	QIcon   icon(":images/trackCurveNone.png");
 	QString text(tr("&None"));
 
-	qtractorSubject *pSubject = (pObserver ? pObserver->subject() : NULL);
+	qtractorSubject *pSubject = (pObserver ? pObserver->subject() : nullptr);
 	if (pSubject) {
 		text = pSubject->name();
 		qtractorCurve *pCurve = pSubject->curve();
@@ -7087,25 +7097,25 @@ bool qtractorMainForm::trackCurveSelectMenuReset ( QMenu *pMenu ) const
 {
 	pMenu->clear();
 
-	if (m_pTracks == NULL)
+	if (m_pTracks == nullptr)
 		return false;
 
 	qtractorTrack *pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	qtractorCurveList *pCurveList = pTrack->curveList();
-	if (pCurveList == NULL)
+	if (pCurveList == nullptr)
 		return false;
 
 	qtractorMonitor *pMonitor = pTrack->monitor();
-	if (pMonitor == NULL)
+	if (pMonitor == nullptr)
 		return false;
 
 	qtractorCurve *pCurrentCurve
 	   = pCurveList->currentCurve();
 	qtractorSubject *pCurrentSubject
-	   = (pCurrentCurve ? pCurrentCurve->subject() : NULL);
+	   = (pCurrentCurve ? pCurrentCurve->subject() : nullptr);
 
 	trackCurveSelectMenuAction(pMenu,
 		pTrack->monitorObserver(), pCurrentSubject);
@@ -7149,7 +7159,7 @@ bool qtractorMainForm::trackCurveSelectMenuReset ( QMenu *pMenu ) const
 
 	pMenu->addSeparator();
 
-	trackCurveSelectMenuAction(pMenu, NULL, pCurrentSubject);
+	trackCurveSelectMenuAction(pMenu, nullptr, pCurrentSubject);
 	
 	return true;
 }
@@ -7160,11 +7170,11 @@ bool qtractorMainForm::trackCurveModeMenuReset ( QMenu *pMenu ) const
 	pMenu->clear();
 
 	qtractorTrack *pTrack = m_pTracks->currentTrack();
-	if (pTrack == NULL)
+	if (pTrack == nullptr)
 		return false;
 
 	qtractorCurve *pCurrentCurve = pTrack->currentCurve();
-	if (pCurrentCurve == NULL)
+	if (pCurrentCurve == nullptr)
 		return false;
 
 	const qtractorCurve::Mode mode = pCurrentCurve->mode();
@@ -7209,19 +7219,19 @@ void qtractorMainForm::updateClipMenu (void)
 {
 	const unsigned long iPlayHead = m_pSession->playHead();
 
-	qtractorClip  *pClip  = NULL;
-	qtractorTrack *pTrack = NULL;
+	qtractorClip  *pClip  = nullptr;
+	qtractorTrack *pTrack = nullptr;
 	const bool bTracks = (m_pTracks && m_pSession->tracks().count() > 0);
 	if (bTracks) {
 		pClip  = m_pTracks->currentClip();
 		pTrack = (pClip ? pClip->track() : m_pTracks->currentTrack());
 	}
 
-	const bool bEnabled = (pTrack != NULL);
+	const bool bEnabled = (pTrack != nullptr);
 	const bool bSelected = (m_pTracks && m_pTracks->isSelected());
-	const bool bClipSelected = (pClip != NULL)
+	const bool bClipSelected = (pClip != nullptr)
 		|| (m_pTracks && m_pTracks->isClipSelected());
-	const bool bClipSelectable = (pClip != NULL)
+	const bool bClipSelectable = (pClip != nullptr)
 		|| (m_pSession->editHead() < m_pSession->editTail());
 	const bool bSingleTrackSelected = bClipSelected
 		&& (pTrack && m_pTracks->singleTrackSelected() == pTrack);
@@ -7231,19 +7241,19 @@ void qtractorMainForm::updateClipMenu (void)
 	m_ui.editDeleteAction->setEnabled(bSelected);
 
 	m_ui.clipNewAction->setEnabled(bEnabled);
-	m_ui.clipEditAction->setEnabled(pClip != NULL);
+	m_ui.clipEditAction->setEnabled(pClip != nullptr);
 
 	// Special unlink (MIDI) clip...
-	qtractorMidiClip *pMidiClip = NULL;
+	qtractorMidiClip *pMidiClip = nullptr;
 	if (pTrack && pTrack->trackType() == qtractorTrack::Midi)
 		pMidiClip = static_cast<qtractorMidiClip *> (pClip);
 	m_ui.clipUnlinkAction->setEnabled(pMidiClip && pMidiClip->isHashLinked());
 
-	m_ui.clipRecordExAction->setEnabled(pMidiClip != NULL);
+	m_ui.clipRecordExAction->setEnabled(pMidiClip != nullptr);
 	m_ui.clipRecordExAction->setChecked(pTrack && pTrack->isClipRecordEx()
 		&& static_cast<qtractorMidiClip *> (pTrack->clipRecord()) == pMidiClip);
 
-	m_ui.clipSplitAction->setEnabled(pClip != NULL
+	m_ui.clipSplitAction->setEnabled(pClip != nullptr
 		&& iPlayHead > pClip->clipStart()
 		&& iPlayHead < pClip->clipStart() + pClip->clipLength());
 	m_ui.clipMergeAction->setEnabled(bSingleTrackSelected);
@@ -7256,7 +7266,7 @@ void qtractorMainForm::updateClipMenu (void)
 	m_ui.clipExportAction->setEnabled(bSingleTrackSelected);
 	m_ui.clipToolsMenu->setEnabled(bClipSelected
 		&& pTrack && pTrack->trackType() == qtractorTrack::Midi);
-	m_ui.clipTakeMenu->setEnabled(pClip != NULL);
+	m_ui.clipTakeMenu->setEnabled(pClip != nullptr);
 
 	updateTakeMenu();
 }
@@ -7265,22 +7275,22 @@ void qtractorMainForm::updateClipMenu (void)
 // Take menu stabilizers.
 void qtractorMainForm::updateTakeMenu (void)
 {
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	if (m_pTracks)
 		pClip = m_pTracks->currentClip();
 
-	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : NULL);
+	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : nullptr);
 	const int iCurrentTake = (pTakeInfo ? pTakeInfo->currentTake() : -1);
 	const int iTakeCount = (pTakeInfo ? pTakeInfo->takeCount() : 0);
 
-//	m_ui.clipTakeMenu->setEnabled(pTakeInfo != NULL);
+//	m_ui.clipTakeMenu->setEnabled(pTakeInfo != nullptr);
 	m_ui.clipTakeSelectMenu->setEnabled(iTakeCount > 0);
 	m_ui.clipTakeFirstAction->setEnabled(iCurrentTake != 0 && iTakeCount > 0);
 	m_ui.clipTakePrevAction->setEnabled(iTakeCount > 0);
 	m_ui.clipTakeNextAction->setEnabled(iTakeCount > 0);
 	m_ui.clipTakeLastAction->setEnabled(iCurrentTake < iTakeCount - 1);
 	m_ui.clipTakeResetAction->setEnabled(iCurrentTake >= 0);
-	m_ui.clipTakeRangeAction->setEnabled(pTakeInfo == NULL);
+	m_ui.clipTakeRangeAction->setEnabled(pTakeInfo == nullptr);
 }
 
 
@@ -7289,11 +7299,11 @@ void qtractorMainForm::updateTakeSelectMenu (void)
 {
 	m_ui.clipTakeSelectMenu->clear();
 
-	qtractorClip *pClip = NULL;
+	qtractorClip *pClip = nullptr;
 	if (m_pTracks)
 		pClip = m_pTracks->currentClip();
 	
-	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : NULL);
+	qtractorClip::TakeInfo *pTakeInfo = (pClip ? pClip->takeInfo() : nullptr);
 	if (pTakeInfo) {
 		QAction *pAction;
 		const int iCurrentTake = pTakeInfo->currentTake();
@@ -7397,14 +7407,14 @@ void qtractorMainForm::appendMessagesError( const QString& s )
 
 	appendMessagesColor(s.simplified(), "#ff0000");
 
-	QMessageBox::critical(this, tr("Error") + " - " QTRACTOR_TITLE, s);
+	QMessageBox::critical(this, tr("Error"), s);
 }
 
 
 // Force update of the messages font.
 void qtractorMainForm::updateMessagesFont (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	if (m_pMessages && !m_pOptions->sMessagesFont.isEmpty()) {
@@ -7418,7 +7428,7 @@ void qtractorMainForm::updateMessagesFont (void)
 // Update messages window line limit.
 void qtractorMainForm::updateMessagesLimit (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	if (m_pMessages) {
@@ -7433,7 +7443,7 @@ void qtractorMainForm::updateMessagesLimit (void)
 // Enablement of the messages capture feature.
 void qtractorMainForm::updateMessagesCapture (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	if (m_pMessages)
@@ -7444,7 +7454,7 @@ void qtractorMainForm::updateMessagesCapture (void)
 // Update/reset custome color (palette) theme..
 void qtractorMainForm::updateCustomColorTheme (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	if (m_pOptions->sCustomColorTheme.isEmpty())
@@ -7478,7 +7488,7 @@ void qtractorMainForm::updateCustomColorTheme (void)
 // Update/reset custom (widget) style theme..
 void qtractorMainForm::updateCustomStyleTheme (void)
 {
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	if (m_pOptions->sCustomStyleTheme.isEmpty())
@@ -7688,7 +7698,7 @@ void qtractorMainForm::slowTimerSlot (void)
 					pAudioEngine->resetMetro();
 					pMidiEngine->resetTempo();
 					m_pSession->unlock();
-					updateContents(NULL, true);
+					updateContents(nullptr, true);
 				}
 			}
 		}
@@ -7936,11 +7946,11 @@ void qtractorMainForm::audioBuffNotify ( unsigned int iBufferSize )
 #endif
 
 	qtractorAudioEngine *pAudioEngine = m_pSession->audioEngine();
-	if (pAudioEngine == NULL)
+	if (pAudioEngine == nullptr)
 		return;
 
 	qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
-	if (pMidiEngine == NULL)
+	if (pMidiEngine == nullptr)
 		return;
 
 	// HACK: The audio engine (jackd) is still up
@@ -8004,7 +8014,7 @@ void qtractorMainForm::audioBuffNotify ( unsigned int iBufferSize )
 			++m_iDirtyCount;
 		}
 		// Final view update, just in case...
-		selectionNotifySlot(NULL);
+		selectionNotifySlot(nullptr);
 	}
 	else
 #else
@@ -8026,15 +8036,15 @@ void qtractorMainForm::audioSessNotify ( void *pvSessionArg )
 {
 #ifdef CONFIG_JACK_SESSION
 
-	if (m_pOptions == NULL)
+	if (m_pOptions == nullptr)
 		return;
 
 	qtractorAudioEngine *pAudioEngine = m_pSession->audioEngine();
-	if (pAudioEngine == NULL)
+	if (pAudioEngine == nullptr)
 		return;
 
 	jack_client_t *pJackClient = pAudioEngine->jackClient();
-	if (pJackClient == NULL)
+	if (pJackClient == nullptr)
 		return;
 
 	jack_session_event_t *pJackSessionEvent
@@ -8376,7 +8386,7 @@ void qtractorMainForm::midiClkNotify ( float fTempo )
 	}
 	++m_iTransportUpdate;
 
-	updateContents(NULL, true);
+	updateContents(nullptr, true);
 	++m_iStabilizeTimer;
 }
 
@@ -8544,7 +8554,7 @@ void qtractorMainForm::trackSelectionChanged (void)
 
 	// Select sync to mixer...
 	if (m_pTracks && m_pMixer && m_pMixer->trackRack()) {
-		qtractorMixerStrip *pStrip = NULL;
+		qtractorMixerStrip *pStrip = nullptr;
 		qtractorTrack *pTrack = m_pTracks->trackList()->currentTrack();
 		if (pTrack)
 			pStrip = (m_pMixer->trackRack())->findStrip(pTrack->monitor());
@@ -8573,7 +8583,7 @@ void qtractorMainForm::mixerSelectionChanged (void)
 
 	// Select sync to tracks...
 	if (m_pTracks && m_pMixer && m_pMixer->trackRack()) {
-		qtractorTrack *pTrack = NULL;
+		qtractorTrack *pTrack = nullptr;
 		qtractorMixerStrip *pStrip = (m_pMixer->trackRack())->selectedStrip();
 		if (pStrip)
 			pTrack = pStrip->track();
@@ -8644,7 +8654,7 @@ void qtractorMainForm::updateNotifySlot ( unsigned int flags )
 		m_pTracks->clearSelect(flags & qtractorCommand::Reset);
 
 	// Proceed as usual...
-	updateContents(NULL, (flags & qtractorCommand::Refresh));
+	updateContents(nullptr, (flags & qtractorCommand::Refresh));
 }
 
 
@@ -8732,7 +8742,7 @@ void qtractorMainForm::dirtyNotifySlot (void)
 #endif
 
 	updateDirtyCount(true);
-	selectionNotifySlot(NULL);
+	selectionNotifySlot(nullptr);
 }
 
 

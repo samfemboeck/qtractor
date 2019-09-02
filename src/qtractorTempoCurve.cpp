@@ -1,7 +1,7 @@
 // qtractorTempoCurve.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2018, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
    Copyright (C) 2018, spog aka Samo Pogačnik. All rights reserved.
 
    This program is free software; you can redistribute it and/or
@@ -58,7 +58,7 @@ static inline float cubef2 ( float x )
 // Constructor.
 qtractorTempoCurve::qtractorTempoCurve ( qtractorTimeScale *pTimeScale, qtractorSubject *pSubject )
 		: /*m_pTimeScale(pTimeScale), */m_observer(pSubject, this), m_state(Idle)/*, m_cursor(this)*/,
-		m_color(Qt::darkRed), m_pEditList(NULL)
+		m_color(Qt::darkRed), m_pEditList(nullptr)
 {
 
 	if (pTimeScale)
@@ -76,7 +76,7 @@ qtractorTempoCurve::qtractorTempoCurve ( qtractorTimeScale *pTimeScale, qtractor
 qtractorTempoCurve::~qtractorTempoCurve (void)
 {
 
-	m_observer.setCurve(NULL);
+	m_observer.setCurve(nullptr);
 
 }
 
@@ -84,9 +84,9 @@ qtractorTempoCurve::~qtractorTempoCurve (void)
 // Common interpolate method.
 float qtractorTempoCurve::value ( const qtractorTimeScale::Node *pNode, unsigned long iFrame ) const
 {
-	if (pNode == NULL) {
+	if (pNode == nullptr) {
 		pNode = m_pTimeScale->nodes().last();
-		if (pNode == NULL)
+		if (pNode == nullptr)
 			return 0;
 	}
 
@@ -156,7 +156,7 @@ void qtractorTempoCurve::setProcess ( bool bProcess )
 // Curve edit list command executive.
 bool qtractorTempoCurveEditList::execute ( bool bRedo )
 {
-	if (m_pTempoCurve == NULL)
+	if (m_pTempoCurve == nullptr)
 		return false;
 
 	QListIterator<Item *> iter(m_items);

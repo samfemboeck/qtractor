@@ -1,7 +1,7 @@
 // qtractorTimeScale.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2017, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -482,9 +482,9 @@ void qtractorTimeScale::updateAllowChanges ( qtractorTimeScale::Node *pNode )
 		return;
 
 	// Update allowChange on all nodes thereafter...
-	Node *pPrev = NULL;
+	Node *pPrev = nullptr;
 	Node *pNext = m_nodes.first();
-	Node *pMark = NULL;
+	Node *pMark = nullptr;
 	bool bAttach = pNode->attached;
 	bool bAllowChange = true;
 	// First dis-allow changes for all nodes from the first attached node to the last!

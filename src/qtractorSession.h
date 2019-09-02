@@ -192,7 +192,7 @@ public:
 	const qtractorList<qtractorTrack>& tracks() const;
 
 	void addTrack(qtractorTrack *pTrack);
-	void insertTrack(qtractorTrack *pTrack, qtractorTrack *pPrevTrack = NULL);
+	void insertTrack(qtractorTrack *pTrack, qtractorTrack *pPrevTrack = nullptr);
 	void moveTrack(qtractorTrack *pTrack, qtractorTrack *pNextTrack);
 	void updateTrack(qtractorTrack *pTrack);
 	void unlinkTrack(qtractorTrack *pTrack);
@@ -382,7 +382,7 @@ public:
 	{
 		// Default constructor.
 		Properties()
-			{ m_pTempoCurve = NULL; clear(); }
+			{ m_pTempoCurve = nullptr; clear(); }
 		// Copy constructor.
 		Properties(const Properties& props)
 			{ copy(props); }

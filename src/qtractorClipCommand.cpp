@@ -1,7 +1,7 @@
 // qtractorClipCommand.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2017, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -154,10 +154,10 @@ void qtractorClipCommand::moveClip ( qtractorClip *pClip,
 		if (pTakeInfo) {
 			pClip = pTakeInfo->clipPart(qtractorClip::TakeInfo::ClipHead);
 			if (pClip)
-				takeInfoClip(pClip, NULL);
+				takeInfoClip(pClip, nullptr);
 			pClip = pTakeInfo->clipPart(qtractorClip::TakeInfo::ClipTake);
 			if (pClip)
-				takeInfoClip(pClip, NULL);
+				takeInfoClip(pClip, nullptr);
 		}
 	}
 
@@ -237,7 +237,7 @@ void qtractorClipCommand::resizeClip ( qtractorClip *pClip,
 		pItem->pitchShift = fPitchShift;
 	m_items.append(pItem);
 
-	if (pItem->editCommand == NULL)
+	if (pItem->editCommand == nullptr)
 		reopenClip(pClip, fTimeStretch > 0.0f);
 //	else
 //		setClearSelect(true);
@@ -357,11 +357,11 @@ bool qtractorClipCommand::addClipRecord (
 	qtractorTrack *pTrack, unsigned long iFrameTime )
 {
 	qtractorSession *pSession = pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	qtractorClip *pClip = pTrack->clipRecord();
-	if (pClip == NULL)
+	if (pClip == nullptr)
 		return false;
 
 	// Recording clip extents...
@@ -403,7 +403,7 @@ bool qtractorClipCommand::addClipRecord (
 			}
 		}
 		// Can get rid of the recorded clip.
-		pTrack->setClipRecord(NULL);
+		pTrack->setClipRecord(nullptr);
 		return true;
 	}
 
@@ -464,7 +464,7 @@ bool qtractorClipCommand::addClipRecord (
 	pSession->releaseFilePath(pClip->filename());
 
 	// Can get rid of the recorded clip.
-	pTrack->setClipRecord(NULL);
+	pTrack->setClipRecord(nullptr);
 
 	// Done.
 	return true;
@@ -545,8 +545,8 @@ qtractorMidiEditCommand *qtractorClipCommand::createMidiEditCommand (
 	qtractorMidiClip *pMidiClip, float fTimeStretch )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
-		return NULL;
+	if (pSession == nullptr)
+		return nullptr;
 
 	// Make it like an undoable command...
 	qtractorMidiEditCommand *pEditCommand
@@ -601,7 +601,7 @@ bool qtractorClipCommand::isEmpty (void) const
 bool qtractorClipCommand::execute ( bool bRedo )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	pSession->lock();
@@ -652,7 +652,7 @@ bool qtractorClipCommand::execute ( bool bRedo )
 			const QString sOldFilename = pClip->filename();
 			unsigned short iOldTrackChannel = 0;
 			pClip->setFilename(pItem->filename);
-			qtractorMidiClip *pMidiClip = NULL;
+			qtractorMidiClip *pMidiClip = nullptr;
 			if (pTrack->trackType() == qtractorTrack::Midi)
 				pMidiClip = static_cast<qtractorMidiClip *> (pClip);
 			if (pMidiClip) {
@@ -704,7 +704,7 @@ bool qtractorClipCommand::execute ( bool bRedo )
 			const unsigned long iOldFadeOut = pClip->fadeOutLength();
 			float fOldTimeStretch = 0.0f;
 			float fOldPitchShift  = 0.0f;
-			qtractorAudioClip *pAudioClip = NULL;
+			qtractorAudioClip *pAudioClip = nullptr;
 			if ((pTrack->trackType() == qtractorTrack::Audio) || (pTrack->trackType() == qtractorTrack::Tempo)) {
 				pAudioClip = static_cast<qtractorAudioClip *> (pClip);
 				if (pAudioClip) {
@@ -780,7 +780,7 @@ bool qtractorClipCommand::execute ( bool bRedo )
 			break;
 		}
 		case TimeStretchClip: {
-			qtractorAudioClip *pAudioClip = NULL;
+			qtractorAudioClip *pAudioClip = nullptr;
 			if ((pTrack->trackType() == qtractorTrack::Audio) || (pTrack->trackType() == qtractorTrack::Tempo))
 				pAudioClip = static_cast<qtractorAudioClip *> (pClip);
 			if (pAudioClip) {
@@ -792,7 +792,7 @@ bool qtractorClipCommand::execute ( bool bRedo )
 			break;
 		}
 		case PitchShiftClip: {
-			qtractorAudioClip *pAudioClip = NULL;
+			qtractorAudioClip *pAudioClip = nullptr;
 			if ((pTrack->trackType() == qtractorTrack::Audio) || (pTrack->trackType() == qtractorTrack::Audio))
 				pAudioClip = static_cast<qtractorAudioClip *> (pClip);
 			if (pAudioClip) {
@@ -825,7 +825,7 @@ bool qtractorClipCommand::execute ( bool bRedo )
 			break;
 		}
 		case WsolaClip: {
-			qtractorAudioClip *pAudioClip = NULL;
+			qtractorAudioClip *pAudioClip = nullptr;
 			if ((pTrack->trackType() == qtractorTrack::Audio) || (pTrack->trackType() == qtractorTrack::Audio))
 				pAudioClip = static_cast<qtractorAudioClip *> (pClip);
 			if (pAudioClip) {
@@ -883,7 +883,7 @@ qtractorClipTakeCommand::qtractorClipTakeCommand (
 	if (pTrack && iCurrentTake >= 0)
 		m_pTakeInfo->select(this, pTrack, iCurrentTake);
 	else
-		m_pTakeInfo->reset(this, pTrack == NULL);
+		m_pTakeInfo->reset(this, pTrack == nullptr);
 }
 
 
@@ -962,7 +962,7 @@ void qtractorClipRangeCommand::addTimeScaleNodeCommand (
 bool qtractorClipRangeCommand::execute ( bool bRedo )
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return false;
 
 	// Loop/Punch...
@@ -1205,7 +1205,7 @@ qtractorClipRecordExCommand::qtractorClipRecordExCommand (
 // Clip-record command method.
 bool qtractorClipRecordExCommand::redo (void)
 {
-	if (m_pTrack == NULL)
+	if (m_pTrack == nullptr)
 		return false;
 
 	// Carry on...
@@ -1213,7 +1213,7 @@ bool qtractorClipRecordExCommand::redo (void)
 	const bool bClipRecordEx = m_pTrack->isClipRecordEx();
 
 	m_pTrack->setRecord(m_bClipRecordEx);
-	m_pTrack->setClipRecord(m_bClipRecordEx ? m_pClipRecordEx : NULL);
+	m_pTrack->setClipRecord(m_bClipRecordEx ? m_pClipRecordEx : nullptr);
 	m_pTrack->setClipRecordEx(m_bClipRecordEx);
 
 	// Reset for undo.

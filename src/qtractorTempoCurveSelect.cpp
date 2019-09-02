@@ -1,7 +1,7 @@
 // qtractorTempoCurveSelect.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2014, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
    Copyright (C) 2018, spog aka Samo Pogačnik. All rights reserved.
 
    This program is free software; you can redistribute it and/or
@@ -29,8 +29,8 @@
 // Constructor.
 qtractorTempoCurveSelect::qtractorTempoCurveSelect (void)
 {
-	m_pTempoCurve = NULL;
-	m_pAnchorNode = NULL;
+	m_pTempoCurve = nullptr;
+	m_pAnchorNode = nullptr;
 }
 
 
@@ -46,7 +46,7 @@ qtractorTempoCurveSelect::Item *qtractorTempoCurveSelect::findItem (
 	qtractorTimeScale::Node *pNode )
 {
 	// Check if this very event already exists...
-	return m_items.value(pNode, NULL);
+	return m_items.value(pNode, nullptr);
 }
 
 
@@ -58,7 +58,7 @@ void qtractorTempoCurveSelect::addItem (
 
 	m_rect = m_rect.united(rectNode);
 	
-	if (m_pAnchorNode == NULL || m_pAnchorNode->frame > pNode->frame)
+	if (m_pAnchorNode == nullptr || m_pAnchorNode->frame > pNode->frame)
 		m_pAnchorNode = pNode;
 }
 
@@ -93,7 +93,7 @@ void qtractorTempoCurveSelect::selectItem ( qtractorTempoCurve *pTempoCurve,
 	}
 	else
 	if (bSelect) {
-		if (m_pTempoCurve == NULL)
+		if (m_pTempoCurve == nullptr)
 			m_pTempoCurve  = pTempoCurve;
 		if (m_pTempoCurve == pTempoCurve)
 			addItem(pNode, rectNode);
@@ -145,8 +145,8 @@ void qtractorTempoCurveSelect::commit (void)
 	}
 
 	if (m_items.isEmpty()) {
-		m_pAnchorNode = NULL;
-		m_pTempoCurve = NULL;
+		m_pAnchorNode = nullptr;
+		m_pTempoCurve = nullptr;
 	}
 }
 
@@ -159,8 +159,8 @@ void qtractorTempoCurveSelect::clear (void)
 	qDeleteAll(m_items);
 	m_items.clear();
 
-	m_pAnchorNode = NULL;
-	m_pTempoCurve = NULL;
+	m_pAnchorNode = nullptr;
+	m_pTempoCurve = nullptr;
 }
 
 

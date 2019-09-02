@@ -75,7 +75,7 @@ public:
 	qtractorMidiSequence *sequence() const;
 
 	// Special executive setup method.
-	void setup(qtractorMidiClip *pMidiClip = NULL);
+	void setup(qtractorMidiClip *pMidiClip = nullptr);
 
 	// Reset coomposite dirty flag.
 	void resetDirtyCount();
@@ -90,10 +90,13 @@ public:
 	QMenu *editMenu() const;
 	
 	// Save(as) warning message box.
-	static int querySave(const QString& sFilename, QWidget *pParent = NULL);
+	static int querySave(const QString& sFilename, QWidget *pParent = nullptr);
 
 	// Update thumb-view play-head...
 	void updatePlayHead(unsigned long iPlayHead);
+
+	// Update event-list display...
+	void updateEventList(void);
 
 public slots:
 
@@ -199,6 +202,10 @@ protected slots:
 	void snapToScaleTypeChanged(int iSnapToScaleType);
 
 	void snapPerBeatChanged(int iSnapPerBeat);
+
+	// Top-level window geometry related slots.
+	void posChanged();
+	void sizeChanged();
 
 protected:
 

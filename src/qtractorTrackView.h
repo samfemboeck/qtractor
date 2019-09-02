@@ -189,7 +189,7 @@ public:
 	
 	// Clip selection executive method.
 	void executeClipSelect(
-		qtractorTrackView::Command cmd, qtractorClip *pClip = NULL);
+		qtractorTrackView::Command cmd, qtractorClip *pClip = nullptr);
 
 	// Intra-drag-n-drop clip move method.
 	void moveClipSelect(qtractorTrack *pTrack);
@@ -278,11 +278,11 @@ protected:
 
 	// Get track from given contents vertical position.
 	qtractorTrack *trackAt(const QPoint& pos,
-		bool bSelectTrack = false, TrackViewInfo *pTrackViewInfo = NULL) const;
+		bool bSelectTrack = false, TrackViewInfo *pTrackViewInfo = nullptr) const;
 
 	// Get clip from given contents position.
 	qtractorClip *clipAt(const QPoint& pos,
-		bool bSelectTrack = false, QRect *pClipRect = NULL) const;
+		bool bSelectTrack = false, QRect *pClipRect = nullptr) const;
 	// Get clip from given contents position.
 	qtractorClip *clipAtTrack(const QPoint& pos, QRect *pClipRect,
 		qtractorTrack *pTrack, TrackViewInfo *pTrackViewInfo) const;
@@ -307,7 +307,7 @@ protected:
 	// Drag-n-drop event stuffers (for clips).
 	qtractorTrack *dragClipMove(const QPoint& pos, bool bKeyStep = false);
 	qtractorTrack *dragClipDrop(const QPoint& pos, bool bKeyStep = false,
-		const QMimeData *pMimeData = NULL);
+		const QMimeData *pMimeData = nullptr);
 	qtractorTrack *dragClipDropEvent(QDropEvent *pDropEvent);
 	bool canClipDropEvent(QDropEvent *pDropEvent);
 
@@ -320,7 +320,7 @@ protected:
 	void dragLeaveEvent(QDragLeaveEvent *pDragLeaveEvent);
 	void dropEvent(QDropEvent *pDropEvent);
 
-	bool dropClip(const QPoint& pos, const QMimeData *pMimeData = NULL);
+	bool dropClip(const QPoint& pos, const QMimeData *pMimeData = nullptr);
 
 	// Handle item selection with mouse.
 	void mousePressEvent(QMouseEvent *pMouseEvent);
@@ -343,7 +343,7 @@ protected:
 	void selectClip(bool bReset);
 
 	// Clip selection sanity check method.
-	bool queryClipSelect(qtractorClip *pClip = NULL);
+	bool queryClipSelect(qtractorClip *pClip = nullptr);
 
 	// Update whole clip selection.
 	void updateClipSelect();
@@ -370,7 +370,7 @@ protected:
 	// Check whether we're up to drag something on a track or one of its clips.
 	qtractorClip *dragClipStart(const QPoint& pos,
 		const Qt::KeyboardModifiers& modifiers,
-		bool bSelectTrack = false, QRect *pClipRect = NULL);
+		bool bSelectTrack = false, QRect *pClipRect = nullptr);
 	// Check whether we're up to drag a clip fade-in/out or resize handles.
 	bool dragClipStartEx(const QPoint& pos,
 		const Qt::KeyboardModifiers& modifiers,
@@ -459,7 +459,7 @@ private:
 	{
 		// Item constructor.
 		DropItem(const QString& sPath, int iChannel = -1)
-			: path(sPath), channel(iChannel), rubberBand(NULL) {}
+			: path(sPath), channel(iChannel), rubberBand(nullptr) {}
 		// Item destructor.
 		~DropItem() {
 			if (rubberBand) { 
@@ -560,7 +560,7 @@ private:
 	static struct ClipBoard
 	{
 		// Clipboard constructor.
-		ClipBoard() : singleTrack(NULL), frames(0) {}
+		ClipBoard() : singleTrack(nullptr), frames(0) {}
 		// Destructor.
 		~ClipBoard() { clear(); }
 		// Clipboard stuffer methods.

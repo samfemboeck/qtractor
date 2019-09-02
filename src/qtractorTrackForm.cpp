@@ -134,10 +134,10 @@ qtractorTrackForm::qtractorTrackForm (
 	QDialog::setWindowModality(Qt::WindowModal);
 
 	// No settings descriptor initially (the caller will set it).
-	m_pTrack = NULL;
+	m_pTrack = nullptr;
 
 	// Current MIDI output bus to be cached.
-	m_pMidiBus = NULL;
+	m_pMidiBus = nullptr;
 
 	// Set some dialog validators...
 	m_ui.BankComboBox->setValidator(new QIntValidator(m_ui.BankComboBox));
@@ -166,7 +166,7 @@ qtractorTrackForm::qtractorTrackForm (
 	}
 	
 	// To save and keep bus/channel patching consistency.
-	m_pOldMidiBus = NULL;
+	m_pOldMidiBus = nullptr;
 	m_iOldChannel = -1;
 	m_sOldInstrumentName.clear();
 	m_iOldBankSelMethod = -1;
@@ -174,10 +174,10 @@ qtractorTrackForm::qtractorTrackForm (
 	m_iOldProg = -1;
 
 	// No last acceptable command yet.
-	m_pLastCommand = NULL;
+	m_pLastCommand = nullptr;
 
 	// MIDI ban/program observer.
-	m_pMidiProgramObserver = NULL;
+	m_pMidiProgramObserver = nullptr;
 
 	// Initialize dirty control state.
 	m_iDirtySetup = 0;
@@ -330,7 +330,7 @@ void qtractorTrackForm::setTrack ( qtractorTrack *pTrack )
 
 	// Initialize dialog widgets...
 	m_ui.TrackNameTextEdit->setPlainText(m_props.trackName);
-	qtractorEngine *pEngine = NULL;
+	qtractorEngine *pEngine = nullptr;
 	switch (m_props.trackType) {
 	case qtractorTrack::Tempo:
 		pEngine = (m_pTrack->session())->audioEngine();
@@ -435,7 +435,7 @@ qtractorTrack::TrackType qtractorTrackForm::trackType (void) const
 void qtractorTrackForm::accept (void)
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	// Save options...
@@ -487,7 +487,7 @@ void qtractorTrackForm::reject (void)
 		if (m_ui.DialogButtonBox->button(QDialogButtonBox::Ok)->isEnabled())
 			buttons |= QMessageBox::Apply;
 		switch (QMessageBox::warning(this,
-			tr("Warning") + " - " QTRACTOR_TITLE,
+			tr("Warning"),
 			tr("Some settings have been changed.\n\n"
 			"Do you want to apply the changes?"),
 			buttons)) {
@@ -520,7 +520,7 @@ void qtractorTrackForm::reject (void)
 			}
 		}
 		// Reset plugin list, before too late...
-		m_ui.PluginListView->setPluginList(NULL);
+		m_ui.PluginListView->setPluginList(nullptr);
 		// Just go away.
 		QDialog::reject();
 	}
@@ -539,7 +539,7 @@ void qtractorTrackForm::stabilizeForm (void)
 	const int iItemCount = m_ui.PluginListView->count();
 
 	int iItem = -1;
-	qtractorPlugin *pPlugin = NULL;
+	qtractorPlugin *pPlugin = nullptr;
 	qtractorPluginListItem *pItem
 		= static_cast<qtractorPluginListItem *> (
 			m_ui.PluginListView->currentItem());
@@ -549,7 +549,7 @@ void qtractorTrackForm::stabilizeForm (void)
 	}
 
 	m_ui.AddPluginToolButton->setEnabled(bEnabled);
-	m_ui.RemovePluginToolButton->setEnabled(pPlugin != NULL);
+	m_ui.RemovePluginToolButton->setEnabled(pPlugin != nullptr);
 
 	m_ui.MoveUpPluginToolButton->setEnabled(pItem && iItem > 0);
 	m_ui.MoveDownPluginToolButton->setEnabled(pItem && iItem < iItemCount - 1);
@@ -559,17 +559,17 @@ void qtractorTrackForm::stabilizeForm (void)
 // Retrieve currently assigned MIDI output-bus, if applicable.
 qtractorMidiBus *qtractorTrackForm::midiBus (void) const
 {
-	if (m_pTrack == NULL)
-		return NULL;
+	if (m_pTrack == nullptr)
+		return nullptr;
 
 	// If it ain't MIDI, bail out...
 	if (trackType() != qtractorTrack::Midi)
-		return NULL;
+		return nullptr;
 
 	// MIDI engine...
 	qtractorMidiEngine *pMidiEngine = m_pTrack->session()->midiEngine();
-	if (pMidiEngine == NULL)
-		return NULL;
+	if (pMidiEngine == nullptr)
+		return nullptr;
 
 	// MIDI bus...
 	const QString& sOutputBusName
@@ -608,15 +608,15 @@ int qtractorTrackForm::midiProg (void) const
 // Refresh instrument list.
 void qtractorTrackForm::updateInstruments (void)
 {
-	if (m_pTrack == NULL)
+	if (m_pTrack == nullptr)
 		return;
 
 	qtractorSession *pSession = m_pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 	qtractorInstrumentList *pInstruments = pSession->instruments();
-	if (pInstruments == NULL)
+	if (pInstruments == nullptr)
 		return;
 
 	// Avoid superfluous change notifications...
@@ -650,7 +650,7 @@ void qtractorTrackForm::updateInstruments (void)
 void qtractorTrackForm::updateInstrumentsAdd (
 	const QIcon& icon, qtractorMidiManager *pMidiManager )
 {
-	if (pMidiManager == NULL)
+	if (pMidiManager == nullptr)
 		return;
 
 	pMidiManager->updateInstruments();
@@ -673,11 +673,11 @@ void qtractorTrackForm::updateTrackType ( qtractorTrack::TrackType trackType )
 	// Renew the MIDI bank/program observer.
 	if (m_pMidiProgramObserver) {
 		delete m_pMidiProgramObserver;
-		m_pMidiProgramObserver = NULL;
+		m_pMidiProgramObserver = nullptr;
 	}
 
 	// Make changes due to track type change.
-	qtractorEngine *pEngine = NULL;
+	qtractorEngine *pEngine = nullptr;
 	QIcon icon;
 	switch (trackType) {
 	case qtractorTrack::Tempo:
@@ -749,7 +749,7 @@ void qtractorTrackForm::updateChannel ( int iChannel,
 		return;
 
 	// MIDI bus...
-	if (m_pMidiBus == NULL)
+	if (m_pMidiBus == nullptr)
 		return;
 
 #ifdef CONFIG_DEBUG
@@ -796,11 +796,11 @@ void qtractorTrackForm::updateChannel ( int iChannel,
 void qtractorTrackForm::updateBanks ( const QString& sInstrumentName,
 	int iBankSelMethod, int iBank, int iProg )
 {
-	if (m_pTrack == NULL)
+	if (m_pTrack == nullptr)
 		return;
 
 	qtractorSession *pSession = m_pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 //	if (sInstrumentName.isEmpty())
@@ -812,7 +812,7 @@ void qtractorTrackForm::updateBanks ( const QString& sInstrumentName,
 #endif
 
 	qtractorInstrumentList *pInstruments = pSession->instruments();
-	if (pInstruments == NULL)
+	if (pInstruments == nullptr)
 		return;
 
 	// Avoid superfluos change notifications...
@@ -909,11 +909,11 @@ void qtractorTrackForm::updateBanks ( const QString& sInstrumentName,
 void qtractorTrackForm::updatePrograms (  const QString& sInstrumentName,
 	int iBank, int iProg )
 {
-	if (m_pTrack == NULL)
+	if (m_pTrack == nullptr)
 		return;
 
 	qtractorSession *pSession = m_pTrack->session();
-	if (pSession == NULL)
+	if (pSession == nullptr)
 		return;
 
 //	if (sInstrumentName.isEmpty())
@@ -925,7 +925,7 @@ void qtractorTrackForm::updatePrograms (  const QString& sInstrumentName,
 #endif
 
 	qtractorInstrumentList *pInstruments = pSession->instruments();
-	if (pInstruments == NULL)
+	if (pInstruments == nullptr)
 		return;
 
 	// Avoid superfluos change notifications...
@@ -1010,7 +1010,7 @@ bool qtractorTrackForm::updateBanksAdd (
 	const QIcon& icon, qtractorMidiManager *pMidiManager,
 	const QString& sInstrumentName, int iBank, int& iBankIndex )
 {
-	if (pMidiManager == NULL)
+	if (pMidiManager == nullptr)
 		return false;
 
 	const qtractorMidiManager::Instruments& list
@@ -1044,7 +1044,7 @@ bool qtractorTrackForm::updateProgramsAdd (
 	const QIcon& icon, qtractorMidiManager *pMidiManager,
 	const QString& sInstrumentName, int iBank, int iProg, int& iProgIndex )
 {
-	if (pMidiManager == NULL)
+	if (pMidiManager == nullptr)
 		return false;
 
 	const qtractorMidiManager::Instruments& list
@@ -1184,14 +1184,14 @@ void qtractorTrackForm::trackIconClicked (void)
 		sFilename.clear();
 
 	const QString& sTitle
-		= tr("Track Icon") + " - " QTRACTOR_TITLE;
+		= tr("Track Icon");
 
 	QStringList filters;
 	filters.append(tr("Image files (%1)").arg("*.png *.xpm *.jpg *.jpeg"));
 	filters.append(tr("All files (*.*)"));
 	const QString& sFilter = filters.join(";;");
 
-	QWidget *pParentWidget = NULL;
+	QWidget *pParentWidget = nullptr;
 	QFileDialog::Options options = 0;
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
 	if (pOptions && pOptions->bDontUseNativeDialogs) {
@@ -1201,7 +1201,7 @@ void qtractorTrackForm::trackIconClicked (void)
 #if 1//QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
 	// Ask for the filename to open...
 	sFilename = QFileDialog::getOpenFileName(pParentWidget,
-		sTitle, sFilename, sFilter, NULL, options);
+		sTitle, sFilename, sFilter, nullptr, options);
 #else
 	// Construct open-file dialog...
 	QFileDialog fileDialog(pParentWidget, sTitle, sFilename, sFilter);
@@ -1249,7 +1249,7 @@ void qtractorTrackForm::trackTypeChanged (void)
 	if (m_iDirtySetup > 0)
 		return;
 
-	if (m_pTrack == NULL)
+	if (m_pTrack == nullptr)
 		return;
 
 	if (!m_sOldOutputBusName.isEmpty()) {
@@ -1263,7 +1263,7 @@ void qtractorTrackForm::trackTypeChanged (void)
 		m_pOldMidiBus->setPatch(m_iOldChannel, m_sOldInstrumentName,
 			m_iOldBankSelMethod, m_iOldBank, m_iOldProg, m_pTrack);
 		// Reset restorable patch reference...
-		m_pOldMidiBus = NULL;
+		m_pOldMidiBus = nullptr;
 		m_iOldChannel = -1;
 		m_sOldInstrumentName.clear();
 		m_iOldBankSelMethod = -1;
@@ -1296,7 +1296,7 @@ void qtractorTrackForm::outputBusNameChanged ( const QString& sBusName )
 	if (m_iDirtySetup > 0)
 		return;
 
-	if (m_pTrack == NULL)
+	if (m_pTrack == nullptr)
 		return;
 
 	// It all depends on the track type we're into...
@@ -1339,7 +1339,7 @@ void qtractorTrackForm::busNameClicked (void)
 		return;
 
 	// Depending on track type...
-	qtractorEngine *pEngine = NULL;
+	qtractorEngine *pEngine = nullptr;
 	switch (trackType()) {
 	case qtractorTrack::Tempo:
 	case qtractorTrack::Audio:
@@ -1505,9 +1505,9 @@ void qtractorTrackForm::progChanged (void)
 void qtractorTrackForm::selectForegroundColor (void)
 {
 	const QString& sTitle
-		= tr("Foreground Color") + " - " QTRACTOR_TITLE;
+		= tr("Foreground Color");
 
-	QWidget *pParentWidget = NULL;
+	QWidget *pParentWidget = nullptr;
 	QColorDialog::ColorDialogOptions options = 0;
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
 	if (pOptions && pOptions->bDontUseNativeDialogs) {
@@ -1531,9 +1531,9 @@ void qtractorTrackForm::selectForegroundColor (void)
 void qtractorTrackForm::selectBackgroundColor (void)
 {
 	const QString& sTitle
-		= tr("Background Color") + " - " QTRACTOR_TITLE;
+		= tr("Background Color");
 
-	QWidget *pParentWidget = NULL;
+	QWidget *pParentWidget = nullptr;
 	QColorDialog::ColorDialogOptions options = 0;
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
 	if (pOptions && pOptions->bDontUseNativeDialogs) {

@@ -52,7 +52,7 @@ public:
 	void resetFocus();
 
 	// Direct value accessors.
-	void setValue(float fValue, qtractorObserver *pSender = NULL);
+	void setValue(float fValue, qtractorObserver *pSender = nullptr);
 	float value() const
 		{ return m_fValue; }
 
@@ -103,7 +103,7 @@ public:
 	float defaultValue() const
 		{ return m_fDefaultValue; }
 
-	void resetValue(qtractorObserver *pSender = NULL)
+	void resetValue(qtractorObserver *pSender = nullptr)
 		{ setValue(m_fDefaultValue, pSender); }
 
 	// Toggled mode accessors.
@@ -221,7 +221,7 @@ class qtractorObserver
 public:
 
 	// Constructor.
-	qtractorObserver(qtractorSubject *pSubject = NULL) : m_pSubject(pSubject)
+	qtractorObserver(qtractorSubject *pSubject = nullptr) : m_pSubject(pSubject)
 		{ if (m_pSubject) m_pSubject->attach(this); }
 
 	// Virtual destructor.
@@ -303,13 +303,13 @@ public:
 	void setCurve(qtractorCurve *pCurve)
 		{ if (m_pSubject) m_pSubject->setCurve(pCurve); }
 	qtractorCurve *curve() const
-		{ return (m_pSubject ? m_pSubject->curve() : NULL); }
+		{ return (m_pSubject ? m_pSubject->curve() : nullptr); }
 
 	// Tempo curve association.
 	void setTempoCurve(qtractorTempoCurve *pTempoCurve)
 		{ if (m_pSubject) m_pSubject->setTempoCurve(pTempoCurve); }
 	qtractorTempoCurve *tempoCurve() const
-		{ return (m_pSubject ? m_pSubject->tempoCurve() : NULL); }
+		{ return (m_pSubject ? m_pSubject->tempoCurve() : nullptr); }
 
 	// Pure virtual view updater.
 	virtual void update(bool bUpdate) = 0;
