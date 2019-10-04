@@ -1952,15 +1952,17 @@ void qtractorMidiEditor::selectEvent ( qtractorMidiEvent *pEvent, bool bSelect )
 	// Commit selection...
 	m_select.update(true);
 
+	const QSize pad(2, 2);
+
 	rectUpdateView = rectUpdateView.united(m_select.rectView());
 	m_pEditView->viewport()->update(QRect(
 		m_pEditView->contentsToViewport(rectUpdateView.topLeft()),
-		rectUpdateView.size()));
+		rectUpdateView.size() + pad));
 
 	rectUpdateEvent = rectUpdateEvent.united(m_select.rectEvent());
 	m_pEditEvent->viewport()->update(QRect(
 		m_pEditEvent->contentsToViewport(rectUpdateEvent.topLeft()),
-		rectUpdateEvent.size()));
+		rectUpdateEvent.size() + pad));
 }
 
 
@@ -2372,6 +2374,11 @@ void qtractorMidiEditor::zoomCenterPre ( ZoomCenter& zc ) const
 	if (m_pTimeScale == nullptr)
 		return;
 
+	const int x0 = m_pTimeScale->pixelFromFrame(m_iOffset);
+
+	const int cx = m_pEditView->contentsX();
+	const int cy = m_pEditView->contentsY();
+
 	QWidget *pViewport = m_pEditView->viewport();
 	const QRect& rect = pViewport->rect();
 	const QPoint& pos = pViewport->mapFromGlobal(QCursor::pos());
@@ -2379,20 +2386,15 @@ void qtractorMidiEditor::zoomCenterPre ( ZoomCenter& zc ) const
 		zc.x = pos.x();
 		zc.y = pos.y();
 	} else {
-	#if 0
 		zc.x = 0;
 		zc.y = 0;
-	#else
-		zc.x = (rect.width()  >> 1);
-		zc.y = (rect.height() >> 1);
-	#endif
+		if (cx > rect.width())
+			zc.x += (rect.width() >> 1);
+		if (cy > rect.height())
+			zc.y += (rect.height() >> 1);
 	}
 
-	const int x0 = m_pTimeScale->pixelFromFrame(m_iOffset);
-	const int cx = m_pEditView->contentsX();
 	zc.frame = m_pTimeScale->frameFromPixel(x0 + cx + zc.x);
-
-	const int cy = m_pEditView->contentsY();
 	zc.item = (cy + zc.y) / m_pEditList->itemHeight();
 }
 
@@ -3421,15 +3423,17 @@ void qtractorMidiEditor::updateDragSelect (
 	// Commit selection...
 	m_select.update(flags & SelectCommit);
 
+	const QSize pad(2, 2);
+
 	rectUpdateView = rectUpdateView.united(m_select.rectView());
 	m_pEditView->viewport()->update(QRect(
 		m_pEditView->contentsToViewport(rectUpdateView.topLeft()),
-		rectUpdateView.size()));
+		rectUpdateView.size() + pad));
 
 	rectUpdateEvent = rectUpdateEvent.united(m_select.rectEvent());
 	m_pEditEvent->viewport()->update(QRect(
 		m_pEditEvent->contentsToViewport(rectUpdateEvent.topLeft()),
-		rectUpdateEvent.size()));
+		rectUpdateEvent.size() + pad));
 }
 
 
@@ -3758,17 +3762,19 @@ void qtractorMidiEditor::updateDragMove (
 		m_posDelta.setY(0);
 	}
 
+	const QSize pad(2, 2);
+
 	rectUpdateView = rectUpdateView.united(
 		m_select.rectView().translated(m_posDelta));
 	m_pEditView->viewport()->update(QRect(
 		m_pEditView->contentsToViewport(rectUpdateView.topLeft()),
-		rectUpdateView.size()));
+		rectUpdateView.size() + pad));
 
 	rectUpdateEvent = rectUpdateEvent.united(
 		m_select.rectEvent().translated(m_posDelta.x(), 0));
 	m_pEditEvent->viewport()->update(QRect(
 		m_pEditEvent->contentsToViewport(rectUpdateEvent.topLeft()),
-		rectUpdateEvent.size()));
+		rectUpdateEvent.size() + pad));
 
 	// Maybe we've change some note pending...
 	if (m_bSendNotes && m_pEventDrag
@@ -3917,17 +3923,19 @@ void qtractorMidiEditor::updateDragResize (
 	m_posDelta.setX(dx);
 	m_posDelta.setY(dy);
 
+	const QSize pad(2, 2);
+
 	rectUpdateView = rectUpdateView.united(
 		m_select.rectView().translated(m_posDelta.x(), 0));
 	m_pEditView->viewport()->update(QRect(
 		m_pEditView->contentsToViewport(rectUpdateView.topLeft()),
-		rectUpdateView.size()));
+		rectUpdateView.size() + pad));
 
 	rectUpdateEvent = rectUpdateEvent.united(
 		m_select.rectEvent().translated(m_posDelta));
 	m_pEditEvent->viewport()->update(QRect(
 		m_pEditEvent->contentsToViewport(rectUpdateEvent.topLeft()),
-		rectUpdateEvent.size()));
+		rectUpdateEvent.size() + pad));
 
 	// Show anchor event tooltip...
 	if (m_bToolTips) {
@@ -4910,7 +4918,10 @@ void qtractorMidiEditor::updateNotifySlot ( unsigned int flags )
 	if (flags & qtractorCommand::Refresh)
 		updateContents();
 
-	contentsChangeNotify();
+	if (flags & qtractorCommand::Reset)
+		emit changeNotifySignal(nullptr);
+	else
+		emit changeNotifySignal(this);
 }
 
 
@@ -4922,11 +4933,6 @@ void qtractorMidiEditor::selectionChangeNotify (void)
 	emit selectNotifySignal(this);
 
 	m_pThumbView->update();
-}
-
-void qtractorMidiEditor::contentsChangeNotify (void)
-{
-	emit changeNotifySignal(this);
 }
 
 

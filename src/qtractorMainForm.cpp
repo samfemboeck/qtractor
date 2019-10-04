@@ -205,35 +205,6 @@ static void qtractor_sigterm_handler ( int /* signo */ )
 
 
 //-------------------------------------------------------------------------
-// qtractorTempoCursor -- Custom session tempo helper class
-
-class qtractorTempoCursor
-{
-public:
-
-	// Constructor.
-	qtractorTempoCursor() : m_pNode(nullptr) {}
-
-	// Reset method.
-	void clear() { m_pNode = nullptr; }
-
-	// Predicate method.
-	qtractorTimeScale::Node *seek(
-		qtractorSession *pSession, unsigned long iFrame)
-	{
-		qtractorTimeScale::Cursor& cursor = pSession->timeScale()->cursor();
-		qtractorTimeScale::Node *pNode = cursor.seekFrame(iFrame);
-		return (m_pNode == pNode ? nullptr : m_pNode = pNode);
-	}
-
-private:
-
-	// Instance variables.
-	qtractorTimeScale::Node *m_pNode;
-};
-
-
-//-------------------------------------------------------------------------
 // qtractorMainForm -- Main window form implementation.
 
 // Kind of singleton reference.
@@ -526,7 +497,7 @@ qtractorMainForm::qtractorMainForm (
 	
 	// Transport time.
 	const QString sTime("+99:99:99.999");
-	m_pTimeSpinBox = new qtractorTimeSpinBox();
+	m_pTimeSpinBox = new qtractorTimeSpinBox(m_ui.timeToolbar);
 	m_pTimeSpinBox->setTimeScale(m_pSession->timeScale());
 	m_pTimeSpinBox->setFont(font);
 	m_pTimeSpinBox->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -540,10 +511,11 @@ qtractorMainForm::qtractorMainForm (
 
 	// Tempo spin-box.
 	const QString sTempo("999.9 9/9");
-	m_pTempoSpinBox = new qtractorTempoSpinBox();
+	m_pTempoSpinBox = new qtractorTempoSpinBox(m_ui.timeToolbar);
 //	m_pTempoSpinBox->setDecimals(1);
 //	m_pTempoSpinBox->setMinimum(1.0f);
 //	m_pTempoSpinBox->setMaximum(1000.0f);
+//	m_pTempoSpinBox->setFont(font);
 	m_pTempoSpinBox->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 	m_pTempoSpinBox->setMinimumSize(QSize(fm.horizontalAdvance(sTempo) + d, d) + pad);
 	m_pTempoSpinBox->setPalette(pal);
@@ -554,7 +526,7 @@ qtractorMainForm::qtractorMainForm (
 	m_ui.timeToolbar->addSeparator();
 
 	// Snap-per-beat combo-box.
-	m_pSnapPerBeatComboBox = new QComboBox();
+	m_pSnapPerBeatComboBox = new QComboBox(m_ui.timeToolbar);
 	m_pSnapPerBeatComboBox->setEditable(false);
 //	m_pSnapPerBeatComboBox->insertItems(0, snapItems);
 	m_pSnapPerBeatComboBox->setIconSize(QSize(8, 16));
@@ -569,8 +541,8 @@ qtractorMainForm::qtractorMainForm (
 
 	// Track-line thumbnail view...
 	m_pThumbView = new qtractorThumbView();
-	m_ui.thumbToolbar->addWidget(m_pThumbView);
-	m_ui.thumbToolbar->setAllowedAreas(
+	m_ui.thumbViewToolbar->addWidget(m_pThumbView);
+	m_ui.thumbViewToolbar->setAllowedAreas(
 		Qt::TopToolBarArea | Qt::BottomToolBarArea);
 
 	QObject::connect(m_pTimeSpinBox,
@@ -1738,7 +1710,7 @@ bool qtractorMainForm::queryClose (void)
 			m_pOptions->bOptionsToolbar = m_ui.optionsToolbar->isVisible();
 			m_pOptions->bTransportToolbar = m_ui.transportToolbar->isVisible();
 			m_pOptions->bTimeToolbar = m_ui.timeToolbar->isVisible();
-			m_pOptions->bThumbToolbar = m_ui.thumbToolbar->isVisible();
+			m_pOptions->bThumbToolbar = m_ui.thumbViewToolbar->isVisible();
 			m_pOptions->bTrackViewSnapZebra = m_ui.viewSnapZebraAction->isChecked();
 			m_pOptions->bTrackViewSnapGrid = m_ui.viewSnapGridAction->isChecked();
 			m_pOptions->bTrackViewToolTips = m_ui.viewToolTipsAction->isChecked();
@@ -4789,7 +4761,7 @@ void qtractorMainForm::viewToolbarTime ( bool bOn )
 // Show/hide the thumb (track-line)ime toolbar.
 void qtractorMainForm::viewToolbarThumb ( bool bOn )
 {
-	m_ui.thumbToolbar->setVisible(bOn);
+	m_ui.thumbViewToolbar->setVisible(bOn);
 }
 
 
@@ -4970,9 +4942,9 @@ void qtractorMainForm::viewRefresh (void)
 	// Update other editors contents...
 	QListIterator<qtractorMidiEditorForm *> iter(m_editors);
 	while (iter.hasNext()) {
-		qtractorMidiEditor *pEditor = iter.next()->editor();
-		pEditor->updateTimeScale();
-		pEditor->updateContents();
+		qtractorMidiEditorForm *pForm = iter.next();
+		pForm->updateTimeScale();
+		qtractorMidiEditor *pEditor = pForm->editor();
 		pEditor->setEditHead(iEditHead, false);
 		pEditor->setEditTail(iEditTail, false);
 	}
@@ -6210,7 +6182,8 @@ void qtractorMainForm::updateTransportTime ( unsigned long iPlayHead )
 		iter.next()->updatePlayHead(iPlayHead);
 
 	// Tricky stuff: node's non-null iif tempo changes...
-	qtractorTimeScale::Node *pNode = m_pTempoCursor->seek(m_pSession, iPlayHead);
+	qtractorTimeScale::Node *pNode
+		= m_pTempoCursor->seek(m_pSession->timeScale(), iPlayHead);
 	if (pNode) {
 		m_pTempoSpinBox->setTempo(pNode->tempo, false);
 		m_pTempoSpinBox->setBeatsPerBar(pNode->beatsPerBar, false);
@@ -6412,7 +6385,7 @@ void qtractorMainForm::stabilizeForm (void)
 	// Update editors too...
 	QListIterator<qtractorMidiEditorForm *> iter(m_editors);
 	while (iter.hasNext())
-		(iter.next())->stabilizeForm();
+		iter.next()->stabilizeForm();
 }
 
 
@@ -6693,30 +6666,11 @@ void qtractorMainForm::updateDisplayFormat (void)
 		return;
 
 	// Main transport display format is due...
-	qtractorTimeScale::DisplayFormat displayFormat;
-	switch (m_pOptions->iDisplayFormat) {
-	case 2:
-		displayFormat = qtractorTimeScale::BBT;
-		break;
-	case 1:
-		displayFormat = qtractorTimeScale::Time;
-		break;
-	case 0:
-	default:
-		displayFormat = qtractorTimeScale::Frames;
-		break;
-	}
+	const qtractorTimeScale::DisplayFormat displayFormat
+		= qtractorTimeScale::DisplayFormat(m_pOptions->iDisplayFormat);
 
-	m_pSession->timeScale()->setDisplayFormat(displayFormat);
+	(m_pSession->timeScale())->setDisplayFormat(displayFormat);
 	m_pTimeSpinBox->setDisplayFormat(displayFormat);
-
-	// Update other open editors as well...
-	QListIterator<qtractorMidiEditorForm *> iter(m_editors);
-	while (iter.hasNext()) {
-		qtractorMidiEditorForm *pForm = iter.next();
-		pForm->timeScale()->setDisplayFormat(displayFormat);
-		pForm->updateEventList();
-	}
 }
 
 
@@ -6940,7 +6894,7 @@ void qtractorMainForm::updateSyncViewHold (void)
 	// Update editors ...
 	QListIterator<qtractorMidiEditorForm *> iter(m_editors);
 	while (iter.hasNext())
-		(iter.next())->editor()->setSyncViewHold(m_pOptions->bSyncViewHold);
+		(iter.next()->editor())->setSyncViewHold(m_pOptions->bSyncViewHold);
 }
 
 
@@ -7480,7 +7434,7 @@ void qtractorMainForm::updateCustomColorTheme (void)
 
 		QListIterator<qtractorMidiEditorForm *> iter(m_editors);
 		while (iter.hasNext())
-			iter.next()->editor()->updateContents();
+			(iter.next()->editor())->updateContents();
 	}
 }
 
@@ -7510,7 +7464,7 @@ void qtractorMainForm::addEditorForm ( qtractorMidiEditorForm *pEditorForm )
 
 void qtractorMainForm::removeEditorForm ( qtractorMidiEditorForm *pEditorForm )
 {
-	int iEditorForm = m_editors.indexOf(pEditorForm);
+	const int iEditorForm = m_editors.indexOf(pEditorForm);
 	if (iEditorForm >= 0)
 		m_editors.removeAt(iEditorForm);
 }
@@ -7600,7 +7554,7 @@ void qtractorMainForm::fastTimerSlot (void)
 			updateTransportTime(iPlayHead);
 			m_pThumbView->updateThumb();
 		}
-		// Ensure the amin form is stable later on...
+		// Ensure the main form is stable later on...
 		++m_iStabilizeTimer;
 		// Done with transport tricks.
 	}
@@ -7670,7 +7624,7 @@ void qtractorMainForm::slowTimerSlot (void)
 					m_pSession->seek(iPlayHead, true);
 			}
 			// 2. Watch for temp/time-sig changes on JACK transport...
-			if (pos.valid & JackPositionBBT) {
+			if ((pos.valid & JackPositionBBT) && pAudioEngine->isTimebaseEx()) {
 				qtractorTimeScale *pTimeScale = m_pSession->timeScale();
 				qtractorTimeScale::Cursor& cursor = pTimeScale->cursor();
 				qtractorTimeScale::Node *pNode = cursor.seekFrame(pos.frame);
@@ -8429,7 +8383,7 @@ void qtractorMainForm::activateAudioFile (
 	const QString& sFilename, int /*iTrackChannel*/ )
 {
 #ifdef CONFIG_DEBUG
-	qDebug("qtractorMainForm::selectAudioFile(\"%s\")",
+	qDebug("qtractorMainForm::activateAudioFile(\"%s\")",
 		sFilename.toUtf8().constData());
 #endif
 
@@ -8440,12 +8394,12 @@ void qtractorMainForm::activateAudioFile (
 	// the player is stopped (eg. empty filename)...
 	qtractorAudioEngine *pAudioEngine = m_pSession->audioEngine();
 	if (pAudioEngine && pAudioEngine->openPlayer(sFilename)) {
+		// Try updating player status anyway...
+		m_pFiles->setPlayState(true);
+		++m_iPlayerTimer;
 		appendMessages(tr("Playing \"%1\"...")
 			.arg(QFileInfo(sFilename).fileName()));
 	}
-
-	// Try updating player status anyway...
-	++m_iPlayerTimer;
 
 	++m_iStabilizeTimer;
 }
@@ -8497,12 +8451,12 @@ void qtractorMainForm::activateMidiFile (
 	// the player is stopped (eg. empty filename)...
 	qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
 	if (pMidiEngine && pMidiEngine->openPlayer(sFilename, iTrackChannel)) {
+		// Try updating player status anyway...
+		m_pFiles->setPlayState(true);
+		++m_iPlayerTimer;
 		appendMessages(tr("Playing \"%1\"...")
 			.arg(QFileInfo(sFilename).fileName()));
 	}
-
-	// Try updating player status anyway...
-	++m_iPlayerTimer;
 
 	++m_iStabilizeTimer;
 }
@@ -8634,7 +8588,7 @@ void qtractorMainForm::selectionNotifySlot ( qtractorMidiEditor *pMidiEditor )
 void qtractorMainForm::changeNotifySlot ( qtractorMidiEditor *pMidiEditor )
 {
 #ifdef CONFIG_DEBUG_0
-	qDebug("qtractorMainForm::changeNotifySlot()");
+	qDebug("qtractorMainForm::changeNotifySlot(%p)", pMidiEditor);
 #endif
 
 	updateContents(pMidiEditor, true);
@@ -8664,6 +8618,7 @@ void qtractorMainForm::updateContents (
 {
 	// Maybe, just maybe, we've made things larger...
 	m_pTempoCursor->clear();
+
 	m_pSession->updateTimeScale();
 	m_pSession->updateSession();
 
@@ -8674,11 +8629,9 @@ void qtractorMainForm::updateContents (
 	// Update other editors contents...
 	QListIterator<qtractorMidiEditorForm *> iter(m_editors);
 	while (iter.hasNext()) {
-		qtractorMidiEditor *pEditor = (iter.next())->editor();
-		if (pEditor != pMidiEditor) {
-			pEditor->updateTimeScale();
-			pEditor->updateContents();
-		}
+		qtractorMidiEditorForm *pForm = iter.next();
+		if (pForm->editor() != pMidiEditor)
+			pForm->updateTimeScale();
 	}
 
 	// Notify who's watching...
@@ -8717,9 +8670,8 @@ void qtractorMainForm::contentsChanged (void)
 	qDebug("qtractorMainForm::contentsChanged()");
 #endif
 
-	// HACK: Force play-head position update...
-	// m_iPlayHead = 0;
-	m_pTempoCursor->clear();
+	// HACK: Force immediate stabilization later...
+	m_iStabilizeTimer = 0;
 
 	// Stabilize session toolbar widgets...
 //	m_pTempoSpinBox->setTempo(m_pSession->tempo(), false);
@@ -8764,8 +8716,8 @@ void qtractorMainForm::transportTempoChanged (
 		if (pNode->allowChange()) {
 			// Now, express the change as a undoable command...
 			m_pSession->execute(new qtractorTimeScaleUpdateNodeCommand(
-				pTimeScale, pNode->frame, fTempo, 2, iBeatsPerBar, iBeatDivisor, pNode->bars, pNode->attached));
-
+				pTimeScale, pNode->frame, fTempo, 2, iBeatsPerBar, iBeatDivisor,
+				pNode->bars, pNode->attached));
 			++m_iTransportUpdate;
 		} else {
 			m_pTempoSpinBox->setTempo(pNode->tempo, false);
@@ -8774,6 +8726,7 @@ void qtractorMainForm::transportTempoChanged (
 		}
 	}
 }
+
 
 void qtractorMainForm::transportTempoFinished (void)
 {
@@ -8839,17 +8792,13 @@ void qtractorMainForm::transportTimeChanged ( unsigned long iPlayHead )
 
 void qtractorMainForm::transportTimeFinished (void)
 {
-	static int s_iTimeFinished = 0;
-	if (s_iTimeFinished > 0)
-		return;
-
 #ifdef CONFIG_DEBUG
 	qDebug("qtractorMainForm::transportTimeFinished()");
 #endif
 
-	++s_iTimeFinished;
+	const bool bBlockSignals = m_pTimeSpinBox->blockSignals(true);
 	m_pTimeSpinBox->clearFocus();
-	--s_iTimeFinished;
+	m_pTimeSpinBox->blockSignals(bBlockSignals);
 }
 
 
