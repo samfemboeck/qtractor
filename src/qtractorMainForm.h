@@ -484,7 +484,6 @@ private:
 	QComboBox *m_pSnapPerBeatComboBox;
 	QProgressBar *m_pProgressBar;
 	qtractorThumbView *m_pThumbView;
-	qtractorTempoCursor *m_pTempoCursor;
 	qtractorInstrumentMenu *m_pInstrumentMenu;
 	qtractorActionControl *m_pActionControl;
 	qtractorMidiControl *m_pMidiControl;
@@ -510,6 +509,8 @@ private:
 	int m_iAutoSavePeriod;
 	int m_iAudioPropertyChange;
 	int m_iStabilizeTimer;
+
+	qtractorTempoCursor *m_pTempoCursor;
 
 	// Status bar item indexes
 	enum {

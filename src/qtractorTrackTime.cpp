@@ -112,6 +112,7 @@ void qtractorTrackTime::updatePixmap ( int cx, int /* cy */)
 	
 	QPainter painter(&m_pixmap);
 //	painter.initFrom(this);
+	painter.setFont(qtractorScrollView::font());
 
 	// Draw the time scale...
 	//
@@ -124,7 +125,7 @@ void qtractorTrackTime::updatePixmap ( int cx, int /* cy */)
 	unsigned short iPixelsPerBeat = pNode->pixelsPerBeat();
 	unsigned int iBeat = pNode->beatFromPixel(cx);
 	if (iBeat > 0) pNode = cursor.seekBeat(--iBeat);
-	x = x1 = pNode->pixelFromBeat(iBeat) - cx;
+	x = x1 = pNode->pixelFromBeat(iBeat) - cx - 1;
 
 	while (x < w) {
 		const bool bBeatIsBar = pNode->beatIsBar(iBeat);
@@ -158,7 +159,7 @@ void qtractorTrackTime::updatePixmap ( int cx, int /* cy */)
 			}
 		}
 		pNode = cursor.seekBeat(++iBeat);
-		x = pNode->pixelFromBeat(iBeat) - cx;
+		x = pNode->pixelFromBeat(iBeat) - cx - 1;
 	}
 
 	// Draw location markers, if any...

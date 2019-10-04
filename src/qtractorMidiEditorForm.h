@@ -34,6 +34,9 @@ class qtractorTimeScale;
 class qtractorMidiEventList;
 class qtractorMidiControlTypeGroup;
 class qtractorInstrumentMenu;
+class qtractorTimeSpinBox;
+class qtractorTempoSpinBox;
+class qtractorTempoCursor;
 
 class QContextMenuEvent;
 class QActionGroup;
@@ -95,8 +98,8 @@ public:
 	// Update thumb-view play-head...
 	void updatePlayHead(unsigned long iPlayHead);
 
-	// Update event-list display...
-	void updateEventList(void);
+	// Update local time-scale...
+	void updateTimeScale();
 
 public slots:
 
@@ -147,6 +150,7 @@ protected slots:
 	void viewToolbarEdit(bool bOn);
 	void viewToolbarView(bool bOn);
 	void viewToolbarTransport(bool bOn);
+	void viewToolbarTime(bool bOn);
 	void viewToolbarScale(bool bOn);
 	void viewToolbarThumb(bool bOn);
 	void viewEvents(bool bOn);
@@ -201,6 +205,16 @@ protected slots:
 	void snapToScaleKeyChanged(int iSnapToScaleKey);
 	void snapToScaleTypeChanged(int iSnapToScaleType);
 
+	void transportTimeFormatChanged(int iDisplayFormat);
+	void transportTimeChanged(unsigned long iPlayHead);
+	void transportTimeFinished();
+
+	void transportTempoChanged(float fTempo,
+		unsigned short iBeatsPerBar, unsigned short iBeatDivisor);
+	void transportTempoFinished();
+	void transportTempoContextMenu(const QPoint& pos);
+	void timeSig2ResetClicked();
+
 	void snapPerBeatChanged(int iSnapPerBeat);
 
 	// Top-level window geometry related slots.
@@ -217,6 +231,11 @@ protected:
 
 	// Save current clip track-channel sequence.
 	bool saveClipFile(bool bPrompt);
+
+	// Secondary time-signature reset slot.
+	void resetTimeSig2(
+		unsigned short iBeatsPerBar2 = 0,
+		unsigned short iBeatDivisor2 = 0);
 
 private:
 
@@ -237,6 +256,16 @@ private:
 
 	// Custom track/instrument proxy menu.
 	qtractorInstrumentMenu *m_pInstrumentMenu;
+
+	// Transport tempo/time-signature tracker.
+	qtractorTempoCursor *m_pTempoCursor;
+
+	// Transport time/tempo widgets.
+	qtractorTimeSpinBox *m_pTimeSpinBox;
+	qtractorTempoSpinBox *m_pTempoSpinBox;
+
+	// Secondary time-signature reset button.
+	QToolButton *m_pTimeSig2ResetButton;
 
 	// View/Snap-to-beat actions (for shortcuts access)
 	QList<QAction *> m_snapPerBeatActions;
