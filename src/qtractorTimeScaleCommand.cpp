@@ -30,6 +30,7 @@
 #include "qtractorMidiEngine.h"
 
 #include "qtractorAudioClip.h"
+#include "qtractorMidiClip.h"
 
 
 //----------------------------------------------------------------------
@@ -50,7 +51,7 @@ qtractorTimeScaleNodeCommand::qtractorTimeScaleNodeCommand (
 	if (pSession)
 		m_bAutoTimeStretch = pSession->isAutoTimeStretch();
 
-	setClearSelect(true);
+	setClearSelectReset(true);
 }
 
 
@@ -102,7 +103,6 @@ bool qtractorTimeScaleNodeCommand::addNode (void)
 	if (bRedoCurveEditCommands) {
 		addCurveEditCommands(pNode, fNewTempo, fOldTempo);
 	} else {
-
 		QListIterator<qtractorCurveEditCommand *> undos(m_curveEditCommands);
 		while (undos.hasNext())
 			undos.next()->undo();
@@ -265,7 +265,6 @@ bool qtractorTimeScaleNodeCommand::removeNode (void)
 	if (bRedoCurveEditCommands) {
 		addCurveEditCommands(pNode, fNewTempo, fOldTempo);
 	} else {
-
 		QListIterator<qtractorCurveEditCommand *> undos(m_curveEditCommands);
 		while (undos.hasNext())
 			undos.next()->undo();
@@ -789,6 +788,52 @@ bool qtractorTimeScaleCommand::undo (void)
 	}
 
 	return (iUndos > 0);
+}
+
+
+//----------------------------------------------------------------------
+// class qtractorTimeScaleCommand - declaration.
+//
+
+// Constructor.
+qtractorTimeScaleTimeSig2Command::qtractorTimeScaleTimeSig2Command (
+	qtractorTimeScale *pTimeScale, qtractorMidiClip *pMidiClip,
+	unsigned short iBeatsPerBar2, unsigned short iBeatDivisor2 )
+	: qtractorCommand(QObject::tr("change time-sig.")),
+		m_pTimeScale(pTimeScale), m_pMidiClip(pMidiClip),
+		m_iBeatsPerBar2(iBeatsPerBar2),
+		m_iBeatDivisor2(iBeatDivisor2)
+{
+}
+
+
+// Time-scale command methods.
+bool qtractorTimeScaleTimeSig2Command::redo (void)
+{
+	if (m_pTimeScale == nullptr)
+		return false;
+
+	const unsigned short iBeatsPerBar2 = m_pTimeScale->beatsPerBar2();
+	const unsigned short iBeatDivisor2 = m_pTimeScale->beatDivisor2();
+
+	m_pTimeScale->setBeatsPerBar2(m_iBeatsPerBar2);
+	m_pTimeScale->setBeatDivisor2(m_iBeatDivisor2);
+
+	if (m_pMidiClip) {
+		m_pMidiClip->setBeatsPerBar2(m_iBeatsPerBar2);
+		m_pMidiClip->setBeatDivisor2(m_iBeatDivisor2);
+	}
+
+	m_iBeatsPerBar2 = iBeatsPerBar2;
+	m_iBeatDivisor2 = iBeatDivisor2;
+
+	return true;
+}
+
+
+bool qtractorTimeScaleTimeSig2Command::undo (void)
+{
+	return redo();
 }
 
 

@@ -197,6 +197,11 @@ void qtractorMidiSequence::replaceEvents ( qtractorMidiSequence *pSeq,
 		iTimeLength = pSeq->timeLength();
 	}
 
+	// Reset bank/prog settings anyway...
+	setBankSelMethod(pSeq->bankSelMethod());
+	setBank(pSeq->bank());
+	setProg(pSeq->prog());
+
 	// Set the given replacement range...
 	const unsigned short iTicksPerBeat
 		= pSeq->ticksPerBeat();
@@ -209,7 +214,7 @@ void qtractorMidiSequence::replaceEvents ( qtractorMidiSequence *pSeq,
 	qtractorMidiEvent *pEvent = m_events.first();
 	while (pEvent) {
 		qtractorMidiEvent *pNextEvent = pEvent->next();
-		if (pEvent->time() >= iTimeStart &&	pEvent->time() < iTimeEnd)
+		if (pEvent->time() >= iTimeStart && pEvent->time() < iTimeEnd)
 			removeEvent(pEvent);
 		pEvent = pNextEvent;
 	}

@@ -569,7 +569,7 @@ void qtractorTrackView::drawContents ( QPainter *pPainter, const QRect& rect )
 					pPainter->setBrush(bg);
 				#endif
 					unsigned long iClipStart  = pClipRecord->clipStart();
-					unsigned long iClipOffset = pClipRecord->clipOffset();
+					unsigned long iClipOffset = 0;//pClipRecord->clipOffset();
 					// Care for loop-recording/take offsets...
 					if (pTrack->isClipRecordEx()) {
 						const unsigned long iClipEnd
@@ -911,6 +911,7 @@ void qtractorTrackView::updatePixmap ( int cx, int cy )
 
 	QPainter painter(&m_pixmap);
 //	painter.initFrom(this);
+	painter.setFont(qtractorScrollView::font());
 
 	// Update view session cursor location,
 	// so that we'll start drawing clips from there...

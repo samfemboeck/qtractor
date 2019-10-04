@@ -545,7 +545,7 @@ void qtractorOptionsForm::setOptions ( qtractorOptions *pOptions )
 	m_pOptions->loadComboBoxHistory(m_ui.Lv2PresetDirComboBox);
 
 	// Time-scale related options...
-	qtractorTimeScale::DisplayFormat displayFormat
+	const qtractorTimeScale::DisplayFormat displayFormat
 		= qtractorTimeScale::DisplayFormat(m_pOptions->iDisplayFormat);
 	if (m_pTimeScale)
 		m_pTimeScale->setDisplayFormat(displayFormat);
@@ -1026,7 +1026,7 @@ void qtractorOptionsForm::updateMetroNoteNames (void)
 // Display format has changed.
 void qtractorOptionsForm::displayFormatChanged ( int iDisplayFormat )
 {
-	qtractorTimeScale::DisplayFormat displayFormat
+	const qtractorTimeScale::DisplayFormat displayFormat
 		= qtractorTimeScale::DisplayFormat(iDisplayFormat);
 
 	m_ui.AudioMetroOffsetSpinBox->setDisplayFormat(displayFormat);

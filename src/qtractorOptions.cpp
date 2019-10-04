@@ -320,7 +320,9 @@ void qtractorOptions::loadOptions (void)
 	bMidiViewToolbar = m_settings.value("/ViewToolbar", true).toBool();
 	bMidiTransportToolbar = m_settings.value("/TransportToolbar", false).toBool();
 	bMidiScaleToolbar = m_settings.value("/ScaleToolbar", false).toBool();
+	bMidiTimeToolbar = m_settings.value("/TimeToolbar", false).toBool();
 	bMidiThumbToolbar = m_settings.value("/ThumbToolbar", true).toBool();
+	iMidiDisplayFormat = m_settings.value("/DisplayFormat", 2).toInt();
 	bMidiNoteDuration = m_settings.value("/NoteDuration", true).toBool();
 	bMidiNoteColor   = m_settings.value("/NoteColor", false).toBool();
 	bMidiValueColor  = m_settings.value("/ValueColor", false).toBool();
@@ -616,8 +618,10 @@ void qtractorOptions::saveOptions (void)
 	m_settings.setValue("/EditToolbar", bMidiEditToolbar);
 	m_settings.setValue("/ViewToolbar", bMidiViewToolbar);
 	m_settings.setValue("/TransportToolbar", bMidiTransportToolbar);
+	m_settings.setValue("/TimeToolbar", bMidiTimeToolbar);
 	m_settings.setValue("/ScaleToolbar", bMidiScaleToolbar);
 	m_settings.setValue("/ThumbToolbar", bMidiThumbToolbar);
+	m_settings.setValue("/DisplayFormat", iMidiDisplayFormat);
 	m_settings.setValue("/NoteDuration", bMidiNoteDuration);
 	m_settings.setValue("/NoteColor", bMidiNoteColor);
 	m_settings.setValue("/ValueColor", bMidiValueColor);

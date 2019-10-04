@@ -748,6 +748,15 @@ void qtractorSession::updateTimeScale (void)
 }
 
 
+void qtractorSession::updateTimeScaleEx (void)
+{
+	updateTimeScale();
+
+	if (m_pAudioEngine)
+		m_pAudioEngine->resetTimebase();
+}
+
+
 // Update time resolution divisor factors.
 void qtractorSession::updateTimeResolution (void) 
 {

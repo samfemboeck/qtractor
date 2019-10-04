@@ -1244,6 +1244,7 @@ void qtractorTrackList::updatePixmap ( int cx, int cy )
 
 	QPainter painter(&m_pixmap);
 //	painter.initFrom(pViewport);
+	painter.setFont(qtractorScrollView::font());
 
 	// Update actual contents size...
 	m_pHeader->setOffset(cx);
