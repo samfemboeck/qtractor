@@ -41,7 +41,8 @@
 qtractorTimeScaleNodeCommand::qtractorTimeScaleNodeCommand (
 	const QString& sName, qtractorTimeScale *pTimeScale,
 	unsigned long iFrame, float fTempo, unsigned short iBeatType,
-	unsigned short iBeatsPerBar, unsigned short iBeatDivisor, unsigned int iBars, bool bAttached)
+	unsigned short iBeatsPerBar, unsigned short iBeatDivisor,
+	unsigned int iBars, bool bAttached)
 	: qtractorCommand(sName), m_pTimeScale(pTimeScale),
 		m_iFrame(iFrame), m_fTempo(fTempo), m_iBeatType(iBeatType),
 		m_iBeatsPerBar(iBeatsPerBar), m_iBeatDivisor(iBeatDivisor),
@@ -71,9 +72,6 @@ qtractorTimeScaleNodeCommand::~qtractorTimeScaleNodeCommand (void)
 bool qtractorTimeScaleNodeCommand::addNode (void)
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-#ifdef CONFIG_DEBUG
-	qDebug("qtractorTimeScaleNodeCommand::%s@%d pSession=%p", __func__, __LINE__, pSession);
-#endif
 	if (pSession == nullptr)
 		return false;
 
@@ -101,7 +99,8 @@ bool qtractorTimeScaleNodeCommand::addNode (void)
 	}
 
 	pNode = m_pTimeScale->addNode(
-		m_iFrame, m_fTempo, m_iBeatType, m_iBeatsPerBar, m_iBeatDivisor, m_iBars, m_bAttached);
+		m_iFrame, m_fTempo, m_iBeatType, m_iBeatsPerBar, m_iBeatDivisor,
+		m_iBars, m_bAttached);
 
 	const bool bRedoCurveEditCommands = m_curveEditCommands.isEmpty();
 	if (bRedoCurveEditCommands) {
@@ -147,9 +146,6 @@ bool qtractorTimeScaleNodeCommand::addNode (void)
 bool qtractorTimeScaleNodeCommand::updateNode (void)
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-#ifdef CONFIG_DEBUG
-	qDebug("qtractorTimeScaleNodeCommand::%s@%d pSession=%p", __func__, __LINE__, pSession);
-#endif
 	if (pSession == nullptr)
 		return false;
 
@@ -245,9 +241,6 @@ bool qtractorTimeScaleNodeCommand::updateNode (void)
 bool qtractorTimeScaleNodeCommand::removeNode (void)
 {
 	qtractorSession *pSession = qtractorSession::getInstance();
-#ifdef CONFIG_DEBUG
-	qDebug("qtractorTimeScaleNodeCommand::%s@%d pSession=%p", __func__, __LINE__, pSession);
-#endif
 	if (pSession == nullptr)
 		return false;
 
@@ -352,7 +345,8 @@ qtractorClipCommand *qtractorTimeScaleNodeCommand::createClipCommand (
 			if (pClip->clipStart() <  iFrameStart ||
 				pClip->clipStart() >= iFrameEnd)
 				continue;
-			if ((pTrack->trackType() == qtractorTrack::Audio) || (pTrack->trackType() == qtractorTrack::Tempo)) {
+			if ((pTrack->trackType() == qtractorTrack::Audio) ||
+				(pTrack->trackType() == qtractorTrack::Tempo)) {
 				qtractorAudioClip *pAudioClip
 					= static_cast<qtractorAudioClip *> (pClip);
 				if (pAudioClip) {
@@ -441,10 +435,12 @@ void qtractorTimeScaleNodeCommand::addCurveEditCommands (
 qtractorTimeScaleAddNodeCommand::qtractorTimeScaleAddNodeCommand (
 	qtractorTimeScale *pTimeScale, unsigned long iFrame,
 	float fTempo, unsigned short iBeatType,
-	unsigned short iBeatsPerBar, unsigned short iBeatDivisor, unsigned short iBars, bool bAttached )
+	unsigned short iBeatsPerBar, unsigned short iBeatDivisor,
+	unsigned short iBars, bool bAttached )
 	: qtractorTimeScaleNodeCommand(
 		QObject::tr("add tempo node"), pTimeScale,
-		iFrame, fTempo, iBeatType, iBeatsPerBar, iBeatDivisor, iBars, bAttached)
+		iFrame, fTempo, iBeatType, iBeatsPerBar, iBeatDivisor,
+		iBars, bAttached)
 {
 }
 
@@ -461,10 +457,12 @@ bool qtractorTimeScaleAddNodeCommand::undo (void) { return removeNode(); }
 qtractorTimeScaleUpdateNodeCommand::qtractorTimeScaleUpdateNodeCommand (
 	qtractorTimeScale *pTimeScale, unsigned long iFrame,
 	float fTempo, unsigned short iBeatType,
-	unsigned short iBeatsPerBar, unsigned short iBeatDivisor, unsigned short iBars, bool bAttached)
+	unsigned short iBeatsPerBar, unsigned short iBeatDivisor,
+	unsigned short iBars, bool bAttached)
 	: qtractorTimeScaleNodeCommand(
 		QObject::tr("update tempo node"), pTimeScale,
-		iFrame, fTempo, iBeatType, iBeatsPerBar, iBeatDivisor, iBars, bAttached)
+		iFrame, fTempo, iBeatType, iBeatsPerBar, iBeatDivisor,
+		iBars, bAttached)
 {
 }
 
