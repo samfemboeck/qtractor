@@ -311,17 +311,24 @@ qtractorTrackForm::~qtractorTrackForm (void)
 // Populate (setup) dialog controls from settings descriptors.
 void qtractorTrackForm::setTrack ( qtractorTrack *pTrack )
 {
-	// Avoid dirty this all up.
-	++m_iDirtySetup;
-
 	// Set target track reference descriptor.
 	m_pTrack = pTrack;
+
+	if (m_pTrack == nullptr)
+		return;
+
+	qtractorSession *pSession = m_pTrack->session();
+	if (pSession == nullptr)
+		return;
+
+	// Avoid dirty this all up.
+	++m_iDirtySetup;
 
 	// Track properties cloning...
 	m_props = m_pTrack->properties();
 
 	// Get reference of the last acceptable command...
-	qtractorCommandList *pCommands = (m_pTrack->session())->commands();
+	qtractorCommandList *pCommands = pSession->commands();
 	m_pLastCommand = pCommands->lastCommand();
 
 	// Set plugin list stuff...
@@ -337,11 +344,11 @@ void qtractorTrackForm::setTrack ( qtractorTrack *pTrack )
 		m_ui.TempoRadioButton->setChecked(true);
 		break;
 	case qtractorTrack::Audio:
-		pEngine = (m_pTrack->session())->audioEngine();
+		pEngine = pSession->audioEngine();
 		m_ui.AudioRadioButton->setChecked(true);
 		break;
 	case qtractorTrack::Midi:
-		pEngine = (m_pTrack->session())->midiEngine();
+		pEngine = pSession->midiEngine();
 		m_ui.MidiRadioButton->setChecked(true);
 		break;
 	default:
@@ -504,13 +511,18 @@ void qtractorTrackForm::reject (void)
 
 	if (bReject) {
 		// Bogus track? Unlikely, but...
-		if (m_pTrack) {
+		qtractorSession *pSession = nullptr;
+		if (m_pTrack)
+			pSession = m_pTrack->session();
+		if (pSession) {
 			// Backout all commands made this far...
-			((m_pTrack->session())->commands())->backout(m_pLastCommand);
+			(pSession->commands())->backout(m_pLastCommand);
 			// Restore old output bus...
 			if (!m_sOldOutputBusName.isEmpty()) {
+				pSession->lock();
 				m_pTrack->setOutputBusName(m_sOldOutputBusName);
 				m_pTrack->open(); // re-open...
+				pSession->unlock();
 				m_sOldOutputBusName.clear();
 			}
 			// Try to restore the previously saved patch...
@@ -562,12 +574,16 @@ qtractorMidiBus *qtractorTrackForm::midiBus (void) const
 	if (m_pTrack == nullptr)
 		return nullptr;
 
+	qtractorSession *pSession = m_pTrack->session();
+	if (pSession == nullptr)
+		return nullptr;
+
 	// If it ain't MIDI, bail out...
 	if (trackType() != qtractorTrack::Midi)
 		return nullptr;
 
 	// MIDI engine...
-	qtractorMidiEngine *pMidiEngine = m_pTrack->session()->midiEngine();
+	qtractorMidiEngine *pMidiEngine = pSession->midiEngine();
 	if (pMidiEngine == nullptr)
 		return nullptr;
 
@@ -667,6 +683,13 @@ void qtractorTrackForm::updateInstrumentsAdd (
 // Update track type and buses.
 void qtractorTrackForm::updateTrackType ( qtractorTrack::TrackType trackType )
 {
+	if (m_pTrack == nullptr)
+		return;
+
+	qtractorSession *pSession = m_pTrack->session();
+	if (pSession == nullptr)
+		return;
+
 	// Avoid superfluos change notifications...
 	++m_iDirtySetup;
 
@@ -682,7 +705,7 @@ void qtractorTrackForm::updateTrackType ( qtractorTrack::TrackType trackType )
 	switch (trackType) {
 	case qtractorTrack::Tempo:
 	case qtractorTrack::Audio:
-		pEngine = m_pTrack->session()->audioEngine();
+		pEngine = pSession->audioEngine();
 		if (pEngine) {
 			qtractorSessionCursor *pAudioCursor = pEngine->sessionCursor();
 			pAudioCursor->setSyncType(qtractorTrack::Audio);
@@ -694,7 +717,7 @@ void qtractorTrackForm::updateTrackType ( qtractorTrack::TrackType trackType )
 		m_ui.OutputBusNameComboBox->setEnabled(true);
 		break;
 	case qtractorTrack::Midi:
-		pEngine = m_pTrack->session()->midiEngine();
+		pEngine = pSession->midiEngine();
 		icon = QIcon(":/images/trackMidi.png");
 		m_ui.MidiGroupBox->show();
 		m_ui.MidiGroupBox->setEnabled(true);
@@ -1252,9 +1275,15 @@ void qtractorTrackForm::trackTypeChanged (void)
 	if (m_pTrack == nullptr)
 		return;
 
+	qtractorSession *pSession = m_pTrack->session();
+	if (pSession == nullptr)
+		return;
+
 	if (!m_sOldOutputBusName.isEmpty()) {
+		pSession->lock();
 		m_pTrack->setOutputBusName(m_sOldOutputBusName);
 		m_pTrack->open(); // re-open...
+		pSession->unlock();
 		m_sOldOutputBusName.clear();
 	}
 
@@ -1299,33 +1328,25 @@ void qtractorTrackForm::outputBusNameChanged ( const QString& sBusName )
 	if (m_pTrack == nullptr)
 		return;
 
-	// It all depends on the track type we're into...
-	const qtractorTrack::TrackType trackType
-		= qtractorTrackForm::trackType();
+	qtractorSession *pSession = m_pTrack->session();
+	if (pSession == nullptr)
+		return;
 
-	switch (trackType) {
-	case qtractorTrack::Tempo:
-	case qtractorTrack::Audio: {
-		// (Re)initialize plugin-list audio output bus properly...
-		const QString& sOutputBusName
-			= m_pTrack->outputBusName();
-		if (sOutputBusName != sBusName) {
-			if (m_sOldOutputBusName.isEmpty() && !sOutputBusName.isEmpty())
-				m_sOldOutputBusName = sOutputBusName;
-			m_pTrack->setOutputBusName(sBusName);
-			m_pTrack->open(); // re-open...
-		}
-		break;
-	}
-	case qtractorTrack::Midi:
-		// Re-open MIDI track and output bus properly...
-		m_pTrack->open();
+	// (Re)initialize output bus properly...
+	const QString& sOutputBusName
+		= m_pTrack->outputBusName();
+	if (sOutputBusName != sBusName) {
+		pSession->lock();
+		if (m_sOldOutputBusName.isEmpty() && !sOutputBusName.isEmpty())
+			m_sOldOutputBusName = sOutputBusName;
+		m_pTrack->setOutputBusName(sBusName);
+		m_pTrack->open(); // Re-open...
+		pSession->unlock();
 		// Recache the applicable MIDI output bus ...
-		m_pMidiBus = midiBus();
-		updateInstruments();
-		// Fall thru...
-	default:
-		break;
+		if (trackType() == qtractorTrack::Midi) {
+			m_pMidiBus = midiBus();
+			updateInstruments();
+		}
 	}
 
 	channelChanged(m_ui.ChannelSpinBox->value());
@@ -1338,15 +1359,22 @@ void qtractorTrackForm::busNameClicked (void)
 	if (m_iDirtySetup > 0)
 		return;
 
+	if (m_pTrack == nullptr)
+		return;
+
+	qtractorSession *pSession = m_pTrack->session();
+	if (pSession == nullptr)
+		return;
+
 	// Depending on track type...
 	qtractorEngine *pEngine = nullptr;
 	switch (trackType()) {
 	case qtractorTrack::Tempo:
 	case qtractorTrack::Audio:
-		pEngine = m_pTrack->session()->audioEngine();
+		pEngine = pSession->audioEngine();
 		break;
 	case qtractorTrack::Midi:
-		pEngine = m_pTrack->session()->midiEngine();
+		pEngine = pSession->midiEngine();
 		break;
 	case qtractorTrack::None:
 	default:
