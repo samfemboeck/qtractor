@@ -1,3 +1,20 @@
+#
+# spec file for package qtractor
+#
+# Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+#
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
+
 %define name    @PACKAGE_TARNAME@
 %define version @PACKAGE_VERSION@
 %define release 50
@@ -119,7 +136,7 @@ the personal home-studio.
 
 %changelog
 * Sat Nov  9 2019 Rui Nuno Capela <rncbc@rncbc.org> 0.9.11
-- Mid-Autumn'19 beta release.
+- Mauerfall'30 release.
 * Sat Oct 12 2019 Rui Nuno Capela <rncbc@rncbc.org> 0.9.10
 - Autumn'19 beta release.
 * Wed Jul 24 2019 Rui Nuno Capela <rncbc@rncbc.org> 0.9.9
