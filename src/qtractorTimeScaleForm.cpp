@@ -335,10 +335,10 @@ void qtractorTimeScaleForm::setFrame ( unsigned long iFrame )
 		m_ui.TempoSpinBox->setTempo(pNode->tempo, false);
 		m_ui.TempoSpinBox->setBeatsPerBar(pNode->beatsPerBar, false);
 		m_ui.TempoSpinBox->setBeatDivisor(pNode->beatDivisor, true);
-		if (!pNode->next())
+		if (!pNode->next()) {
 			m_ui.BarsSpinBox->setValue(9999);
-		else {
-			int iBars = pNode->next()->bar - pNode->barFromFrame(iFrame);
+		} else {
+			const int iBars = pNode->next()->bar - pNode->barFromFrame(iFrame);
 			m_ui.BarsSpinBox->setValue(iBars);
 		}
 	}
@@ -1105,7 +1105,6 @@ void qtractorTimeScaleForm::barsChanged ( int iBars )
 		const float fDeltaTime = (iNodeBars * iNodeBeatsPerBar) / fNodeTempo;
 		const unsigned short iBeatsPerBar = m_ui.TempoSpinBox->beatsPerBar();
 		const float fTempo = (iBeatsPerBar * iBars) / fDeltaTime;
-
 		if ((fTempo >= 1.0f) && (fTempo <= 1000.0f))
 			m_ui.TempoSpinBox->setTempo(fTempo, false);
 		else
