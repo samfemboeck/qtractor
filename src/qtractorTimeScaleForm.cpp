@@ -52,7 +52,7 @@ class qtractorTimeScaleItemDelegate : public QItemDelegate
 public:
 
 	// Constructor.
-	qtractorTimeScaleItemDelegate(QObject *pParent = 0)
+	qtractorTimeScaleItemDelegate(QObject *pParent = nullptr)
 		: QItemDelegate(pParent) {}
 
 protected:
@@ -65,6 +65,7 @@ protected:
 		switch (index.column()) {
 		case 0: // Bar
 		case 2: // Tempo
+		case 3: // Key
 			opt.displayAlignment = Qt::AlignCenter;
 			break;
 		default:
@@ -121,10 +122,21 @@ public:
 				QTreeWidgetItem::setText(1, pTimeScale->textFromFrameEx(
 					displayFormat, pMarker->frame));
 			}
-			QTreeWidgetItem::setText(3, pMarker->text);
-			QTreeWidgetItem::setForeground(3, pMarker->color);
+			if (pMarker->accidentals || pMarker->mode) {
+				QTreeWidgetItem::setText(3,
+					qtractorTimeScale::keySignatureName(
+						pMarker->accidentals, pMarker->mode));
+			}
+			else QTreeWidgetItem::setText(3, dash);
+			if (!pMarker->text.isEmpty()) {
+				QTreeWidgetItem::setText(4, pMarker->text);
+				QTreeWidgetItem::setForeground(4, pMarker->color);
+			}
+			else QTreeWidgetItem::setText(4, dash);
+		} else {
+			QTreeWidgetItem::setText(3, dash);
+			QTreeWidgetItem::setText(4, dash);
 		}
-		else QTreeWidgetItem::setText(3, dash);
 	}
 
 	// Node accessor.
@@ -182,7 +194,9 @@ qtractorTimeScaleForm::qtractorTimeScaleForm (
 	pHeaderModel->setHeaderData(0, Qt::Horizontal,
 		Qt::AlignCenter, Qt::TextAlignmentRole); // Bar
 	pHeaderModel->setHeaderData(2, Qt::Horizontal,
-		Qt::AlignCenter, Qt::TextAlignmentRole); // tempo
+		Qt::AlignCenter, Qt::TextAlignmentRole); // Tempo
+	pHeaderModel->setHeaderData(3, Qt::Horizontal,
+		Qt::AlignCenter, Qt::TextAlignmentRole); // Key
 
 	m_ui.TimeScaleListView->setItemDelegate(
 		new qtractorTimeScaleItemDelegate(m_ui.TimeScaleListView));
@@ -236,6 +250,13 @@ qtractorTimeScaleForm::qtractorTimeScaleForm (
 	QObject::connect(m_ui.BarsSpinBox,
 		SIGNAL(valueChanged(int)),
 		SLOT(barsChanged(int)));
+
+	QObject::connect(m_ui.KeySignatureAccidentalsComboBox,
+		SIGNAL(activated(int)),
+		SLOT(changed()));
+	QObject::connect(m_ui.KeySignatureModeComboBox,
+		SIGNAL(activated(int)),
+		SLOT(modeChanged(int)));
 
 	QObject::connect(m_ui.MarkerTextLineEdit,
 		SIGNAL(textChanged(const QString&)),
@@ -328,6 +349,10 @@ void qtractorTimeScaleForm::setFrame ( unsigned long iFrame )
 		setCurrentMarker(pMarker);
 	else
 		setCurrentMarker(nullptr);
+	if (pMarker && iFrame >= pMarker->frame)
+		setCurrentKeySignature(pMarker);
+	else
+		setCurrentKeySignature(nullptr);
 
 	// Done.
 	m_iDirtySetup = 0;
@@ -454,6 +479,60 @@ void qtractorTimeScaleForm::setCurrentMarker (
 }
 
 
+// Set current key-signature...
+void qtractorTimeScaleForm::setCurrentKeySignature (
+	qtractorTimeScale::Marker *pMarker )
+{
+	int iAccidentals = 0;
+	int iMode = 0;
+
+	if (pMarker) {
+		iAccidentals = pMarker->accidentals;
+		iMode = pMarker->mode;
+	}
+
+	updateKeySignatures(iAccidentals, iMode);
+
+	const bool bBlockSignals
+		= m_ui.KeySignatureModeComboBox->blockSignals(true);
+	m_ui.KeySignatureModeComboBox->setCurrentIndex(iMode);
+	m_ui.KeySignatureModeComboBox->blockSignals(bBlockSignals);
+}
+
+
+// Refresh key signatures.
+void qtractorTimeScaleForm::updateKeySignatures (
+	int iAccidentals, int iMode )
+{
+#ifdef CONFIG_DEBUG
+	qDebug("qtractorTimeScaleForm::updateKeySignatures(%d, %d)",
+		iAccidentals, iMode);
+#endif
+
+	const bool bBlockSignals
+		= m_ui.KeySignatureAccidentalsComboBox->blockSignals(true);
+
+	const QString sAccidentals
+		= m_ui.KeySignatureAccidentalsComboBox->currentText();
+
+	m_ui.KeySignatureAccidentalsComboBox->clear();
+
+	int iIndex = 0;
+	for (int i = 0; i < 18; ++i) {
+		const int iData = i - 8;
+		m_ui.KeySignatureAccidentalsComboBox->addItem(
+			qtractorTimeScale::keySignatureName(iData, iMode, 0));
+		m_ui.KeySignatureAccidentalsComboBox->setItemData(iIndex++, iData);
+	}
+
+	iIndex = m_ui.KeySignatureAccidentalsComboBox->findData(iAccidentals);
+	if (iIndex >= 0)
+		m_ui.KeySignatureAccidentalsComboBox->setCurrentIndex(iIndex);
+
+	m_ui.KeySignatureAccidentalsComboBox->blockSignals(bBlockSignals);
+}
+
+
 // Make given frame visble at the main tracks view.
 void qtractorTimeScaleForm::ensureVisibleFrame ( unsigned long iFrame )
 {
@@ -500,8 +579,8 @@ void qtractorTimeScaleForm::selectItem (void)
 			updateItem();
 			// Fall thru...
 		case QMessageBox::Discard:
-			break;;
-		default:    // Cancel.
+			break;
+		default: // Cancel.
 			return;
 		}
 	}
@@ -532,6 +611,7 @@ void qtractorTimeScaleForm::selectItem (void)
 	}
 
 	setCurrentMarker(pMarker);
+	setCurrentKeySignature(pMarker);
 
 	m_iDirtySetup = 0;
 	m_iDirtyCount = 0;
@@ -579,8 +659,18 @@ unsigned int qtractorTimeScaleForm::flags (void) const
 	const QColor& rgbMarkerColor
 		= m_ui.MarkerTextLineEdit->palette().text().color();
 
+	int iAccidentals = 0;
+	const int iIndex
+		= m_ui.KeySignatureAccidentalsComboBox->currentIndex();
+	if (iIndex >= 0)
+		iAccidentals = m_ui.KeySignatureAccidentalsComboBox->itemData(iIndex).toInt();
+	const int iMode = m_ui.KeySignatureModeComboBox->currentIndex();
+
 	if (pMarker && pMarker->frame == iFrame) {
-		iFlags |= UpdateMarker;
+		if (!sMarkerText.isEmpty())
+			iFlags |= UpdateMarker;
+		if (iAccidentals || iMode)
+			iFlags |= UpdateKeySignature;
 		iFlags |= RemoveMarker;
 	}
 	if (pMarker
@@ -589,8 +679,17 @@ unsigned int qtractorTimeScaleForm::flags (void) const
 		iFlags &= ~UpdateMarker;
 	else if (!sMarkerText.isEmpty())
 		iFlags |=  AddMarker;
-	if (pMarker && pMarker->frame == iFrame)
+	if (pMarker
+		&& pMarker->accidentals == iAccidentals
+		&& pMarker->mode == iMode)
+		iFlags &= ~UpdateKeySignature;
+	else if (iAccidentals || iMode)
+		iFlags |=  AddKeySignature;
+
+	if (pMarker && pMarker->frame == iFrame) {
 		iFlags &= ~AddMarker;
+		iFlags &= ~AddKeySignature;
+	}
 
 	return iFlags;
 }
@@ -629,6 +728,20 @@ void qtractorTimeScaleForm::addItem (void)
 				m_ui.MarkerTextLineEdit->text().simplified(),
 				m_ui.MarkerTextLineEdit->palette().text().color()));
 		++m_iDirtyTotal;
+	}
+
+	if (iFlags & AddKeySignature) {
+		int iAccidentals = 0;
+		const int iIndex = m_ui.KeySignatureAccidentalsComboBox->currentIndex();
+		if (iIndex >= 0)
+			iAccidentals = m_ui.KeySignatureAccidentalsComboBox->itemData(iIndex).toInt();
+		const int iMode = m_ui.KeySignatureModeComboBox->currentIndex();
+		if (iAccidentals || iMode) {
+			pSession->execute(
+				new qtractorTimeScaleAddKeySignatureCommand(
+					m_pTimeScale, iFrame, iAccidentals, iMode));
+			++m_iDirtyTotal;
+		}
 	}
 
 	refresh();
@@ -676,6 +789,23 @@ void qtractorTimeScaleForm::updateItem (void)
 					m_pTimeScale, iFrame,
 					m_ui.MarkerTextLineEdit->text().simplified(),
 					m_ui.MarkerTextLineEdit->palette().text().color()));
+			++m_iDirtyTotal;
+		}
+	}
+
+	if (iFlags & UpdateKeySignature) {
+		const unsigned long iFrame = m_pTimeScale->frameFromBar(iBar);
+		qtractorTimeScale::Marker *pMarker
+			= m_pTimeScale->markers().seekFrame(iFrame);
+		if (pMarker && pMarker->frame == iFrame) {
+			int iAccidentals = 0;
+			const int iIndex = m_ui.KeySignatureAccidentalsComboBox->currentIndex();
+			if (iIndex >= 0)
+				iAccidentals = m_ui.KeySignatureAccidentalsComboBox->itemData(iIndex).toInt();
+			const int iMode = m_ui.KeySignatureModeComboBox->currentIndex();
+			pSession->execute(
+				new qtractorTimeScaleUpdateKeySignatureCommand(
+					m_pTimeScale, iFrame, iAccidentals, iMode));
 			++m_iDirtyTotal;
 		}
 	}
@@ -812,7 +942,6 @@ void qtractorTimeScaleForm::barChanged ( int iBar )
 
 		setCurrentMarker(pMarker);
 
-		m_iDirtySetup = 0;
 		m_iDirtyCount = 0;
 
 	} else {
@@ -826,10 +955,15 @@ void qtractorTimeScaleForm::barChanged ( int iBar )
 		else
 			setCurrentMarker(nullptr);
 
-		m_iDirtySetup = 0;
-
 		++m_iDirtyCount;
 	}
+
+	if (pMarker && iFrame >= pMarker->frame)
+		setCurrentKeySignature(pMarker);
+	else
+		setCurrentKeySignature(nullptr);
+
+	m_iDirtySetup = 0;
 
 	// Locate nearest list item...
 	if (pNode)
@@ -866,6 +1000,10 @@ void qtractorTimeScaleForm::timeChanged ( unsigned long iFrame )
 		setCurrentMarker(pMarker);
 	else
 		setCurrentMarker(nullptr);
+	if (pMarker && iFrame >= pMarker->frame)
+		setCurrentKeySignature(pMarker);
+	else
+		setCurrentKeySignature(nullptr);
 
 	m_iDirtySetup = 0;
 
@@ -879,7 +1017,7 @@ void qtractorTimeScaleForm::timeChanged ( unsigned long iFrame )
 }
 
 
-// Tempo signature has changed.
+// Tempo/Time-signature has changed.
 void qtractorTimeScaleForm::tempoChanged (void)
 {
 	if (m_iDirtySetup > 0)
@@ -907,6 +1045,28 @@ void qtractorTimeScaleForm::tempoChanged (void)
 			m_ui.TempoSpinBox->setBeatDivisor(pNode->beatDivisor, false);
 		}
 	}
+}
+
+
+// Key signature has changed.
+void qtractorTimeScaleForm::modeChanged ( int iMode )
+{
+	if (m_iDirtySetup > 0)
+		return;
+
+#ifdef CONFIG_DEBUG
+	qDebug("qtractorTimeScaleForm::modeChanged(%d)", iMode);
+#endif
+
+	int iAccidentals = 0;
+	const int iIndex
+		= m_ui.KeySignatureAccidentalsComboBox->currentIndex();
+	if (iIndex >= 0)
+		iAccidentals = m_ui.KeySignatureAccidentalsComboBox->itemData(iIndex).toInt();
+
+	updateKeySignatures(iAccidentals, iMode);
+
+	changed();
 }
 
 
@@ -1072,8 +1232,8 @@ void qtractorTimeScaleForm::stabilizeForm (void)
 {
 	const unsigned int iFlags = flags();
 //	m_ui.RefreshPushButton->setEnabled(m_iDirtyCount > 0);
-	m_ui.AddPushButton->setEnabled(iFlags & (AddNode | AddMarker));
-	m_ui.UpdatePushButton->setEnabled(iFlags & (UpdateNode | UpdateMarker));
+	m_ui.AddPushButton->setEnabled(iFlags & (AddNode | AddMarker | AddKeySignature));
+	m_ui.UpdatePushButton->setEnabled(iFlags & (UpdateNode | UpdateMarker | UpdateKeySignature));
 	m_ui.RemovePushButton->setEnabled(iFlags & (RemoveNode | RemoveMarker));
 }
 
@@ -1090,12 +1250,12 @@ void qtractorTimeScaleForm::contextMenu ( const QPoint& /*pos*/ )
 	pAction = menu.addAction(
 		QIcon(":/images/formAdd.png"),
 		tr("&Add"), this, SLOT(addItem()));
-	pAction->setEnabled(iFlags & (AddNode | AddMarker));
+	pAction->setEnabled(iFlags & (AddNode | AddMarker | AddKeySignature));
 
 	pAction = menu.addAction(
 		QIcon(":/images/formAccept.png"),
 		tr("&Update"), this, SLOT(updateItem()));
-	pAction->setEnabled(iFlags & (UpdateNode | UpdateMarker));
+	pAction->setEnabled(iFlags & (UpdateNode | UpdateMarker | UpdateKeySignature));
 
 	pAction = menu.addAction(
 		QIcon(":/images/formRemove.png"),

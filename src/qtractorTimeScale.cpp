@@ -21,9 +21,10 @@
 
 #include "qtractorTimeScale.h"
 
+#include "qtractorSession.h"
+
 #include <QObject>
 
-#include "qtractorSession.h"
 
 //----------------------------------------------------------------------
 // class qtractorTimeScale -- Time scale conversion helper class.
@@ -283,10 +284,10 @@ void qtractorTimeScale::Cursor::reset ( qtractorTimeScale::Node *pNode )
 qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekFrame (
 	unsigned long iFrame )
 {
-	if (node == 0) {
+	if (node == nullptr) {
 		node = ts->nodes().first();
-		if (node == 0)
-			return 0;
+		if (node == nullptr)
+			return nullptr;
 	}
 
 	if (iFrame > node->frame) {
@@ -299,7 +300,7 @@ qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekFrame (
 		// Seek frame backward...
 		while (node && node->frame > iFrame)
 			node = node->prev();
-		if (node == 0)
+		if (node == nullptr)
 			node = ts->nodes().first();
 	}
 
@@ -311,10 +312,10 @@ qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekFrame (
 qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekBar (
 	unsigned short iBar )
 {
-	if (node == 0) {
+	if (node == nullptr) {
 		node = ts->nodes().first();
-		if (node == 0)
-			return 0;
+		if (node == nullptr)
+			return nullptr;
 	}
 
 	if (iBar > node->bar) {
@@ -327,7 +328,7 @@ qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekBar (
 		// Seek bar backward...
 		while (node && node->bar > iBar)
 			node = node->prev();
-		if (node == 0)
+		if (node == nullptr)
 			node = ts->nodes().first();
 	}
 
@@ -339,10 +340,10 @@ qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekBar (
 qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekBeat (
 	unsigned int iBeat )
 {
-	if (node == 0) {
+	if (node == nullptr) {
 		node = ts->nodes().first();
-		if (node == 0)
-			return 0;
+		if (node == nullptr)
+			return nullptr;
 	}
 
 	if (iBeat > node->beat) {
@@ -355,7 +356,7 @@ qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekBeat (
 		// Seek beat backward...
 		while (node && node->beat > iBeat)
 			node = node->prev();
-		if (node == 0)
+		if (node == nullptr)
 			node = ts->nodes().first();
 	}
 
@@ -367,10 +368,10 @@ qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekBeat (
 qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekTick (
 	unsigned long iTick )
 {
-	if (node == 0) {
+	if (node == nullptr) {
 		node = ts->nodes().first();
-		if (node == 0)
-			return 0;
+		if (node == nullptr)
+			return nullptr;
 	}
 
 	if (iTick > node->tick) {
@@ -383,7 +384,7 @@ qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekTick (
 		// Seek tick backward...
 		while (node && node->tick > iTick)
 			node = node->prev();
-		if (node == 0)
+		if (node == nullptr)
 			node = ts->nodes().first();
 	}
 
@@ -394,10 +395,10 @@ qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekTick (
 // Time-scale cursor node seeker (by pixel).
 qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekPixel ( int x )
 {
-	if (node == 0) {
+	if (node == nullptr) {
 		node = ts->nodes().first();
-		if (node == 0)
-			return 0;
+		if (node == nullptr)
+			return nullptr;
 	}
 
 	if (x > node->pixel) {
@@ -410,7 +411,7 @@ qtractorTimeScale::Node *qtractorTimeScale::Cursor::seekPixel ( int x )
 		// Seek tick backward...
 		while (node && node->pixel > x)
 			node = node->prev();
-		if (node == 0)
+		if (node == nullptr)
 			node = ts->nodes().first();
 	}
 
@@ -423,7 +424,7 @@ qtractorTimeScale::Node *qtractorTimeScale::addNode (
 	unsigned long iFrame, float fTempo, unsigned short iBeatType,
 	unsigned short iBeatsPerBar, unsigned short iBeatDivisor, unsigned short iBars, bool bAttached )
 {
-	Node *pNode	= 0;
+	Node *pNode	= nullptr;
 
 	// Seek for the nearest preceding node...
 	Node *pPrev = m_cursor.seekFrame(iFrame);
@@ -495,7 +496,7 @@ void qtractorTimeScale::removeNode ( qtractorTimeScale::Node *pNode )
 {
 	// Don't ever remove the very first node... 
 	Node *pNodePrev = pNode->prev();
-	if (pNodePrev == 0)
+	if (pNodePrev == nullptr)
 		return;
 
 	// Relocate internal cursor...
@@ -586,7 +587,7 @@ void qtractorTimeScale::updateScale (void)
 	m_fFrameRate = 60.0f * float(m_iSampleRate);
 
 	// Update all nodes thereafter...
-	Node *pPrev = 0;
+	Node *pPrev = nullptr;
 	Node *pNext = m_nodes.first();
 	while (pNext) {
 		pNext->update();
@@ -650,7 +651,6 @@ unsigned long qtractorTimeScale::frameFromTextEx (
 		}
 
 		case Frames:
-		default:
 		{
 			iFrame = sText.toULong();
 			break;
@@ -714,7 +714,11 @@ QString qtractorTimeScale::textFromFrameEx (
 				++bars;
 				++beats;
 			}
+		#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
 			sText.sprintf("%u.%u.%03lu", bars, beats, ticks);
+		#else
+			sText = QString::asprintf("%u.%u.%03lu", bars, beats, ticks);
+		#endif
 			break;
 		}
 
@@ -737,12 +741,15 @@ QString qtractorTimeScale::textFromFrameEx (
 				secs -= float(ss);
 			}
 			zzz = (unsigned int) (secs * 1000.0f);
+		#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
 			sText.sprintf("%02u:%02u:%02u.%03u", hh, mm, ss, zzz);
+		#else
+			sText = QString::asprintf("%02u:%02u:%02u.%03u", hh, mm, ss, zzz);
+		#endif
 			break;
 		}
 
 		case Frames:
-		default:
 		{
 			sText = QString::number(bDelta ? iDelta : iFrame);
 			break;
@@ -877,10 +884,10 @@ void qtractorTimeScale::MarkerCursor::reset (
 qtractorTimeScale::Marker *qtractorTimeScale::MarkerCursor::seekFrame (
 	unsigned long iFrame )
 {
-	if (marker == 0) {
+	if (marker == nullptr) {
 		marker = ts->markers().first();
-		if (marker == 0)
-			return 0;
+		if (marker == nullptr)
+			return nullptr;
 	}
 
 	if (iFrame > marker->frame) {
@@ -893,7 +900,7 @@ qtractorTimeScale::Marker *qtractorTimeScale::MarkerCursor::seekFrame (
 		// Seek frame backward...
 		while (marker && marker->frame > iFrame)
 			marker = marker->prev();
-		if (marker == 0)
+		if (marker == nullptr)
 			marker = ts->markers().first();
 	}
 
@@ -933,7 +940,7 @@ qtractorTimeScale::Marker *qtractorTimeScale::MarkerCursor::seekPixel ( int x )
 qtractorTimeScale::Marker *qtractorTimeScale::addMarker (
 	unsigned long iFrame, const QString& sText, const QColor& rgbColor )
 {
-	Marker *pMarker	= 0;
+	Marker *pMarker	= nullptr;
 
 	// Snap to nearest bar...
 	unsigned short iBar = 0;
@@ -972,6 +979,49 @@ qtractorTimeScale::Marker *qtractorTimeScale::addMarker (
 }
 
 
+// Key-signature list specifics.
+qtractorTimeScale::Marker *qtractorTimeScale::addKeySignature (
+	unsigned long iFrame, int iAccidentals, int iMode )
+{
+	Marker *pMarker	= nullptr;
+
+	// Snap to nearest bar...
+	unsigned short iBar = 0;
+
+	Node *pNodePrev = m_cursor.seekFrame(iFrame);
+	if (pNodePrev) {
+		iBar = pNodePrev->barFromFrame(iFrame);
+		iFrame = pNodePrev->frameFromBar(iBar);
+	}
+
+	// Seek for the nearest marker...
+	Marker *pMarkerNear = m_markerCursor.seekFrame(iFrame);
+	// Either update existing marker or add new one...
+	if (pMarkerNear && pMarkerNear->frame == iFrame) {
+		// Update exact matching marker...
+		pMarker = pMarkerNear;
+		pMarker->bar = iBar;
+		pMarker->accidentals = iAccidentals;
+		pMarker->mode = iMode;
+	} else {
+		// Add/insert a new marker...
+		pMarker = new Marker(iFrame, iBar, iAccidentals, iMode);
+		if (pMarkerNear && pMarkerNear->frame > iFrame)
+			m_markers.insertBefore(pMarker, pMarkerNear);
+		else
+		if (pMarkerNear && pMarkerNear->frame < iFrame)
+			m_markers.insertAfter(pMarker, pMarkerNear);
+		else
+			m_markers.append(pMarker);
+	}
+
+	// Update positioning...
+	updateMarker(pMarker);
+
+	return pMarker;
+}
+
+
 void qtractorTimeScale::updateMarker ( qtractorTimeScale::Marker *pMarker )
 {
 	// Relocate internal cursor...
@@ -992,9 +1042,9 @@ void qtractorTimeScale::removeMarker ( qtractorTimeScale::Marker *pMarker )
 // Update markers from given node position.
 void qtractorTimeScale::updateMarkers ( qtractorTimeScale::Node *pNode )
 {
-	if (pNode == 0)
+	if (pNode == nullptr)
 		pNode = m_nodes.first();
-	if (pNode == 0)
+	if (pNode == nullptr)
 		return;
 
 	Marker *pMarker = m_markerCursor.seekFrame(pNode->frame);
@@ -1005,6 +1055,54 @@ void qtractorTimeScale::updateMarkers ( qtractorTimeScale::Node *pNode )
 			pMarker->frame  = pNode->frameFromBar(pMarker->bar);
 		pMarker = pMarker->next();
 	}
+}
+
+
+// Key signature map accessor.
+QString qtractorTimeScale::keySignatureName (
+	int iAccidentals, int iMode, char chMinor )
+{
+	static struct
+	{
+		const char *natural;
+		const char *sharp;
+		const char *flat;
+
+	} s_aAccidentalsTab[] = {
+
+		{ QT_TR_NOOP("C"), QT_TR_NOOP("B#"), nullptr          },
+		{ nullptr,         QT_TR_NOOP("C#"), QT_TR_NOOP("Db") },
+		{ QT_TR_NOOP("D"), nullptr,          nullptr          },
+		{ nullptr,         QT_TR_NOOP("D#"), QT_TR_NOOP("Eb") },
+		{ QT_TR_NOOP("E"), nullptr,          QT_TR_NOOP("Fb") },
+		{ QT_TR_NOOP("F"), QT_TR_NOOP("E#"), nullptr          },
+		{ nullptr,         QT_TR_NOOP("F#"), QT_TR_NOOP("Gb") },
+		{ QT_TR_NOOP("G"), nullptr,          nullptr          },
+		{ nullptr,         QT_TR_NOOP("G#"), QT_TR_NOOP("Ab") },
+		{ QT_TR_NOOP("A"), nullptr,          nullptr          },
+		{ nullptr,         QT_TR_NOOP("A#"), QT_TR_NOOP("Bb") },
+		{ QT_TR_NOOP("B"), nullptr,          QT_TR_NOOP("Cb") }
+	};
+
+	const int i
+		= (iAccidentals * (iAccidentals < 0 ? -5 : 7)
+		+ (iMode > 0 ? 9 : 0)) % 12;
+
+	const char *name = nullptr;
+	if (iAccidentals < 0)
+		name = s_aAccidentalsTab[i].flat;
+	else
+	if (iAccidentals > 0)
+		name = s_aAccidentalsTab[i].sharp;
+	if (name == nullptr)
+		name = s_aAccidentalsTab[i].natural;
+
+	QString sKeySignature = tr(name);
+
+	if (iMode && chMinor)
+		sKeySignature += chMinor;
+
+	return sKeySignature;
 }
 
 

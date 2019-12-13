@@ -28,12 +28,18 @@
 #include <QColor>
 
 
+// Needed for the translation functions.
+#include <QCoreApplication>
+
+
 //----------------------------------------------------------------------
 // class qtractorTimeScale -- Time scale conversion helper class.
 //
 
 class qtractorTimeScale
 {
+	Q_DECLARE_TR_FUNCTIONS(qtractorTimeScale)
+
 public:
 
 	// Available display-formats.
@@ -545,22 +551,33 @@ public:
 	{
 	public:
 
-		// Constructor.
+		// Constructors.
 		Marker(unsigned long iFrame, unsigned short iBar,
 			const QString& sText, const QColor& rgbColor = Qt::darkGray)
-			: frame(iFrame), bar(iBar), text(sText), color(rgbColor) {}
+			: frame(iFrame), bar(iBar), text(sText), color(rgbColor),
+				accidentals(0), mode(0) {}
+
+		Marker(unsigned long iFrame, unsigned short iBar,
+			int iAccidentals = 0, int iMode = 0)
+			: frame(iFrame), bar(iBar), color(Qt::darkGray),
+				accidentals(iAccidentals), mode(iMode) {}
 
 		// Copy constructor.
 		Marker(const Marker& marker) : frame(marker.frame),
-			bar(marker.bar), text(marker.text), color(marker.color) {}
+			bar(marker.bar), text(marker.text), color(marker.color),
+			accidentals(marker.accidentals), mode(marker.mode) {}
 
 		// Marker keys.
 		unsigned long  frame;
 		unsigned short bar;
 
-		// Marker payload.
+		// Location marker payload.
 		QString text;
 		QColor  color;
+
+		// Key-signature marker payload.
+		int accidentals;
+		int mode;
 	};
 
 	// To optimize and keep track of current frame
@@ -605,6 +622,10 @@ public:
 		unsigned long iFrame,
 		const QString& sText,
 		const QColor& rgbColor = Qt::darkGray);
+	Marker *addKeySignature(
+		unsigned long iFrame,
+		int iAccidentals,
+		int iMode = 0);
 	void updateMarker(Marker *pMarker);
 	void removeMarker(Marker *pMarker);
 
@@ -613,6 +634,10 @@ public:
 
 	void framesDiffReset() { m_iFramesDiff = 0; }
 	long framesDiff() const { return m_iFramesDiff; }
+
+	// Key signature map accessor.
+	static QString keySignatureName(
+		int iAccidentals, int iMode, char chMinor = 'm');
 
 protected:
 

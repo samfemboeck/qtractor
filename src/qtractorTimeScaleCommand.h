@@ -204,11 +204,12 @@ class qtractorTimeScaleMarkerCommand : public qtractorCommand
 {
 public:
 
-	// Constructor.
+	// Constructors.
 	qtractorTimeScaleMarkerCommand(const QString& sName,
 		qtractorTimeScale *pTimeScale, unsigned long iFrame = 0,
-		const QString& sText = QString(),
-		const QColor& rgbColor = Qt::darkGray);
+	const QString& sText = QString(),
+	const QColor& rgbColor = Qt::darkGray,
+	int iAccidentals = 0, int iMode = 0);
 
 	// Time-scale accessor.
 	qtractorTimeScale *timeScale() const
@@ -221,12 +222,18 @@ public:
 		{ return m_sText; }
 	const QColor& color() const
 		{ return m_rgbColor; }
+	int accidentals() const
+		{ return m_iAccidentals; }
+	bool mode() const
+		{ return m_iMode; }
 
 protected:
 
 	// Executive commands.
 	bool addMarker();
 	bool updateMarker();
+	bool addKeySignature();
+	bool updateKeySignature();
 	bool removeMarker();
 
 private:
@@ -237,6 +244,8 @@ private:
 	unsigned long m_iFrame;
 	QString       m_sText;
 	QColor        m_rgbColor;
+	int           m_iAccidentals;
+	int           m_iMode;
 };
 
 
@@ -260,7 +269,7 @@ public:
 
 
 //----------------------------------------------------------------------
-// class qtractorTimeScaleUpdateNodeCommand - declaration.
+// class qtractorTimeScaleUpdateMarkerCommand - declaration.
 //
 
 class qtractorTimeScaleUpdateMarkerCommand : public qtractorTimeScaleMarkerCommand
@@ -298,6 +307,63 @@ public:
 
 
 //----------------------------------------------------------------------
+// class qtractorTimeScaleAddKeySignatureCommand - declaration.
+//
+
+class qtractorTimeScaleAddKeySignatureCommand : public qtractorTimeScaleMarkerCommand
+{
+public:
+
+	// Constructor.
+	qtractorTimeScaleAddKeySignatureCommand(
+		qtractorTimeScale *pTimeScale, unsigned long iFrame,
+		int iAccidentals = 0, int iMode = 0);
+
+	// Time-scale command methods.
+	bool redo();
+	bool undo();
+};
+
+
+//----------------------------------------------------------------------
+// class qtractorTimeScaleUpdateKeySignatureCommand - declaration.
+//
+
+class qtractorTimeScaleUpdateKeySignatureCommand : public qtractorTimeScaleMarkerCommand
+{
+public:
+
+	// Constructor.
+	qtractorTimeScaleUpdateKeySignatureCommand(
+		qtractorTimeScale *pTimeScale, unsigned long iFrame,
+		int iAccidentals = 0, int iMode = 0);
+
+	// Time-scale command methods.
+	bool redo();
+	bool undo();
+};
+
+
+//----------------------------------------------------------------------
+// class qtractorTimeScaleRemoveKeySignatureCommand - declaration.
+//
+
+class qtractorTimeScaleRemoveKeySignatureCommand : public qtractorTimeScaleMarkerCommand
+{
+public:
+
+	// Constructor.
+	qtractorTimeScaleRemoveKeySignatureCommand(
+		qtractorTimeScale *pTimeScale,
+		qtractorTimeScale::Marker *pMarker);
+
+	// Time-scale command methods.
+	bool redo();
+	bool undo();
+};
+
+
+//----------------------------------------------------------------------
 // class qtractorTimeScaleMoveMarkerCommand - declaration.
 //
 
@@ -323,6 +389,8 @@ private:
 	unsigned long m_iOldFrame;
 	QString       m_sOldText;
 	QColor        m_rgbOldColor;
+	int           m_iOldAccidentals;
+	int           m_iOldMode;
 };
 
 

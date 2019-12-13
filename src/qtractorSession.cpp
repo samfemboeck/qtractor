@@ -2313,12 +2313,14 @@ bool qtractorSession::loadElement (
 				QDomElement eMarker = nMarker.toElement();
 				if (eMarker.isNull())
 					continue;
-				// Load markers...
+				// Load markers/key-signatures...
 				if (eMarker.tagName() == "marker") {
 					const unsigned long iFrame
 						= eMarker.attribute("frame").toULong();
 					QString sText;
 					QColor rgbColor = Qt::darkGray;
+					int iAccidentals = 0;
+					int iMode = 0;
 					for (QDomNode nItem = eMarker.firstChild();
 							!nItem.isNull();
 								nItem = nItem.nextSibling()) {
@@ -2330,11 +2332,20 @@ bool qtractorSession::loadElement (
 							sText = eItem.text();
 						else if (eItem.tagName() == "color")
 							rgbColor.setNamedColor(eItem.text());
+						else if (eItem.tagName() == "accidentals")
+							iAccidentals = eItem.text().toInt();
+						else if (eItem.tagName() == "mode")
+							iMode = eItem.text().toInt();
 					}
 					// Add new marker...
 					if (!sText.isEmpty()) {
 						qtractorSession::timeScale()->addMarker(
 							iFrame, sText, rgbColor);
+					}
+					// Or/and key-signature...
+					if (iAccidentals || iMode) {
+						qtractorSession::timeScale()->addKeySignature(
+							iFrame, iAccidentals, iMode);
 					}
 				}
 			}
@@ -2519,7 +2530,7 @@ bool qtractorSession::saveElement (
 		pElement->appendChild(eTempoMap);
 	}
 
-	// Save location markers, if any...
+	// Save location markers/key-signatures, if any...
 	qtractorTimeScale::Marker *pMarker
 		= qtractorSession::timeScale()->markers().first();
 	if (pMarker) {
@@ -2527,8 +2538,16 @@ bool qtractorSession::saveElement (
 		while (pMarker) {
 			QDomElement eMarker = pDocument->document()->createElement("marker");
 			eMarker.setAttribute("frame", QString::number(pMarker->frame));
-			pDocument->saveTextElement("text", pMarker->text, &eMarker);
-			pDocument->saveTextElement("color", pMarker->color.name(), &eMarker);
+			if (!pMarker->text.isEmpty()) {
+				pDocument->saveTextElement("text", pMarker->text, &eMarker);
+				pDocument->saveTextElement("color", pMarker->color.name(), &eMarker);
+			}
+			if (pMarker->accidentals || pMarker->mode) {
+				pDocument->saveTextElement("accidentals",
+					QString::number(pMarker->accidentals), &eMarker);
+				pDocument->saveTextElement("mode",
+					QString::number(pMarker->mode), &eMarker);
+			}
 			eMarkers.appendChild(eMarker);
 			pMarker = pMarker->next();
 		}
