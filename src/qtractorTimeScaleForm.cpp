@@ -35,7 +35,7 @@
 
 #include <QHeaderView>
 #include <QMessageBox>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QMenu>
 
 #include <QColorDialog>
@@ -171,7 +171,7 @@ qtractorTimeScaleForm::qtractorTimeScaleForm (
 	m_pTimeScale  = nullptr;
 	m_pTempoCurve = nullptr;
 
-	m_pTempoTap   = new QTime();
+	m_pTempoTap   = new QElapsedTimer();
 	m_iTempoTap   = 0;
 	m_fTempoTap   = 0.0f;
 

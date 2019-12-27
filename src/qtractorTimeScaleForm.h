@@ -29,7 +29,7 @@
 class qtractorTimeScaleListItem;
 class qtractorTempoCurve;
 
-class QTime;
+class QElapsedTimer;
 
 
 //----------------------------------------------------------------------------
@@ -120,9 +120,9 @@ private:
 	qtractorTimeScale *m_pTimeScale;
 	qtractorTempoCurve *m_pTempoCurve;
 
-	QTime *m_pTempoTap;
-	int    m_iTempoTap;
-	float  m_fTempoTap;
+	QElapsedTimer *m_pTempoTap;
+	int            m_iTempoTap;
+	float          m_fTempoTap;
 
 	int m_iDirtySetup;
 	int m_iDirtyCount;
