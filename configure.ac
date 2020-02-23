@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(Qtractor, 0.9.12, rncbc@rncbc.org, qtractor)
+AC_INIT(Qtractor, 0.9.13, rncbc@rncbc.org, qtractor)
 
 AC_CONFIG_SRCDIR(src/qtractor.cpp)
 AC_CONFIG_HEADERS(src/config.h)
@@ -157,6 +157,12 @@ AC_ARG_ENABLE(vst,
   AS_HELP_STRING([--enable-vst], [enable VST plug-in support (default=yes)]),
   [ac_vst="$enableval"],
   [ac_vst="yes"])
+
+# Enable VST3 support.
+AC_ARG_ENABLE(vst3,
+  AS_HELP_STRING([--enable-vst3], [enable VST3 plug-in support (default=yes)]),
+  [ac_vst3="$enableval"],
+  [ac_vst3="yes"])
 
 AC_ARG_ENABLE(vestige,
   AS_HELP_STRING([--enable-vestige], [enable VeSTige header support (default=yes)]),
@@ -401,6 +407,11 @@ AC_ARG_WITH(vst,
   AS_HELP_STRING([--with-vst=PATH], [use alternate VST header path]),
   [ac_with_vst="$withval"])
 
+# Set for alternate VST3 SDK root dir.
+AC_ARG_WITH(vst3,
+  AS_HELP_STRING([--with-vst3=PATH], [use alternate VST3 SDK path]),
+  [ac_with_vst3="$withval"])
+
 # Set for alternate LV2 include dir.
 AC_ARG_WITH(lv2,
   AS_HELP_STRING([--with-lv2=PATH], [use alternate LV2 header path]),
@@ -599,11 +610,10 @@ AC_SUBST(ac_lrelease)
 
 
 # Check for IEEE 32bit float optimizations.
+AC_CHECK_SIZEOF(float)
 AC_CACHE_CHECK([for IEEE 32bit float optimizations],
    ac_cv_float32, [
-   AC_TRY_RUN([
-      int main() { return (sizeof(float) == 4 ? 0 : 1); }
-   ], ac_cv_float32="yes", ac_cv_float32="no")
+   AS_IF([test "$ac_cv_sizeof_float" = 4], [ac_cv_float32="yes"], [ac_cv_float32="no"])
 ])
 ac_float32=$ac_cv_float32
 if test "x$ac_float32" = "xyes"; then
@@ -1356,6 +1366,27 @@ if test "x$ac_lv2_ui_x11" = "xyes"; then
    AC_DEFINE(CONFIG_LV2_UI_X11, 1, [Define if LV2 UI X11 native support is available.])
 fi
 
+# Check for VST3 SDK stuff.
+if test "x$ac_vst3" = "xyes"; then
+   if test -n "$ac_with_vst3"; then
+      ac_vst3sdk=$ac_with_vst3
+   else
+      PKG_CHECK_MODULES([VST3SDK], [vst3sdk >= 3.6.14], [ac_vst3="yes"], [ac_vst3="no"])
+      if test "x$ac_vst3" = "xyes"; then
+         ac_vst3sdk="${VST3SDK_CFLAGS/-I/}"
+      fi
+   fi
+fi
+if test "x$ac_vst3" = "xyes" -a -n "$ac_vst3sdk"; then
+   PKG_CHECK_MODULES([XCB], [xcb], [ac_vst3_xcb="yes"], [ac_vst3_xcb="no"])
+   if test "x$ac_vst3_xcb" = "xyes"; then
+      ac_cflags="$ac_cflags $XCB_CFLAGS"
+      ac_libs="$ac_libs $XCB_LIBS"
+   fi
+   AC_DEFINE(CONFIG_VST3, 1, [Define if VST3 plug-in support is avilable.])
+   AC_SUBST(ac_vst3sdk)
+fi
+
 # Check for JACK session headers availability.
 if test "x$ac_jack_session" = "xyes"; then
    AC_CHECK_HEADER(jack/session.h, [ac_jack_session="yes"], [ac_jack_session="no"])
@@ -1467,6 +1498,7 @@ echo "  SSE optimization support (x86) . . . . . . . . . .: $ac_sse"
 echo "  LADSPA plug-in support . . . . . . . . . . . . . .: $ac_ladspa"
 echo "  DSSI plug-in support . . . . . . . . . . . . . . .: $ac_dssi"
 echo "  VST plug-in support  . . . . . . . . . . . . . . .: $ac_vst"
+echo "  VST3 plug-in support (EXPERIMENTAL)  . . . . . . .: $ac_vst3"
 echo "  LV2 plug-in support  . . . . . . . . . . . . . . .: $ac_lv2"
 echo "  LV2 plug-in support (liblilv)  . . . . . . . . . .: $ac_lilv"
 echo "  LV2 plug-in UI support . . . . . . . . . . . . . .: $ac_lv2_ui"
