@@ -1,7 +1,7 @@
 // qtractorOptions.h
 //
 /****************************************************************************
-   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2020, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -223,6 +223,7 @@ public:
 	QStringList ladspaPaths;
 	QStringList dssiPaths;
 	QStringList vstPaths;
+	QStringList vst3Paths;
 	QStringList lv2Paths;
 
 	QString sLv2PresetDir;
@@ -244,6 +245,7 @@ public:
 	int  iDummyLadspaHash;
 	int  iDummyDssiHash;
 	int  iDummyVstHash;
+	int  iDummyVst3Hash;
 	int  iDummyLv2Hash;
 
 	// LV2 plugin specific options.

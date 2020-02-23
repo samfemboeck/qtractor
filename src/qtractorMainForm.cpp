@@ -1,7 +1,7 @@
 // qtractorMainForm.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2020, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -91,6 +91,10 @@
 
 #ifdef CONFIG_VST
 #include "qtractorVstPlugin.h"
+#endif
+
+#ifdef CONFIG_VST3
+#include "qtractorVst3Plugin.h"
 #endif
 
 #ifdef CONFIG_LV2
@@ -2272,6 +2276,9 @@ bool qtractorMainForm::closeSession (void)
 		qtractorSubject::clearQueue();
 		// Reset playhead.
 		m_iPlayHead = 0;
+	#ifdef CONFIG_VST3
+		qtractorVst3Plugin::clearAll();
+	#endif
 	#ifdef CONFIG_LV2
 		qtractorLv2PluginType::lv2_close();
 	#endif
@@ -5769,8 +5776,8 @@ void qtractorMainForm::helpAbout (void)
 #ifndef CONFIG_VST
 	list << tr("VST Plug-in support disabled.");
 #endif
-#ifdef  CONFIG_VESTIGE_0
-	list << tr("VeSTige header support enabled.");
+#ifndef CONFIG_VST3
+	list << tr("VST3 Plug-in support (EXPERIMENTAL) disabled.");
 #endif
 #ifndef CONFIG_LV2
 	list << tr("LV2 Plug-in support disabled.");
@@ -5778,17 +5785,17 @@ void qtractorMainForm::helpAbout (void)
 #ifndef CONFIG_LIBLILV
 	list << tr("LV2 Plug-in support (liblilv) disabled.");
 #endif
-#ifndef  CONFIG_LV2_UI
+#ifndef CONFIG_LV2_UI
 	list << tr("LV2 Plug-in UI support disabled.");
 #else
-#ifndef  CONFIG_LIBSUIL
+#ifndef CONFIG_LIBSUIL
 	list << tr("LV2 Plug-in UI support (libsuil) disabled.");
 #endif
 #ifndef CONFIG_LV2_EXTERNAL_UI
 	list << tr("LV2 Plug-in External UI support disabled.");
 #endif
 #endif // CONFIG_LV2_UI
-#ifdef CONFIG_LV2_EVENT
+#ifdef  CONFIG_LV2_EVENT
 	list << tr("LV2 Plug-in MIDI/Event support (DEPRECATED) enabled.");
 #endif
 #ifndef CONFIG_LV2_ATOM
@@ -5800,8 +5807,8 @@ void qtractorMainForm::helpAbout (void)
 #ifndef CONFIG_LV2_STATE
 	list << tr("LV2 Plug-in State support disabled.");
 #endif
-#ifdef CONFIG_LV2_STATE_FILES
-#ifdef CONFIG_LV2_STATE_MAKE_PATH
+#ifdef  CONFIG_LV2_STATE_FILES
+#ifdef  CONFIG_LV2_STATE_MAKE_PATH
 	list << tr("LV2 plug-in State Make Path support (DANGEROUS)	enabled.");
 #endif
 #else
