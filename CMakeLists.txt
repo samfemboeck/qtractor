@@ -2,7 +2,7 @@ project(QTRACTOR)
 
 cmake_minimum_required(VERSION 3.1)
 
-set (VERSION "0.9.12")
+set (VERSION "0.9.13")
 
 set (CONFIG_VERSION ${VERSION})
 execute_process (
@@ -95,6 +95,9 @@ option (CONFIG_VST "Enable VST plug-in support (default=yes)" 1)
 
 option (CONFIG_VESTIGE "Enable VeSTige header support (default=yes)" 1)
 
+# Enable VST3 support.
+option (CONFIG_VST3 "Enable VST3 plug-in support (default=yes)" 1)
+
 # Enable LV2 support.
 option (CONFIG_LV2 "Enable LV2 plug-in support (default=yes)" 1)
 
@@ -185,12 +188,19 @@ if (WIN32)
   check_function_exists (lroundf CONFIG_ROUND)
 else ()
   find_library (MATH_LIBRARY m)
-  # Check for round math function.
   if (MATH_LIBRARY)
     set (CMAKE_REQUIRED_LIBRARIES "${MATH_LIBRARY};${CMAKE_REQUIRED_LIBRARIES}")
+  # link_libraries (${MATH_LIBRARY})
     check_function_exists (lroundf CONFIG_ROUND)
   else ()
     message (FATAL_ERROR "*** math library not found.")
+  endif ()
+  find_library (DL_LIBRARY dl)
+  if (DL_LIBRARY)
+  # set (CMAKE_REQUIRED_LIBRARIES "${DL_LIBRARY};${CMAKE_REQUIRED_LIBRARIES}")
+    link_libraries (${DL_LIBRARY})
+  else ()
+    message (FATAL_ERROR "*** dl library not found.")
   endif ()
 endif ()
 
@@ -319,7 +329,7 @@ if (CONFIG_LIBVORBIS)
 endif ()
 
 if (CONFIG_LIBVORBIS)
-  pkg_check_modules (VORBISENC REQUIRED vorbisenc)
+  pkg_check_modules (VORBISENC vorbisenc)
   if (VORBISENC_FOUND)
     include_directories (${VORBISENC_INCLUDE_DIRS})
     link_directories (${VORBISENC_LIBRARY_DIRS})
@@ -329,7 +339,7 @@ if (CONFIG_LIBVORBIS)
 endif ()
 
 if (CONFIG_LIBVORBIS)
-  pkg_check_modules (VORBISFILE REQUIRED vorbisfile)
+  pkg_check_modules (VORBISFILE vorbisfile)
   if (VORBISFILE_FOUND)
     include_directories (${VORBISFILE_INCLUDE_DIRS})
     link_directories (${VORBISFILE_LIBRARY_DIRS})
@@ -339,7 +349,7 @@ if (CONFIG_LIBVORBIS)
 endif ()
 
 if (CONFIG_LIBVORBIS)
-  pkg_check_modules (OGG REQUIRED ogg)
+  pkg_check_modules (OGG ogg)
   if (OGG_FOUND)
     include_directories (${OGG_INCLUDE_DIRS})
     link_directories (${OGG_LIBRARY_DIRS})
@@ -429,6 +439,24 @@ if (CONFIG_LIBZ)
   else ()
     message (WARNING "*** ZLIB library not found.")
     set (CONFIG_LIBZ 0)
+  endif ()
+endif ()
+
+# Check for VST3 SDK.
+if (CONFIG_VST3)
+  pkg_check_modules (VST3SDK vst3sdk>=3.6.14)
+  if (VST3SDK_FOUND)
+    include_directories (${VST3SDK_INCLUDE_DIRS})
+    set (CONFIG_VST3SDK ${VST3SDK_INCLUDE_DIRS})
+    pkg_check_modules (XCB xcb)
+    if (XCB_FOUND)
+      include_directories (${XCB_INCLUDE_DIRS})
+      link_directories (${XCB_LIBRARY_DIRS})
+      link_libraries (${XCB_LIBRARIES})
+    endif ()
+  else ()
+    message (WARNING "*** VST3 SDK not found.")
+    set (CONFIG_VST3 0)
   endif ()
 endif ()
 
@@ -624,6 +652,14 @@ if (CONFIG_VST)
 endif ()
 
 
+# Check for VST3 plug-in support.
+if (CONFIG_VST3SDK)
+  set (CONFIG_VST3 1)
+  include_directories (${CONFIG_VST3SDK})
+else ()
+  set (CONFIG_VST3 0)
+endif ()
+
 add_subdirectory (src)
 
 
@@ -659,6 +695,7 @@ show_option ("  SSE optimization support (x86) . . . . . . . . . ." CONFIG_SSE)
 show_option ("  LADSPA plug-in support . . . . . . . . . . . . . ." CONFIG_LADSPA)
 show_option ("  DSSI plug-in support . . . . . . . . . . . . . . ." CONFIG_DSSI)
 show_option ("  VST plug-in support  . . . . . . . . . . . . . . ." CONFIG_VST)
+show_option ("  VST3 plug-in support (EXPERIMENTAL)  . . . . . . ." CONFIG_VST3)
 show_option ("  LV2 plug-in support  . . . . . . . . . . . . . . ." CONFIG_LV2)
 show_option ("  LV2 plug-in support (liblilv)  . . . . . . . . . ." CONFIG_LIBLILV)
 show_option ("  LV2 plug-in UI support . . . . . . . . . . . . . ." CONFIG_LV2_UI)
