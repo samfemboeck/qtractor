@@ -1506,8 +1506,6 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 		m_pOptions->bAudioOutputBus);
 	qtractorMidiManager::setDefaultAudioOutputAutoConnect(
 		m_pOptions->bAudioOutputAutoConnect);
-	qtractorMidiManager::setDefaultAudioOutputMonitor(
-		m_pOptions->bAudioOutputMonitor);
 	// Set default audio-buffer quality...
 	qtractorAudioBuffer::setDefaultResampleType(
 		m_pOptions->iAudioResampleType);
@@ -4941,10 +4939,15 @@ void qtractorMainForm::viewRefresh (void)
 		pEditor->setEditTail(iEditTail, false);
 	}
 
-	// We're formerly done.
-	QApplication::restoreOverrideCursor();
+	// Reset XRUN counters...
+	m_iXrunCount = 0;
+	m_iXrunSkip  = 0;
+	m_iXrunTimer = 0;
 
 	++m_iStabilizeTimer;
+
+	// We're formerly done.
+	QApplication::restoreOverrideCursor();
 }
 
 
@@ -5157,8 +5160,6 @@ void qtractorMainForm::viewOptions (void)
 			m_pOptions->bAudioOutputBus);
 		qtractorMidiManager::setDefaultAudioOutputAutoConnect(
 			m_pOptions->bAudioOutputAutoConnect);
-		qtractorMidiManager::setDefaultAudioOutputMonitor(
-			m_pOptions->bAudioOutputMonitor);
 		// Auto time-stretching, loop-recording global modes...
 		if (m_pSession) {
 			m_pSession->setAutoTimeStretch(m_pOptions->bAudioAutoTimeStretch);
@@ -5724,6 +5725,11 @@ void qtractorMainForm::transportPanic (void)
 
 	// All (MIDI) tracks shut-off (panic)...
 	pMidiEngine->shutOffAllTracks();
+
+	// Reset XRUN counters...
+	m_iXrunCount = 0;
+	m_iXrunSkip  = 0;
+	m_iXrunTimer = 0;
 
 	++m_iStabilizeTimer;
 }
