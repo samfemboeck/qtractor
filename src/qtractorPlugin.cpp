@@ -1535,6 +1535,7 @@ qtractorPluginList::qtractorPluginList (
 		m_pMidiProgramSubject(nullptr),
 		m_bAutoDeactivated(false),
 		m_iForceNoProcessing(0),
+		m_bAudioOutputMonitor(false),
 		m_bLatency(false), m_iLatency(0)
 {
 	setAutoDelete(true);
@@ -1548,8 +1549,6 @@ qtractorPluginList::qtractorPluginList (
 		= qtractorMidiManager::isDefaultAudioOutputBus();
 	m_bAudioOutputAutoConnect
 		= qtractorMidiManager::isDefaultAudioOutputAutoConnect();
-	m_bAudioOutputMonitor
-		= qtractorMidiManager::isDefaultAudioOutputMonitor();
 
 	m_iAudioInsertActivated = 0;
 
@@ -2266,30 +2265,40 @@ void qtractorPluginList::autoDeactivatePlugins ( bool bDeactivated, bool bForce 
 {
 	if (m_bAutoDeactivated != bDeactivated || bForce) {
 		m_bAutoDeactivated  = bDeactivated;
+		int iAudioOuts = 0;
 		if (bDeactivated) {
 			bool bStopDeactivation = false;
-			// pass to all plugins bottom to top / stop for active plugins
-			// possibly connected to other tracks
+			// Pass to all plugins bottom to top;
+			// stop for any active plugins that are
+			// possibly connected to other tracks...
 			qtractorPlugin *pPlugin = last();
 			for ( ;	pPlugin && !bStopDeactivation; pPlugin = pPlugin->prev()) {
 				if (pPlugin->canBeConnectedToOtherTracks())
 					bStopDeactivation = pPlugin->isActivated();
 				else
 					pPlugin->autoDeactivatePlugin(bDeactivated);
+				iAudioOuts += pPlugin->audioOuts();
 			}
-			// (re)activate all above stopper
+			// (Re)activate all above stopper...
 			if (bStopDeactivation) {
 				for ( ; pPlugin; pPlugin = pPlugin->prev()) {
 					pPlugin->autoDeactivatePlugin(false);
+					iAudioOuts += pPlugin->audioOuts();
 				}
 			}
 		} else {
-			// pass to all plugins top to to bottom
+			// Oass to all plugins top to to bottom...
 			for (qtractorPlugin *pPlugin = first();
 					pPlugin; pPlugin = pPlugin->next()) {
 				pPlugin->autoDeactivatePlugin(bDeactivated);
+				iAudioOuts += pPlugin->audioOuts();
 			}
 		}
+		// Take the chance to turn on/off automagically
+		// the audio monitors/meters, when applicable...
+		qtractorMidiManager *pMidiManager = midiManager();
+		if (pMidiManager)
+			pMidiManager->setAudioOutputMonitorEx(iAudioOuts > 0);
 		// inform all views
 		QListIterator<qtractorPluginListView *> iter(m_views);
 		while (iter.hasNext()) {
