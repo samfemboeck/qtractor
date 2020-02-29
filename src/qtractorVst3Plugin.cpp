@@ -1166,7 +1166,8 @@ int qtractorVst3PluginType::Impl::numChannels (
 	for (int32 i = 0; i < nbuses; ++i) {
 		Vst::BusInfo busInfo;
 		if (m_component->getBusInfo(type, direction, i, busInfo) == kResultOk) {
-			if (busInfo.flags & Vst::BusInfo::kDefaultActive)
+			if ((busInfo.busType == Vst::kMain) &&
+				(busInfo.flags & Vst::BusInfo::kDefaultActive))
 				nchannels += busInfo.channelCount;
 		}
 	}
@@ -1713,6 +1714,10 @@ protected:
 	// Cleanup.
 	void clear ();
 
+	// Channel/bus (de)activation helper method.
+	void activate (Vst::IComponent *component,
+		Vst::MediaType type, Vst::BusDirection direction, bool state);
+
 private:
 
 	// Instance variables.
@@ -2147,6 +2152,8 @@ qtractorVst3Plugin::Impl::~Impl (void)
 			component_cp->disconnect(controller_cp);
 			controller_cp->disconnect(component_cp);
 		}
+		if (controller)
+			controller->setComponentHandler(nullptr);
 	}
 
 
@@ -2278,6 +2285,10 @@ void qtractorVst3Plugin::Impl::activate (void)
 
 	Vst::IComponent *component = pType->impl()->component();
 	if (component && m_processor) {
+		activate(component, Vst::kAudio, Vst::kInput,  true);
+		activate(component, Vst::kAudio, Vst::kOutput, true);
+		activate(component, Vst::kEvent, Vst::kInput,  true);
+		activate(component, Vst::kEvent, Vst::kOutput, true);
 		component->setActive(true);
 		m_processor->setProcessing(true);
 		g_hostContext.processAddRef();
@@ -2306,6 +2317,10 @@ void qtractorVst3Plugin::Impl::deactivate (void)
 		m_processor->setProcessing(false);
 		component->setActive(false);
 		m_processing = false;
+		activate(component, Vst::kEvent, Vst::kOutput, false);
+		activate(component, Vst::kEvent, Vst::kInput,  false);
+		activate(component, Vst::kAudio, Vst::kOutput, false);
+		activate(component, Vst::kAudio, Vst::kInput,  false);
 	}
 
 #ifdef CONFIG_DEBUG
@@ -2746,6 +2761,22 @@ void qtractorVst3Plugin::Impl::clear (void)
 }
 
 
+void qtractorVst3Plugin::Impl::activate ( Vst::IComponent *component,
+	Vst::MediaType type, Vst::BusDirection direction, bool state )
+{
+	const int32 nbuses = component->getBusCount(type, direction);
+	for (int32 i = 0; i < nbuses; ++i) {
+		Vst::BusInfo busInfo;
+		if (component->getBusInfo(type, direction, i, busInfo) == kResultOk) {
+			if (busInfo.flags & Vst::BusInfo::kDefaultActive) {
+				const bool state2 = state && (busInfo.busType == Vst::kMain);
+				component->activateBus(type, direction, i, state2);
+			}
+		}
+	}
+}
+
+
 //----------------------------------------------------------------------
 // class qtractorVst3Plugin::EditorWidget -- VST3 plugin editor widget decl.
 //
@@ -2888,7 +2919,6 @@ qtractorVst3Plugin::qtractorVst3Plugin (
 	qtractorPluginList *pList, qtractorVst3PluginType *pType )
 	: qtractorPlugin(pList, pType), m_pImpl(new Impl(this)),
 		m_pEditorFrame(nullptr), m_pEditorWidget(nullptr),
-		m_bEditorClosed(false),
 		m_ppIBuffer(nullptr), m_ppOBuffer(nullptr),
 		m_pfIDummy(nullptr), m_pfODummy(nullptr),
 		m_pMidiParser(nullptr)
@@ -3253,11 +3283,6 @@ void qtractorVst3Plugin::openEditor ( QWidget *pParent )
 
 void qtractorVst3Plugin::closeEditor (void)
 {
-	if (m_bEditorClosed)
-		return;
-
-	m_bEditorClosed = true;
-
 	if (m_pEditorWidget == nullptr)
 		return;
 
@@ -3524,7 +3549,7 @@ bool qtractorVst3Plugin::savePresetFile ( const QString& sFilename )
 		this, sFilename.toUtf8().constData());
 #endif
 
-	QByteArray data;;
+	QByteArray data;
 
 	if (!m_pImpl->getState(data))
 		return false;

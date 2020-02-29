@@ -1,7 +1,7 @@
 // qtractorTrack.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2020, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -1141,6 +1141,8 @@ void qtractorTrack::setHeight ( int iHeight )
 	if (m_iHeight < HeightMin)
 		m_iHeight = HeightMin;
 
+	m_iHeightBase = m_iHeight;
+
 	updateZoomHeight();
 }
 
@@ -1151,6 +1153,16 @@ void qtractorTrack::updateHeight (void)
 		if (m_iHeight < HeightMin)
 			m_iHeight = HeightMin;
 	}
+}
+
+
+// Base zoomed view height accessor.
+int qtractorTrack::zoomHeightBase (void) const
+{
+	if (m_pSession)
+		return (m_iHeightBase * m_pSession->verticalZoom()) / 100;
+	else
+		return m_iHeightBase;
 }
 
 
