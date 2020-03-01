@@ -1980,7 +1980,7 @@ bool qtractorTrack::loadElement (
 
 	// Reset take(record) descriptor/id registry.
 	clearTakeInfo();
-	
+
 	return true;
 }
 
