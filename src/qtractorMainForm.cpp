@@ -1481,7 +1481,6 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 	updateMidiPlayer();
 	updateMidiControl();
 	updateMidiMetronome();
-	updateMixerAutoGridLayout();
 	updateSyncViewHold();
 
 	// FIXME: This is what it should ever be,
@@ -5037,12 +5036,9 @@ void qtractorMainForm::viewOptions (void)
 	const int     iOldMetroBeatDuration  = m_pOptions->iMetroBeatDuration;
 	const bool    bOldMidiMetroBus       = m_pOptions->bMidiMetroBus;
 	const int     iOldMidiMetroOffset    = m_pOptions->iMidiMetroOffset;
-	const bool    bOldMixerAutoGridLayout = m_pOptions->bMixerAutoGridLayout;
 	const bool    bOldSyncViewHold       = m_pOptions->bSyncViewHold;
 	const QString sOldCustomColorTheme   = m_pOptions->sCustomColorTheme;
 	const QString sOldCustomStyleTheme   = m_pOptions->sCustomStyleTheme;
-	const bool    bOldTrackListPlugins   = m_pOptions->bTrackListPlugins;
-	const bool    bOldTrackListMeters    = m_pOptions->bTrackListMeters;
 #ifdef CONFIG_LV2
 	const QString sep(':'); 
 	const bool    bOldLv2DynManifest     = m_pOptions->bLv2DynManifest;
@@ -5218,21 +5214,10 @@ void qtractorMainForm::viewOptions (void)
 			( bOldMidiMetroBus     && !m_pOptions->bMidiMetroBus)     ||
 			(!bOldMidiMetroBus     &&  m_pOptions->bMidiMetroBus))
 			updateMidiMetronome();
-		// Mixer layout options...
-		if (( bOldMixerAutoGridLayout && !m_pOptions->bMixerAutoGridLayout) ||
-			(!bOldMixerAutoGridLayout &&  m_pOptions->bMixerAutoGridLayout))
-			updateMixerAutoGridLayout();
 		// Transport display options...
 		if (( bOldSyncViewHold && !m_pOptions->bSyncViewHold) ||
 			(!bOldSyncViewHold &&  m_pOptions->bSyncViewHold))
 			updateSyncViewHold();
-		if (( bOldTrackListPlugins && !m_pOptions->bTrackListPlugins) ||
-			(!bOldTrackListPlugins &&  m_pOptions->bTrackListPlugins) ||
-			( bOldTrackListMeters  && !m_pOptions->bTrackListMeters)  ||
-			(!bOldTrackListMeters  &&  m_pOptions->bTrackListMeters)) {
-			if (m_pTracks)
-				m_pTracks->trackList()->updateItems();
-		}
 		// Warn if something will be only effective on next time.
 		if (iNeedRestart & RestartAny) {
 			QString sNeedRestart;
@@ -5841,6 +5826,9 @@ void qtractorMainForm::helpAbout (void)
 #ifdef  CONFIG_LV2_UI
 #ifndef CONFIG_LV2_UI_TOUCH
 	list << tr("LV2 Plug-in UI Touch interface support disabled.");
+#endif
+#ifndef CONFIG_LV2_UI_REQ_PARAM
+	list << tr("LV2 Plug-in UI Request-parameter support disabled.");
 #endif
 #ifndef CONFIG_LV2_UI_IDLE
 	list << tr("LV2 Plug-in UI Idle interface support disabled.");
@@ -6881,14 +6869,6 @@ void qtractorMainForm::updateMidiMetronome (void)
 }
 
 
-// Update mixer automatic multi-row strip/grid layout.
-void qtractorMainForm::updateMixerAutoGridLayout (void)
-{
-	if (m_pMixer)
-		m_pMixer->updateWorkspaces();
-}
-
-
 // Update transport display options.
 void qtractorMainForm::updateSyncViewHold (void)
 {
@@ -7632,7 +7612,7 @@ void qtractorMainForm::slowTimerSlot (void)
 				qtractorTimeScale::Cursor& cursor = pTimeScale->cursor();
 				qtractorTimeScale::Node *pNode = cursor.seekFrame(pos.frame);
 				if (pNode && pos.frame >= pNode->frame && (
-					::fabsf(pNode->tempo - pos.beats_per_minute) > 0.01f ||
+					qAbs(pNode->tempo - pos.beats_per_minute) > 0.01f ||
 					pNode->beatsPerBar != (unsigned short) pos.beats_per_bar ||
 					(1 << pNode->beatDivisor) != (unsigned short) pos.beat_type)) {
 				#ifdef CONFIG_DEBUG

@@ -446,22 +446,6 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 		buttons->lower();
 	}
 
-	if (!pOptions->bTrackListPlugins && plugins) {
-		delete plugins;
-		plugins = nullptr;
-	}
-
-	if (meters) {
-		if (track->trackType() == qtractorTrack::Midi) {
-			qtractorMidiComboMeter *pMidiComboMeter
-				= static_cast<qtractorMidiComboMeter *> (meters);
-			if (pMidiComboMeter)
-				pMidiComboMeter->setAudioOutputMonitor(nullptr);
-		}
-		delete meters;
-		meters = nullptr;
-	}
-
 	updateIcon(pTrackList);
 
 	text << track->trackName();
@@ -485,7 +469,7 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 			// Fillers...
 			text << s << s;
 			// Re-create the audio meter...
-			if (pOptions->bTrackListMeters && meters == nullptr) {
+			if (meters == nullptr) {
 				qtractorAudioMonitor *pAudioMonitor
 					= static_cast<qtractorAudioMonitor *> (track->monitor());
 				if (pAudioMonitor) {
@@ -569,7 +553,7 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 			// This is it, MIDI Patch/Bank...
 			text << sProgName + '\n' + sBankName << sInstrumentName;
 			// Re-create the MIDI meter...
-			if (pOptions->bTrackListMeters && meters == nullptr) {
+			if (meters == nullptr) {
 				qtractorMidiMonitor *pMidiMonitor
 					= static_cast<qtractorMidiMonitor *> (track->monitor());
 				if (pMidiMonitor) {
@@ -596,7 +580,7 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 		}
 	}
 
-	if (pOptions->bTrackListPlugins && plugins == nullptr) {
+	if (plugins == nullptr) {
 		const QFont& font = pTrackList->font();
 		plugins = new qtractorPluginListView(pTrackList->viewport());
 		plugins->setFont(QFont(font.family(), font.pointSize() - 2));

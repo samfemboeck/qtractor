@@ -271,10 +271,6 @@ public:
 	bool bTrackViewToolTips;
 	bool bTrackViewCurveEdit;
 
-	// Tracks list options.
-	bool bTrackListPlugins;
-	bool bTrackListMeters;
-
 	// MIDI Editor options...
 	bool bMidiMenubar;
 	bool bMidiStatusbar;
@@ -305,9 +301,6 @@ public:
 	int  iMidiEventParam;
 	int  iMidiSnapToScaleKey;
 	int  iMidiSnapToScaleType;
-
-	// Mixer strip multi-row grid layout option.
-	bool bMixerAutoGridLayout;
 
 	// Meter colors.
 	QStringList audioMeterColors;
