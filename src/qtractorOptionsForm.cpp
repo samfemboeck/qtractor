@@ -50,7 +50,7 @@
 #include <QStyleFactory>
 
 
-// Needed for fabsf(), logf() and powf()
+// Needed for logf() and powf()
 #include <math.h>
 
 static inline float log10f2 ( float x )
@@ -416,9 +416,6 @@ qtractorOptionsForm::qtractorOptionsForm (
 	QObject::connect(m_ui.SessionAutoSaveSpinBox,
 		SIGNAL(valueChanged(int)),
 		SLOT(changed()));
-	QObject::connect(m_ui.MixerAutoGridLayoutCheckBox,
-		SIGNAL(stateChanged(int)),
-		SLOT(changed()));
 	QObject::connect(m_ui.CustomColorThemeComboBox,
 		SIGNAL(activated(int)),
 		SLOT(changed()));
@@ -449,12 +446,6 @@ qtractorOptionsForm::qtractorOptionsForm (
 	QObject::connect(m_ui.ResetMeterColorsPushButton,
 		SIGNAL(clicked()),
 		SLOT(resetMeterColors()));
-	QObject::connect(m_ui.TrackListMetersCheckBox,
-		SIGNAL(stateChanged(int)),
-		SLOT(changed()));
-	QObject::connect(m_ui.TrackListPluginsCheckBox,
-		SIGNAL(stateChanged(int)),
-		SLOT(changed()));
 	QObject::connect(m_ui.PluginTypeComboBox,
 		SIGNAL(activated(int)),
 		SLOT(choosePluginType(int)));
@@ -651,9 +642,6 @@ void qtractorOptionsForm::setOptions ( qtractorOptions *pOptions )
 	m_ui.MidiMetroBusCheckBox->setChecked(m_pOptions->bMidiMetroBus);
 	m_ui.MidiMetroOffsetSpinBox->setValue(m_pOptions->iMidiMetroOffset);
 
-	// Mixer preferences.
-	m_ui.MixerAutoGridLayoutCheckBox->setChecked(m_pOptions->bMixerAutoGridLayout);
-
 	// Custom colors.
 	int iColor;
 	for (iColor = 0; iColor < AudioMeterColors; ++iColor)
@@ -706,8 +694,6 @@ void qtractorOptionsForm::setOptions ( qtractorOptions *pOptions )
 	m_ui.PeakAutoRemoveCheckBox->setChecked(m_pOptions->bPeakAutoRemove);
 	m_ui.KeepToolsOnTopCheckBox->setChecked(m_pOptions->bKeepToolsOnTop);
 	m_ui.TrackViewDropSpanCheckBox->setChecked(m_pOptions->bTrackViewDropSpan);
-	m_ui.TrackListMetersCheckBox->setChecked(m_pOptions->bTrackListMeters);
-	m_ui.TrackListPluginsCheckBox->setChecked(m_pOptions->bTrackListPlugins);
 	m_ui.ShiftKeyModifierCheckBox->setChecked(m_pOptions->bShiftKeyModifier);
 	m_ui.MidButtonModifierCheckBox->setChecked(m_pOptions->bMidButtonModifier);
 	m_ui.MaxRecentFilesSpinBox->setValue(m_pOptions->iMaxRecentFiles);
@@ -846,8 +832,6 @@ void qtractorOptionsForm::accept (void)
 		m_pOptions->bPeakAutoRemove      = m_ui.PeakAutoRemoveCheckBox->isChecked();
 		m_pOptions->bKeepToolsOnTop      = m_ui.KeepToolsOnTopCheckBox->isChecked();
 		m_pOptions->bTrackViewDropSpan   = m_ui.TrackViewDropSpanCheckBox->isChecked();
-		m_pOptions->bTrackListMeters     = m_ui.TrackListMetersCheckBox->isChecked();
-		m_pOptions->bTrackListPlugins    = m_ui.TrackListPluginsCheckBox->isChecked();
 		m_pOptions->bShiftKeyModifier    = m_ui.ShiftKeyModifierCheckBox->isChecked();
 		m_pOptions->bMidButtonModifier   = m_ui.MidButtonModifierCheckBox->isChecked();
 		m_pOptions->iMaxRecentFiles      = m_ui.MaxRecentFilesSpinBox->value();
@@ -886,8 +870,6 @@ void qtractorOptionsForm::accept (void)
 		m_pOptions->iSessionBackupMode   = m_ui.SessionBackupModeComboBox->currentIndex();
 		m_pOptions->bAutoSaveEnabled     = m_ui.SessionAutoSaveCheckBox->isChecked();
 		m_pOptions->iAutoSavePeriod      = m_ui.SessionAutoSaveSpinBox->value();
-		// Mixer preferences....
-		m_pOptions->bMixerAutoGridLayout = m_ui.MixerAutoGridLayoutCheckBox->isChecked();
 		// Custom colors.
 		int iColor;
 		for (iColor = 0; iColor < AudioMeterColors; ++iColor)
