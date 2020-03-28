@@ -1629,6 +1629,11 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 	} else {
 		// Change to last known session dir...
 		if (!m_pOptions->sSessionDir.isEmpty()) {
+			QFileInfo info(m_pOptions->sSessionDir);
+			while (!info.exists() && !info.isRoot())
+				info.setFile(info.absolutePath());
+			if (info.exists() && !info.isRoot())
+				m_pOptions->sSessionDir = info.absoluteFilePath();
 			if (!QDir::setCurrent(m_pOptions->sSessionDir)) {
 				appendMessagesError(
 					tr("Could not set default session directory:\n\n"
@@ -1728,11 +1733,11 @@ bool qtractorMainForm::queryClose (void)
 			// Save custom meter colors, if any...
 			int iColor;
 			m_pOptions->audioMeterColors.clear();
-			for (iColor = 0; iColor < qtractorAudioMeter::ColorCount - 2; ++iColor)
+			for (iColor = 0; iColor < qtractorAudioMeter::ColorCount - 1; ++iColor)
 				m_pOptions->audioMeterColors.append(
 					qtractorAudioMeter::color(iColor).name());
 			m_pOptions->midiMeterColors.clear();
-			for (iColor = 0; iColor < qtractorMidiMeter::ColorCount - 2; ++iColor)
+			for (iColor = 0; iColor < qtractorMidiMeter::ColorCount - 1; ++iColor)
 				m_pOptions->midiMeterColors.append(
 					qtractorMidiMeter::color(iColor).name());
 			// Make sure there will be defaults...
@@ -2001,7 +2006,7 @@ bool qtractorMainForm::openSession (void)
 		= filters.join(";;");
 
 	QWidget *pParentWidget = nullptr;
-	QFileDialog::Options options = 0;
+	QFileDialog::Options options;
 	if (m_pOptions->bDontUseNativeDialogs) {
 		options |= QFileDialog::DontUseNativeDialog;
 		pParentWidget = QWidget::window();
@@ -2093,7 +2098,7 @@ bool qtractorMainForm::saveSession ( bool bPrompt )
 		const QString& sFilter
 			= filters.join(";;");
 		QWidget *pParentWidget = nullptr;
-		QFileDialog::Options options = 0;
+		QFileDialog::Options options;
 		if (m_pOptions->bDontUseNativeDialogs) {
 			options |= QFileDialog::DontUseNativeDialog;
 			pParentWidget = QWidget::window();
@@ -4083,7 +4088,7 @@ void qtractorMainForm::trackCurveColor (void)
 #endif
 
 	QWidget *pParentWidget = nullptr;
-	QColorDialog::ColorDialogOptions options = 0;
+	QColorDialog::ColorDialogOptions options;
 	if (m_pOptions && m_pOptions->bDontUseNativeDialogs) {
 		options |= QColorDialog::DontUseNativeDialog;
 		pParentWidget = QWidget::window();
@@ -5109,6 +5114,8 @@ void qtractorMainForm::viewOptions (void)
 			else
 				updateCustomColorTheme();
 		}
+		if (optionsForm.isDirtyMeterColors())
+			qtractorMeterValue::updateAll();
 		if (sOldCustomStyleTheme != m_pOptions->sCustomStyleTheme) {
 			if (m_pOptions->sCustomStyleTheme.isEmpty())
 					iNeedRestart |= RestartProgram;
@@ -5827,8 +5834,8 @@ void qtractorMainForm::helpAbout (void)
 #ifndef CONFIG_LV2_UI_TOUCH
 	list << tr("LV2 Plug-in UI Touch interface support disabled.");
 #endif
-#ifndef CONFIG_LV2_UI_REQ_PARAM
-	list << tr("LV2 Plug-in UI Request-parameter support disabled.");
+#ifndef CONFIG_LV2_UI_REQ_VALUE
+	list << tr("LV2 Plug-in UI Request-value support disabled.");
 #endif
 #ifndef CONFIG_LV2_UI_IDLE
 	list << tr("LV2 Plug-in UI Idle interface support disabled.");
