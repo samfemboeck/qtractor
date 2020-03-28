@@ -268,6 +268,9 @@ private:
 			QString& sBankName, QString& sProgName) const;
 		// Item updaters.
 		void updateItem(qtractorTrackList *pTrackList);
+		void updateButtons(qtractorTrackList *pTrackList, bool bVisible);
+		void updatePlugins(qtractorTrackList *pTrackList, bool bVisible);
+		void updateMeters(qtractorTrackList *pTrackList, bool bVisible);
 		void updateIcon(qtractorTrackList *pTrackList);
 		// Item members.
 		qtractorTrack *track;
@@ -275,6 +278,7 @@ private:
 		QStringList    text;
 		unsigned int   flags;
 		// Track-list item widgets.
+		unsigned int   updated;
 		qtractorTrackListButtons *buttons;
 		qtractorPluginListView *plugins;
 		QWidget *meters;

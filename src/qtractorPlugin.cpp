@@ -57,7 +57,10 @@ const WindowFlags WindowCloseButtonHint = WindowFlags(0x08000000);
 }
 #endif
 
-
+// Deprecated QTextStreamFunctions/Qt namespaces workaround.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+#define endl	Qt::endl
+#endif
 
 
 //----------------------------------------------------------------------------
