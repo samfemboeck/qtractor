@@ -157,9 +157,8 @@ private:
 // qtractorTimeScaleForm -- UI wrapper form.
 
 // Constructor.
-qtractorTimeScaleForm::qtractorTimeScaleForm (
-	QWidget *pParent, Qt::WindowFlags wflags )
-	: QDialog(pParent, wflags)
+qtractorTimeScaleForm::qtractorTimeScaleForm ( QWidget *pParent )
+	: QDialog(pParent)
 {
 	// Setup UI struct...
 	m_ui.setupUi(this);
@@ -1208,7 +1207,7 @@ void qtractorTimeScaleForm::markerColor (void)
 
 	QWidget *pParentWidget = nullptr;
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
-	QColorDialog::ColorDialogOptions options = 0;
+	QColorDialog::ColorDialogOptions options;
 	if (pOptions && pOptions->bDontUseNativeDialogs) {
 		options |= QColorDialog::DontUseNativeDialog;
 		pParentWidget = QWidget::window();

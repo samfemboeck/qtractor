@@ -37,6 +37,12 @@
 
 #include <QFile>
 
+// Deprecated QTextStreamFunctions/Qt namespaces workaround.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+#define endl	Qt::endl
+#endif
+
+
 #include <math.h>
 
 // Ref. P.448. Approximate cube root of an IEEE float

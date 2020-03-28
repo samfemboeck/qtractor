@@ -1,7 +1,7 @@
 // qtractorInstrument.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2020, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -31,6 +31,11 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+
+// Deprecated QTextStreamFunctions/Qt namespaces workaround.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+#define endl	Qt::endl
+#endif
 
 
 //----------------------------------------------------------------------
@@ -411,8 +416,8 @@ bool qtractorInstrumentList::save ( const QString& sFilename ) const
 		<< ": " << QFileInfo(sFilename).fileName() << endl;
 	ts << "; " << QObject::tr("Date")
 		<< ": " << QDate::currentDate().toString("MMM dd yyyy")
-		<< " "  << QTime::currentTime().toString("hh:mm:ss") << endl;
-	ts << ";"  << endl;
+		<< " " << QTime::currentTime().toString("hh:mm:ss") << endl;
+	ts << ";" << endl;
 
 	// - Patch Names...
     ts << sepl << endl << endl;
@@ -908,7 +913,7 @@ void qtractorInstrumentList::loadMidiPatchNameList (
 					const QString sep(", ");
 					QStringList list = sBankName
 						.remove(sName).remove(sBank)
-						.split(sep, QString::SkipEmptyParts);
+						.split(sep, Qt::SkipEmptyParts);
 					list.append(sName + sBank);
 					sBankName = list.join(sep);
 				}

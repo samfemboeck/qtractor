@@ -66,6 +66,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QPainter>
+#include <QPainterPath>
 #include <QCursor>
 #include <QTimer>
 #include <QUrl>
@@ -308,7 +309,7 @@ void qtractorTrackView::updateContentsHeight (void)
 		return;
 
 	// Allways give some room to drop something at the bottom...
-	int iContentsHeight = qtractorTrack::HeightBase << 1;
+	int iContentsHeight = (qtractorTrack::HeightMin << 2);
 	// Compute total track height...
 	qtractorTrack *pTrack = pSession->tracks().first();
 	while (pTrack) {
@@ -2407,7 +2408,7 @@ void qtractorTrackView::mouseDoubleClickEvent ( QMouseEvent *pMouseEvent )
 void qtractorTrackView::wheelEvent ( QWheelEvent *pWheelEvent )
 {
 	if (pWheelEvent->modifiers() & Qt::ControlModifier) {
-		const int delta = pWheelEvent->delta();
+		const int delta = pWheelEvent->angleDelta().y();
 		if (delta > 0)
 			m_pTracks->zoomIn();
 		else
