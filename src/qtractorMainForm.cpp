@@ -5109,10 +5109,14 @@ void qtractorMainForm::viewOptions (void)
 			iNeedRestart |= RestartProgram;
 		if ((sOldCustomColorTheme != m_pOptions->sCustomColorTheme) ||
 			(optionsForm.isDirtyCustomColorThemes())) {
+		#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+			iNeedRestart |= RestartProgram;
+		#else
 			if (m_pOptions->sCustomColorTheme.isEmpty())
 				iNeedRestart |= RestartProgram;
 			else
 				updateCustomColorTheme();
+		#endif
 		}
 		if (optionsForm.isDirtyMeterColors())
 			qtractorMeterValue::updateAll();
