@@ -1,7 +1,7 @@
 // qtractorMidiImportExtender.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2020, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -391,20 +391,22 @@ bool qtractorMidiImportExtender::finishTracksForExtension(
 					if (!pMidiManager)
 						break;
 
-					const qtractorMidiManager::Instruments& list
+					const qtractorInstrumentList& instruments
 						= pMidiManager->instruments();
-					QString sInstrumentName = m_extendedSettings.sMidiImportInstInst;
-					if (!list.contains(sInstrumentName))
+					const QString& sInstrumentName
+						= m_extendedSettings.sMidiImportInstInst;
+					if (!instruments.contains(sInstrumentName))
 						break;
 
-					const qtractorMidiManager::Banks& banks
-						= list[sInstrumentName];
-					if (!banks.contains(properties.midiBank))
+					const qtractorInstrument& instr
+						= instruments.value(sInstrumentName);
+					const qtractorInstrumentData& bank
+						= instr.patch(properties.midiBank);
+					if (!bank.contains(properties.midiProg))
 						break;
 
 					// A patch name was found!
-					const qtractorMidiManager::Progs& progs = banks[properties.midiBank].progs;
-					sTrackName = progs[properties.midiProg];
+					sTrackName = bank[properties.midiProg];
 				}
 
 				// Drum track's name is fixed - patch names are not really useful at drums.

@@ -1,7 +1,7 @@
 // qtractorMidiImportForm.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2020, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -367,13 +367,14 @@ void qtractorMidiImportForm::updateInstrumentsAdd( const QIcon &icon,
 
 	pMidiManager->updateInstruments();
 
-	const qtractorMidiManager::Instruments& list
+	const qtractorInstrumentList& instruments
 		= pMidiManager->instruments();
-	qtractorMidiManager::Instruments::ConstIterator iter = list.constBegin();
-	const qtractorMidiManager::Instruments::ConstIterator& iter_end = list.constEnd();
+	qtractorInstrumentList::ConstIterator iter = instruments.constBegin();
+	const qtractorInstrumentList::ConstIterator& iter_end = instruments.constEnd();
 	for ( ; iter != iter_end; ++iter) {
-		m_ui.InstInstComboBox->addItem(icon, iter.key());
-		m_ui.DrumInstComboBox->addItem(icon, iter.key());
+		const QString& sInstrumentName = iter.value().instrumentName();
+		m_ui.InstInstComboBox->addItem(icon, sInstrumentName);
+		m_ui.DrumInstComboBox->addItem(icon, sInstrumentName);
 	}
 }
 
@@ -479,25 +480,31 @@ bool qtractorMidiImportForm::updateBanksAdd( const QIcon &icon,
 	// proper bank layout.
 	pMidiManager->updateInstruments();
 
-	const qtractorMidiManager::Instruments& list
+	const qtractorInstrumentList& instruments
 		= pMidiManager->instruments();
-	if (!list.contains(sInstrumentName))
+	if (!instruments.contains(sInstrumentName))
 		return false;
 
 	// Refresh bank mapping...
-	const qtractorMidiManager::Banks& banks = list[sInstrumentName];
-	qtractorMidiManager::Banks::ConstIterator iter = banks.constBegin();
-	const qtractorMidiManager::Banks::ConstIterator& iter_end = banks.constEnd();
+	const qtractorInstrument& instr
+		= instruments.value(sInstrumentName);
+	const qtractorInstrumentPatches& patches = instr.patches();
+	qtractorInstrumentPatches::ConstIterator iter = patches.constBegin();
+	const qtractorInstrumentPatches::ConstIterator& iter_end = patches.constEnd();
 	for ( ; iter != iter_end; ++iter) {
-		pComboBox->addItem(icon, iter.value().name);
-		(*pBankMap)[iBankIndex++] = iter.key();
+		if (iter.key() >= 0) {
+			pComboBox->addItem(icon, iter.value().name());
+			(*pBankMap)[iBankIndex++] = iter.key();
+		}
 	}
+
 	// Reset given bank combobox index.
 	iBankIndex = -1;
 	// For proper bank selection...
-	if (banks.contains(iBank)) {
-		const qtractorMidiManager::Bank& bank = banks[iBank];
-		iBankIndex = pComboBox->findText(bank.name);
+	if (iBank >= 0) {
+		const qtractorInstrumentData& bank = instr.patch(iBank);
+		if (!bank.name().isEmpty())
+			iBankIndex = pComboBox->findText(bank.name());
 	}
 
 	// Mark that we've have something.
