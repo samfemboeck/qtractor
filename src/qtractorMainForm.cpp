@@ -311,8 +311,8 @@ qtractorMainForm::qtractorMainForm (
 			SIGNAL(sessEvent(void *)),
 			SLOT(audioSessNotify(void *)));
 		QObject::connect(pAudioEngineProxy,
-			SIGNAL(syncEvent(unsigned long)),
-			SLOT(audioSyncNotify(unsigned long)));
+			SIGNAL(syncEvent(unsigned long, bool)),
+			SLOT(audioSyncNotify(unsigned long, bool)));
 		QObject::connect(pAudioEngineProxy,
 			SIGNAL(propEvent()),
 			SLOT(audioPropNotify()));
@@ -5111,6 +5111,12 @@ void qtractorMainForm::viewOptions (void)
 		}
 		if (iOldBaseFontSize != m_pOptions->iBaseFontSize)
 			iNeedRestart |= RestartProgram;
+		if (sOldCustomStyleTheme != m_pOptions->sCustomStyleTheme) {
+			if (m_pOptions->sCustomStyleTheme.isEmpty())
+				iNeedRestart |= RestartProgram;
+			else
+				updateCustomStyleTheme();
+		}
 		if ((sOldCustomColorTheme != m_pOptions->sCustomColorTheme) ||
 			(optionsForm.isDirtyCustomColorThemes())) {
 			if (m_pOptions->sCustomColorTheme.isEmpty())
@@ -5120,12 +5126,6 @@ void qtractorMainForm::viewOptions (void)
 		}
 		if (optionsForm.isDirtyMeterColors())
 			qtractorMeterValue::updateAll();
-		if (sOldCustomStyleTheme != m_pOptions->sCustomStyleTheme) {
-			if (m_pOptions->sCustomStyleTheme.isEmpty())
-					iNeedRestart |= RestartProgram;
-			else
-				updateCustomStyleTheme();
-		}
 		if (( bOldCompletePath && !m_pOptions->bCompletePath) ||
 			(!bOldCompletePath &&  m_pOptions->bCompletePath) ||
 			(iOldMaxRecentFiles != m_pOptions->iMaxRecentFiles))
@@ -5822,6 +5822,9 @@ void qtractorMainForm::helpAbout (void)
 #ifndef CONFIG_LV2_PROGRAMS
 	list << tr("LV2 Plug-in Programs support disabled.");
 #endif
+#ifndef CONFIG_LV2_MIDNAM
+	list << tr("LV2 Plug-in MIDNAM support disabled.");
+#endif
 #ifndef CONFIG_LV2_PRESETS
 	list << tr("LV2 Plug-in Presets support disabled.");
 #endif
@@ -6443,7 +6446,7 @@ bool qtractorMainForm::startSession (void)
 		// Uh-oh, we can't go on like this...
 		appendMessagesError(
 			tr("The audio/MIDI engine could not be started.\n\n"
-			"Make sure the JACK audio server (jackd) and/or\n"
+			"Make sure the JACK audio server (jackd) and\n"
 			"the ALSA Sequencer kernel module (snd-seq-midi)\n"
 			"are up and running and then restart the session."));
 	}
@@ -7120,6 +7123,22 @@ bool qtractorMainForm::trackCurveSelectMenuReset ( QMenu *pMenu ) const
 						param.value()->observer(), pCurrentSubject);
 				}
 			}
+			const qtractorPlugin::PropertyKeys& props
+				= pPlugin->propertyKeys();
+			if (props.count() > 0) {
+				pPluginMenu->addSeparator();
+				qtractorPlugin::PropertyKeys::ConstIterator prop
+					= props.constBegin();
+				const qtractorPlugin::PropertyKeys::ConstIterator& prop_end
+					= props.constEnd();
+				for ( ; prop != prop_end; ++prop) {
+					qtractorPlugin::Property *pProp = prop.value();
+					if (pProp->isAutomatable()) {
+						trackCurveSelectMenuAction(pPluginMenu,
+							pProp->observer(), pCurrentSubject);
+					}
+				}
+			}
 			pPlugin = pPlugin->next();
 		}
 	}
@@ -7603,7 +7622,7 @@ void qtractorMainForm::fastTimerSlot (void)
 void qtractorMainForm::slowTimerSlot (void)
 {
 	// Avoid stabilize re-entrancy...
-	if (m_pSession->isBusy()) {
+	if (m_pSession->isBusy() || m_iTransportUpdate > 0) {
 		// Register the next timer slot.
 		QTimer::singleShot(QTRACTOR_TIMER_DELAY, this, SLOT(slowTimerSlot()));
 		return;
@@ -7636,7 +7655,7 @@ void qtractorMainForm::slowTimerSlot (void)
 				if (!bPlaying)
 					m_pSession->seek(iPlayHead, true);
 			}
-			// 2. Watch for temp/time-sig changes on JACK transport...
+			// 2. Watch for tempo/time-sig changes on JACK transport...
 			if ((pos.valid & JackPositionBBT) && pAudioEngine->isTimebaseEx()) {
 				qtractorTimeScale *pTimeScale = m_pSession->timeScale();
 				qtractorTimeScale::Cursor& cursor = pTimeScale->cursor();
@@ -8071,14 +8090,20 @@ void qtractorMainForm::audioSessNotify ( void *pvSessionArg )
 
 
 // Custom (JACK) transport sync event handler.
-void qtractorMainForm::audioSyncNotify ( unsigned long iPlayHead )
+void qtractorMainForm::audioSyncNotify ( unsigned long iPlayHead, bool bPlaying )
 {
 	if (m_pSession->isBusy())
 		return;
 
 #ifdef CONFIG_DEBUG
-	qDebug("qtractorMainForm::audioSyncNotify(%lu)", iPlayHead);
+	qDebug("qtractorMainForm::audioSyncNotify(%lu, %d)", iPlayHead, int(bPlaying));
 #endif
+
+	if (( bPlaying && !m_pSession->isPlaying()) ||
+		(!bPlaying &&  m_pSession->isPlaying())) {
+		// Toggle playing!
+		transportPlay();
+	}
 
 	m_pSession->setPlayHeadEx(iPlayHead);
 	++m_iTransportUpdate;

@@ -844,8 +844,10 @@ void qtractorSession::updateSampleRate ( unsigned int iSampleRate )
 				pClip; pClip = pClip->next()) {
 		//	pClip->setClipStart(qtractorTimeScale::uroundf(
 		//		fRatio * float(pClip->clipStart())));
-		//	pClip->setClipOffset(qtractorTimeScale::uroundf(
-		//		fRatio * float(pClip->clipOffset())));
+		#if 1// EXPERIMENTAL: Don't quantize to MIDI metronomic time-scale...
+			pClip->setClipOffset(qtractorTimeScale::uroundf(
+				fRatio * float(pClip->clipOffset())));
+		#endif
 		//	pClip->setClipLength(qtractorTimeScale::uroundf(
 		//		fRatio * float(pClip->clipLength())));
 			pClip->setFadeInLength(qtractorTimeScale::uroundf(
@@ -1712,6 +1714,11 @@ void qtractorSession::trackRecord (
 				qtractorAudioFileFactory::defaultExt(), true),
 			qtractorAudioFile::Write);
 		pTrack->setClipRecord(pAudioClip);
+		// Adjust for some input latency compensation already...
+		qtractorAudioBus *pAudioBus
+			= static_cast<qtractorAudioBus *> (pTrack->inputBus());
+		if (pAudioBus)
+			pAudioClip->setClipOffset(pAudioBus->latency_in());
 		// One-up audio tracks in record mode.
 		++m_iAudioRecord;
 		break;

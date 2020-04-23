@@ -360,7 +360,15 @@ void qtractorTrackForm::setTrack ( qtractorTrack *pTrack )
 	// Make sure this will be remembered for backup.
 	m_pOldMidiBus = m_pMidiBus;
 	m_iOldChannel = m_props.midiChannel;
-//	m_sOldInstrumentName initially blank...
+
+	m_sOldInstrumentName.clear();
+	if (m_pOldMidiBus) {
+		const qtractorMidiBus::Patch& patch
+			= m_pOldMidiBus->patch(m_iOldChannel);
+		if (patch.isValid())
+			m_sOldInstrumentName = patch.instrumentName;
+	}
+
 	m_iOldBankSelMethod  = m_props.midiBankSelMethod;
 	m_iOldBank = m_props.midiBank;
 	m_iOldProg = m_props.midiProg;
@@ -660,12 +668,12 @@ void qtractorTrackForm::updateInstrumentsAdd (
 
 	pMidiManager->updateInstruments();
 
-	const qtractorMidiManager::Instruments& list
+	const qtractorInstrumentList& instruments
 		= pMidiManager->instruments();
-	qtractorMidiManager::Instruments::ConstIterator iter = list.constBegin();
-	const qtractorMidiManager::Instruments::ConstIterator& iter_end = list.constEnd();
+	qtractorInstrumentList::ConstIterator iter = instruments.constBegin();
+	const qtractorInstrumentList::ConstIterator& iter_end = instruments.constEnd();
 	for ( ; iter != iter_end; ++iter)
-		m_ui.InstrumentComboBox->addItem(icon, iter.key());
+		m_ui.InstrumentComboBox->addItem(icon, iter.value().instrumentName());
 }
 
 
@@ -1020,25 +1028,30 @@ bool qtractorTrackForm::updateBanksAdd (
 	if (pMidiManager == nullptr)
 		return false;
 
-	const qtractorMidiManager::Instruments& list
+	const qtractorInstrumentList& instruments
 		= pMidiManager->instruments();
-	if (!list.contains(sInstrumentName))
+	if (!instruments.contains(sInstrumentName))
 		return false;
 
-	// Refresh bank mapping...
-	const qtractorMidiManager::Banks& banks = list[sInstrumentName];
-	qtractorMidiManager::Banks::ConstIterator iter = banks.constBegin();
-	const qtractorMidiManager::Banks::ConstIterator& iter_end = banks.constEnd();
+	// Get instrument set alright...
+	const qtractorInstrument& instr
+		= instruments.value(sInstrumentName);
+	// Refresh patch bank mapping...
+	const qtractorInstrumentPatches& patches = instr.patches();
+	qtractorInstrumentPatches::ConstIterator iter = patches.constBegin();
+	const qtractorInstrumentPatches::ConstIterator& iter_end = patches.constEnd();
 	for ( ; iter != iter_end; ++iter) {
-		m_ui.BankComboBox->addItem(icon, iter.value().name);
-		m_banks[iBankIndex++] = iter.key();
+		if (iter.key() >= 0) {
+			m_ui.BankComboBox->addItem(icon, iter.value().name());
+			m_banks[iBankIndex++] = iter.key();
+		}
 	}
 	// Reset given bank combobox index.
 	iBankIndex = -1;
-	// For proper bank selection...
-	if (banks.contains(iBank)) {
-		const qtractorMidiManager::Bank& bank = banks[iBank];
-		iBankIndex = m_ui.BankComboBox->findText(bank.name);
+	if (iBank >= 0) {
+		const qtractorInstrumentData& patch = instr.patch(iBank);
+		if (!patch.name().isEmpty())
+			iBankIndex = m_ui.BankComboBox->findText(patch.name());
 	}
 
 	// Mark that we've have something.
@@ -1054,35 +1067,34 @@ bool qtractorTrackForm::updateProgramsAdd (
 	if (pMidiManager == nullptr)
 		return false;
 
-	const qtractorMidiManager::Instruments& list
+	const qtractorInstrumentList& instruments
 		= pMidiManager->instruments();
-	if (!list.contains(sInstrumentName))
+	if (!instruments.contains(sInstrumentName))
 		return false;
 
+	// Common program label...
+	const QString sProg("%1 - %2");
+	// Instrument reference...
+	const qtractorInstrument& instr
+		= instruments.value(sInstrumentName);
 	// Bank reference...
-	const qtractorMidiManager::Banks& banks
-		= list[sInstrumentName];
-	if (banks.contains(iBank)) {
-		const qtractorMidiManager::Progs& progs
-			= banks[iBank].progs;
-		// Refresh program mapping...
-		const QString sProg("%1 - %2");
-		qtractorMidiManager::Progs::ConstIterator iter = progs.constBegin();
-		const qtractorMidiManager::Progs::ConstIterator& iter_end = progs.constEnd();
-		for ( ; iter != iter_end; ++iter) {
+	const qtractorInstrumentData& bank = instr.patch(iBank);
+	// Enumerate the explicit given program list...
+	qtractorInstrumentData::ConstIterator iter = bank.constBegin();
+	const qtractorInstrumentData::ConstIterator& iter_end = bank.constEnd();
+	for ( ; iter != iter_end; ++iter) {
+		if (iter.key() >= 0 && !iter.value().isEmpty()) {
 			m_ui.ProgComboBox->addItem(icon,
 				sProg.arg(iter.key()).arg(iter.value()));
 			m_progs[iProgIndex++] = iter.key();
 		}
-		// Reset given program combobox index.
-		iProgIndex = -1;
-		// For proper program selection...
-		if (progs.contains(iProg)) {
-			iProgIndex = m_ui.ProgComboBox->findText(
-				sProg.arg(iProg).arg(progs[iProg]));
-		}
 	}
-	else iProgIndex = -1;
+	// For proper program selection, thru label...
+	iProgIndex = -1;
+	if (iProg >= 0 && bank.contains(iProg)) {
+		iProgIndex = m_ui.ProgComboBox->findText(
+			sProg.arg(iProg).arg(bank[iProg]));
+	}
 
 	// Mark that we've have something.
 	return true;

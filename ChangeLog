@@ -4,6 +4,31 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+GIT HEAD
+
+- LV2 Plug-in Patch parameter/properties automation and
+  MIDI Controller assignment/learn are now a possibility.
+  (EXPERIMENTAL)
+
+- LV2 Atom/Port-event host notification support has been
+  implemented (unofficial). (EXPERIMENTAL)
+
+- Fix clean-up of any recording leftovers. (EXPERIMENTAL)
+
+- JACK Transport latency is now taken into account for
+  recording latency compensation. (EXPERIMENTAL)
+
+- Attempt to force correct audio clip offsets due on
+  recording latency compensation are not quantized to
+  MIDI metronomic time-scale anymore. (EXPERIMENTAL)
+
+- LV2 Plug-in MIDNAM support introduced. (EXPERIMENTAL)
+
+- Use Shift or Ctrl keyboard modifiers with the mouse-
+  wheel to change any Direct Access plug-in parameters
+  (issue #257).
+
+
 0.9.13  2020-03-28  A Spring'20 Release.
 
 - All meters background color are now customize-able

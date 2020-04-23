@@ -24,12 +24,12 @@
 
 #include "ui_qtractorPluginForm.h"
 
+#include "qtractorPlugin.h"
+
 #include <QHash>
 
 
 // Forward declarations...
-class qtractorPlugin;
-class qtractorPluginParam;
 class qtractorPluginParamWidget;
 class qtractorPluginPropertyWidget;
 
@@ -153,11 +153,11 @@ class qtractorPluginParamWidget : public QWidget
 public:
 
 	// Constructor.
-	qtractorPluginParamWidget(qtractorPluginParam *pParam,
+	qtractorPluginParamWidget(qtractorPlugin::Param *pParam,
 		QWidget *pParent = nullptr);
 
 	// Main properties accessors.
-	qtractorPluginParam *param() const
+	qtractorPlugin::Param *param() const
 		{ return m_pParam; }
 
 	// Refreshner-loader method.
@@ -174,7 +174,7 @@ private:
 	class SliderInterface;
 
 	// Instance variables.
-	qtractorPluginParam *m_pParam;
+	qtractorPlugin::Param *m_pParam;
 
 	// Some possible managed widgets.
 	qtractorObserverCheckBox *m_pCheckBox;
@@ -196,14 +196,12 @@ class qtractorPluginPropertyWidget : public QWidget
 public:
 
 	// Constructor.
-	qtractorPluginPropertyWidget(qtractorPlugin *pPlugin,
-		unsigned long iProperty, QWidget *pParent = nullptr);
+	qtractorPluginPropertyWidget(qtractorPlugin::Property *pProp,
+		QWidget *pParent = nullptr);
 
 	// Main properties accessors.
-	qtractorPlugin *plugin() const
-		{ return m_pPlugin; }
-	unsigned long property() const
-		{ return m_iProperty; }
+	qtractorPlugin::Property *property() const
+		{ return m_pProp; }
 
 	// Refreshner-loader method.
 	void refresh();
@@ -224,15 +222,16 @@ protected:
 private:
 
 	// Instance variables.
-	qtractorPlugin *m_pPlugin;
-	unsigned long   m_iProperty;
+	qtractorPlugin::Property *m_pProp;
 
 	// Some possible managed widgets.
-	QCheckBox       *m_pCheckBox;
-	qtractorSpinBox *m_pSpinBox;
-	QTextEdit       *m_pTextEdit;
-	QComboBox       *m_pComboBox;
-	QToolButton     *m_pToolButton;
+	qtractorObserverCheckBox *m_pCheckBox;
+	qtractorObserverSpinBox  *m_pSpinBox;
+
+	// Non-automatable widgets.
+	QTextEdit   *m_pTextEdit;
+	QComboBox   *m_pComboBox;
+	QToolButton *m_pToolButton;
 };
 
 
