@@ -49,13 +49,23 @@ protected slots:
 	void accept();
 	void reject();
 
-	void browseExportPath();
+	void exportPathChanged(const QString&);
+	void exportPathClicked();
+
+	void audioExportTypeChanged(int);
 
 	void rangeChanged();
 	void formatChanged(int);
 	void valueChanged();
 
 	void stabilizeForm();
+
+protected:
+
+	void audioExportTypeUpdate(int iIndex);
+
+	int audioExportFormat() const;
+	int midiExportFormat() const;
 
 private:
 

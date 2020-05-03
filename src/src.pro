@@ -29,6 +29,7 @@ HEADERS += config.h \
 	qtractorClip.h \
 	qtractorClipCommand.h \
 	qtractorClipSelect.h \
+	qtractorComboBox.h \
 	qtractorCommand.h \
 	qtractorConnect.h \
 	qtractorConnections.h \
@@ -162,6 +163,7 @@ SOURCES += \
 	qtractorClip.cpp \
 	qtractorClipCommand.cpp \
 	qtractorClipSelect.cpp \
+	qtractorComboBox.cpp \
 	qtractorCommand.cpp \
 	qtractorConnect.cpp \
 	qtractorConnections.cpp \
