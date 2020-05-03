@@ -2067,7 +2067,7 @@ bool qtractorMainForm::saveSession ( bool bPrompt )
 	QString sFilename = m_sFilename;
 
 	if (sFilename.isEmpty()) {
-		sFilename = QFileInfo(m_pOptions->sSessionDir,
+		sFilename = QFileInfo(m_pSession->sessionDir(),
 			qtractorSession::sanitize(m_pSession->sessionName())).absoluteFilePath();
 		bPrompt = true;
 	}
@@ -2870,7 +2870,9 @@ void qtractorMainForm::autoSaveReset (void)
 // Execute auto-save routine...
 void qtractorMainForm::autoSaveSession (void)
 {
-	QString sAutoSaveDir = m_pOptions->sSessionDir;
+	QString sAutoSaveDir = m_pSession->sessionDir();
+	if (sAutoSaveDir.isEmpty())
+		sAutoSaveDir = m_pOptions->sSessionDir;
 	if (sAutoSaveDir.isEmpty())
 		sAutoSaveDir = QDir::tempPath();
 
