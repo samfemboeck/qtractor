@@ -761,6 +761,12 @@ static const LV2_Feature *g_lv2_features[] =
 #define LV2_UI_TYPE_EXTERNAL   5
 #define LV2_UI_TYPE_OTHER      6
 
+// LV2 Plug-in UI native flag mask.
+#define LV2_UI_TYPE_NATIVE     1000
+
+#define LV2_UI_TYPE_GTK_NATIVE LV2_UI_TYPE_GTK + LV2_UI_TYPE_NATIVE
+#define LV2_UI_TYPE_X11_NATIVE LV2_UI_TYPE_X11 + LV2_UI_TYPE_NATIVE
+
 #ifndef LV2_UI__Qt5UI
 #define LV2_UI__Qt5UI	LV2_UI_PREFIX "Qt5UI"
 #endif
@@ -2133,6 +2139,7 @@ qtractorLv2Plugin::qtractorLv2Plugin ( qtractorPluginList *pList,
 	#ifdef CONFIG_LIBSUIL
 		, m_suil_host(nullptr)
 		, m_suil_instance(nullptr)
+		, m_suil_support(false)
 	#endif
 	#ifdef CONFIG_LV2_ATOM
 		, m_ui_events(nullptr)
@@ -3113,7 +3120,31 @@ void qtractorLv2Plugin::openEditor ( QWidget */*pParent*/ )
 	if (m_lv2_uis == nullptr)
 		return;
 
-	QMap<int, LilvUI *> ui_map;
+	struct ui_key
+	{
+		ui_key (int type = LV2_UI_TYPE_NONE)
+		{
+			if (type >= LV2_UI_TYPE_NATIVE)
+				ukey = ((type - LV2_UI_TYPE_NATIVE) << 1) | 1;
+			else
+				ukey = (type << 1);
+		}
+
+		int ui_type () const
+		{
+			int type = (ukey >> 1);
+			if (ukey & 1)
+				type += LV2_UI_TYPE_NATIVE;
+			return type;
+		}
+
+		bool operator< (const ui_key& key) const
+			{ return (ukey < key.ukey); }
+
+		uint ukey;
+	};
+
+	QMap<ui_key, LilvUI *> ui_map;
 
 	LILV_FOREACH(uis, iter, m_lv2_uis) {
 		LilvUI *ui = const_cast<LilvUI *> (lilv_uis_get(m_lv2_uis, iter));
@@ -3122,39 +3153,47 @@ void qtractorLv2Plugin::openEditor ( QWidget */*pParent*/ )
 		#ifdef LV2_EXTERNAL_UI_DEPRECATED_URI
 			|| lilv_ui_is_a(ui, g_lv2_external_ui_deprecated_class)
 		#endif
-		)	ui_map.insert(LV2_UI_TYPE_EXTERNAL, ui);
+		)	ui_map.insert(ui_key(LV2_UI_TYPE_EXTERNAL), ui);
 		else
 	#endif
-		if (lilv_ui_is_a(ui, g_lv2_x11_ui_class))
-			ui_map.insert(LV2_UI_TYPE_X11, ui);
+		if (lilv_ui_is_a(ui, g_lv2_x11_ui_class)) {
+			ui_map.insert(ui_key(LV2_UI_TYPE_X11), ui);
+		#ifdef CONFIG_LV2_UI_X11
+			ui_map.insert(ui_key(LV2_UI_TYPE_X11_NATIVE), ui);
+		#endif
+		}
 		else
-		if (lilv_ui_is_a(ui, g_lv2_gtk_ui_class))
-			ui_map.insert(LV2_UI_TYPE_GTK, ui);
+		if (lilv_ui_is_a(ui, g_lv2_gtk_ui_class)) {
+			ui_map.insert(ui_key(LV2_UI_TYPE_GTK), ui);
+		#ifdef CONFIG_LV2_UI_GTK2
+			ui_map.insert(ui_key(LV2_UI_TYPE_GTK_NATIVE), ui);
+		#endif
+		}
 	#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 		else
 		if (lilv_ui_is_a(ui, g_lv2_qt4_ui_class))
-			ui_map.insert(LV2_UI_TYPE_QT4, ui);
+			ui_map.insert(ui_key(LV2_UI_TYPE_QT4), ui);
 	#else
 		else
 		if (lilv_ui_is_a(ui, g_lv2_qt5_ui_class))
-			ui_map.insert(LV2_UI_TYPE_QT5, ui);
+			ui_map.insert(ui_key(LV2_UI_TYPE_QT5), ui);
 	#endif
 	#ifdef CONFIG_LV2_UI_SHOW
 		else
 		if (pLv2Type->lv2_ui_show_interface(ui))
-			ui_map.insert(LV2_UI_TYPE_OTHER, ui);
+			ui_map.insert(ui_key(LV2_UI_TYPE_OTHER), ui);
 	#endif
 	}
 
-	const QMap<int, LilvUI *>::ConstIterator& ui_begin = ui_map.constBegin();
-	const QMap<int, LilvUI *>::ConstIterator& ui_end = ui_map.constEnd();
-	QMap<int, LilvUI *>::ConstIterator ui_iter = ui_begin;
+	const QMap<ui_key, LilvUI *>::ConstIterator& ui_begin = ui_map.constBegin();
+	const QMap<ui_key, LilvUI *>::ConstIterator& ui_end = ui_map.constEnd();
+	QMap<ui_key, LilvUI *>::ConstIterator ui_iter = ui_begin;
 
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
 	if (pOptions && pOptions->bQueryEditorType) {
 		const int iEditorType = editorType();
 		if (iEditorType > 0) // Must be != LV2_UI_TYPE_NONE.
-			ui_iter = ui_map.constFind(iEditorType);
+			ui_iter = ui_map.constFind(ui_key(iEditorType));
 		else
 		if (ui_map.count() > 1) {
 			const QString& sTitle
@@ -3168,7 +3207,7 @@ void qtractorLv2Plugin::openEditor ( QWidget */*pParent*/ )
 			mbox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
 			QButtonGroup group;
 			for ( ; ui_iter != ui_end; ++ui_iter) {
-				const int ui_type = ui_iter.key();
+				const int ui_type = ui_iter.key().ui_type();
 				QRadioButton *pRadioButton;
 				switch (ui_type) {
 				case LV2_UI_TYPE_EXTERNAL:
@@ -3177,8 +3216,14 @@ void qtractorLv2Plugin::openEditor ( QWidget */*pParent*/ )
 				case LV2_UI_TYPE_X11:
 					pRadioButton = new QRadioButton(QObject::tr("X11"));
 					break;
+				case LV2_UI_TYPE_X11_NATIVE:
+					pRadioButton = new QRadioButton(QObject::tr("X11 (native)"));
+					break;
 				case LV2_UI_TYPE_GTK:
 					pRadioButton = new QRadioButton(QObject::tr("Gtk2"));
+					break;
+				case LV2_UI_TYPE_GTK_NATIVE:
+					pRadioButton = new QRadioButton(QObject::tr("Gtk2 (native)"));
 					break;
 			#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 				case LV2_UI_TYPE_QT4:
@@ -3204,11 +3249,11 @@ void qtractorLv2Plugin::openEditor ( QWidget */*pParent*/ )
 			cbox.blockSignals(true);
 			mbox.addButton(&cbox, QMessageBox::ActionRole);
 			if (mbox.exec() == QMessageBox::Ok)
-				ui_iter = ui_map.constFind(group.checkedId());
+				ui_iter = ui_map.constFind(ui_key(group.checkedId()));
 			else
 				ui_iter = ui_end;
 			if (ui_iter != ui_end && cbox.isChecked())
-				setEditorType(ui_iter.key());
+				setEditorType(ui_iter.key().ui_type());
 		}
 	}
 
@@ -3221,8 +3266,14 @@ void qtractorLv2Plugin::openEditor ( QWidget */*pParent*/ )
 	// Tell the world we'll (maybe) take some time...
 	qtractorPluginList::WaitCursor waiting;
 
-	m_lv2_ui_type = ui_iter.key();
+	m_lv2_ui_type = ui_iter.key().ui_type();
 	m_lv2_ui = ui_iter.value();
+
+#ifdef CONFIG_LIBSUIL
+	m_suil_support = bool(m_lv2_ui_type < LV2_UI_TYPE_NATIVE);
+#endif
+	if (m_lv2_ui_type >= LV2_UI_TYPE_NATIVE)
+		m_lv2_ui_type -= LV2_UI_TYPE_NATIVE;
 
 	const char *ui_type_uri = nullptr;
 	switch (m_lv2_ui_type) {
@@ -3852,11 +3903,11 @@ void qtractorLv2Plugin::lv2_ui_port_write ( uint32_t port_index,
 		return;
 #endif
 
-	const float val = *(float *) buffer;
+	const float port_value = *(float *) buffer;
 
 	// FIXME: Update plugin params...
-	// updateParamValue(port_index, val, false);
-	m_ui_params.insert(port_index, val);
+	// updateParamValue(port_index, port_value, false);
+	m_ui_params.insert(port_index, port_value);
 }
 
 // LV2 UI portMap method.
@@ -3918,7 +3969,7 @@ LV2UI_Request_Value_Status qtractorLv2Plugin::lv2_ui_request_value (
 	if (type != g_lv2_urids.atom_Path)
 		return LV2UI_REQUEST_VALUE_ERR_UNSUPPORTED;
 
-	QString sFilename = pProp->value().toString();
+	QString sFilename = pProp->variant().toString();
 
 #ifdef CONFIG_DEBUG
 	qDebug("qtractorLv2Plugin[%p]::lv2_ui_request_value(%d, %d) [%s=\"%s\"]",
@@ -3956,7 +4007,7 @@ LV2UI_Request_Value_Status qtractorLv2Plugin::lv2_ui_request_value (
 		sFilename = fileDialog.selectedFiles().first();
 #endif
 	if (!sFilename.isEmpty()) {
-		pProp->setValue(QFileInfo(sFilename).canonicalFilePath(), true);
+		pProp->setVariant(QFileInfo(sFilename).canonicalFilePath(), true);
 		lv2_property_update(key);
 	}
 
@@ -4077,7 +4128,8 @@ bool qtractorLv2Plugin::lv2_ui_instantiate (
 
 #ifdef CONFIG_LIBSUIL
 	// Check whether special UI wrapping are supported...
-	if (ui_type_uri && suil_ui_supported(ui_host_uri, ui_type_uri) > 0) {
+	if (m_suil_support && ui_type_uri &&
+		suil_ui_supported(ui_host_uri, ui_type_uri) > 0) {
 		m_suil_host = suil_host_new(
 			qtractor_lv2_ui_port_write,
 			qtractor_lv2_ui_port_index,
@@ -4330,22 +4382,22 @@ void qtractorLv2Plugin::lv2_property_changed (
 #endif
 
 	if (type == g_lv2_urids.atom_Bool)
-		pProp->setValue(bool(*(const int32_t *) body));
+		pProp->setVariant(bool(*(const int32_t *) body));
 	else
 	if (type == g_lv2_urids.atom_Int)
-		pProp->setValue(int(*(const int32_t *) body));
+		pProp->setVariant(int(*(const int32_t *) body));
 	else
 	if (type == g_lv2_urids.atom_Long)
-		pProp->setValue(qlonglong(*(const int64_t *) body));
+		pProp->setVariant(qlonglong(*(const int64_t *) body));
 	else
 	if (type == g_lv2_urids.atom_Float)
-		pProp->setValue(*(const float *) body);
+		pProp->setVariant(*(const float *) body);
 	else
 	if (type == g_lv2_urids.atom_Double)
-		pProp->setValue(*(const double *) body);
+		pProp->setVariant(*(const double *) body);
 	else
 	if (type == g_lv2_urids.atom_String || type == g_lv2_urids.atom_Path)
-		pProp->setValue(QByteArray((const char *) body, size));
+		pProp->setVariant(QByteArray((const char *) body, size));
 
 	// Update the stock/generic form if visible...
 	refreshForm();
@@ -4369,7 +4421,7 @@ void qtractorLv2Plugin::lv2_property_update ( LV2_URID key )
 		return;
 
 	LV2_URID type = pProp->type();
-	const QVariant& value = pProp->value();
+	const QVariant& value = pProp->variant();
 
 #ifdef CONFIG_DEBUG_0
 	qDebug("qtractorLv2Plugin[%p]::lv2_property_update(%u) [%s]",
@@ -5529,8 +5581,44 @@ bool qtractorLv2Plugin::Property::isPath (void) const
 	{ return (m_type == g_lv2_urids.atom_Path); }
 
 
-#endif	// CONFIG_LV2_PATCH
+// Fake property predicates.
+bool qtractorLv2Plugin::Property::isBoundedBelow (void) const
+	{ return !isString() && !isPath(); }
 
+bool qtractorLv2Plugin::Property::isBoundedAbove (void) const
+	{ return !isString() && !isPath(); }
+
+bool qtractorLv2Plugin::Property::isDefaultValue (void) const
+	{ return !isString() && !isPath(); }
+
+bool qtractorLv2Plugin::Property::isLogarithmic (void) const
+	{ return false; }
+
+bool qtractorLv2Plugin::Property::isSampleRate (void) const
+	{ return false; }
+
+bool qtractorLv2Plugin::Property::isDisplay (void) const
+	{ return false; }
+
+
+// Virtual observer updater.
+void qtractorLv2Plugin::Property::update ( float fValue, bool bUpdate )
+{
+	qtractorPlugin::Property::update(fValue, bUpdate);
+
+	if (bUpdate) {
+		qtractorPlugin *pPlugin = plugin();
+		qtractorPluginType *pType = pPlugin->type();
+		if (pType->typeHint() == qtractorPluginType::Lv2) {
+			qtractorLv2Plugin *pLv2Plugin
+				= static_cast<qtractorLv2Plugin *> (pPlugin);
+			if (pLv2Plugin)
+				pLv2Plugin->lv2_property_update(index());
+		}
+	}
+}
+
+#endif	// CONFIG_LV2_PATCH
 
 #endif	// CONFIG_LV2
 

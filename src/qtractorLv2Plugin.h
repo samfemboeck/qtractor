@@ -517,6 +517,7 @@ private:
 #ifdef CONFIG_LIBSUIL
 	SuilHost      *m_suil_host;
 	SuilInstance  *m_suil_instance;
+	bool           m_suil_support;
 #endif
 
 #ifdef CONFIG_LV2_ATOM
@@ -729,6 +730,19 @@ public:
 	bool isInteger() const;
 	bool isString()  const;
 	bool isPath()    const;
+
+protected:
+
+	// Fake property predicates.
+	bool isBoundedBelow() const;
+	bool isBoundedAbove() const;
+	bool isDefaultValue() const;
+	bool isLogarithmic()  const;
+	bool isSampleRate()   const;
+	bool isDisplay()      const;
+
+	// Virtual observer updater.
+	void update(float fValue, bool bUpdate);
 
 private:
 
