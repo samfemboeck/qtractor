@@ -114,8 +114,8 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFile>
-#include <QRegExp>
 #include <QUrl>
+#include <QRegularExpression>
 
 #include <QDomDocument>
 
@@ -2643,9 +2643,10 @@ QString qtractorMainForm::sessionBackupPath ( const QString& sFilename )
 		fi.setFile(QDir(fi.filePath()), sBackupName);
 	if (fi.exists()) {
 		int iBackupNo = 0;
-		const QRegExp rxBackupNo("\\.([0-9]+)$");
-		if (rxBackupNo.indexIn(sBackupName) >= 0) {
-			iBackupNo = rxBackupNo.cap(1).toInt();
+		QRegularExpression rxBackupNo("\\.([0-9]+)$");
+		QRegularExpressionMatch match = rxBackupNo.match(sBackupName);
+		if (match.hasMatch()) {
+			iBackupNo = match.captured(1).toInt();
 			sBackupName.remove(rxBackupNo);
 		}
 		sBackupName += ".%1";
