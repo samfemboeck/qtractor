@@ -40,7 +40,7 @@ public:
 
 	// Constructor.
 	qtractorMidiImportForm(qtractorMidiImportExtender *pMidiImportExtender,
-		QWidget *pParent = 0, Qt::WindowFlags wflags = 0);
+		QWidget *pParent = nullptr, Qt::WindowFlags wflags = Qt::WindowFlags());
 	// Destructor.
 	virtual ~qtractorMidiImportForm();
 

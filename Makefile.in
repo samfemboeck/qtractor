@@ -72,6 +72,7 @@ headers = \
 	src/qtractorMidiEventList.h \
 	src/qtractorMidiFile.h \
 	src/qtractorMidiFileTempo.h \
+	src/qtractorMidiImportForm.h \
 	src/qtractorMidiListView.h \
 	src/qtractorMidiManager.h \
 	src/qtractorMidiMeter.h \
@@ -199,6 +200,7 @@ sources = \
 	src/qtractorMidiEventList.cpp \
 	src/qtractorMidiFile.cpp \
 	src/qtractorMidiFileTempo.cpp \
+	src/qtractorMidiImportForm.cpp \
 	src/qtractorMidiListView.cpp \
 	src/qtractorMidiManager.cpp \
 	src/qtractorMidiMeter.cpp \
@@ -273,6 +275,7 @@ forms = \
 	src/qtractorMidiControlForm.ui \
 	src/qtractorMidiControlObserverForm.ui \
 	src/qtractorMidiEditorForm.ui \
+	src/qtractorMidiImportForm.ui \
 	src/qtractorMidiSysexForm.ui \
 	src/qtractorMidiToolsForm.ui \
 	src/qtractorOptionsForm.ui \
