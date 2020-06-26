@@ -1043,9 +1043,11 @@ static struct qtractorLv2Urids
 	LV2_URID atom_Double;
 	LV2_URID atom_String;
 	LV2_URID atom_Path;
+#ifdef CONFIG_LV2_PORT_EVENT
 	LV2_URID atom_PortEvent;
 	LV2_URID atom_portTuple;
 #endif
+#endif	// CONFIG_LV2_ATOM
 #ifdef CONFIG_LV2_PATCH
 	LV2_URID patch_Get;
 	LV2_URID patch_Put;
@@ -1342,8 +1344,14 @@ static void qtractor_lv2_time_position_close ( qtractorLv2Plugin *pLv2Plugin )
 
 #undef signals // Collides with GTK symbology
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+
+#pragma GCC diagnostic pop
+
 
 static void qtractor_lv2_ui_gtk2_on_size_request (
 	GtkWidget */*widget*/, GtkRequisition *req, gpointer user_data )
@@ -1414,7 +1422,7 @@ bool qtractorLv2PluginType::open (void)
 	}
 
 	// Sanitize plugin label.
-	m_sLabel = m_sName.simplified().replace(QRegExp("[\\s|\\.|\\-]+"), "_");
+	m_sLabel = m_sName.simplified().replace(QRegularExpression("[\\s|\\.|\\-]+"), "_");
 
 	// Retrieve plugin unique identifier.
 	m_iUniqueID = qHash(m_sUri);
@@ -2958,7 +2966,7 @@ void qtractorLv2Plugin::process (
 				else
 					lv2_atom_buffer_reset(abuf, true);
 				lilv_instance_connect_port(instance,
-					m_piAtomIns[j], &abuf->atoms);
+					m_piAtomIns[j], &abuf->aseq);
 			#ifdef CONFIG_LV2_TIME_POSITION
 				// Time position has changed, provide an update...
 				if (m_lv2_time_position_changed > 0 &&
@@ -2998,7 +3006,7 @@ void qtractorLv2Plugin::process (
 				else
 					lv2_atom_buffer_reset(abuf, false);
 				lilv_instance_connect_port(instance,
-					m_piAtomOuts[j], &abuf->atoms);
+					m_piAtomOuts[j], &abuf->aseq);
 			}
 		#ifdef CONFIG_LV2_UI
 			// Read and apply control changes, eventually from an UI...
@@ -3408,7 +3416,7 @@ void qtractorLv2Plugin::openEditor ( QWidget */*pParent*/ )
 		pQtWidget->setAttribute(Qt::WA_QuitOnClose, false);
 		QWidget *pQtContainer = QWidget::createWindowContainer(pQtWindow, pQtWidget);
 		QVBoxLayout *pVBoxLayout = new QVBoxLayout();
-		pVBoxLayout->setMargin(0);
+		pVBoxLayout->setContentsMargins(0, 0, 0, 0);
 		pVBoxLayout->setSpacing(0);
 		pVBoxLayout->addWidget(pQtContainer);
 		pQtWidget->setLayout(pVBoxLayout);
@@ -3494,6 +3502,10 @@ void qtractorLv2Plugin::closeEditor (void)
 
 #ifdef CONFIG_LV2_UI_TOUCH
 	m_ui_params_touch.clear();
+#endif
+
+#ifdef CONFIG_LV2_PORT_EVENT
+	m_port_events.clear();
 #endif
 
 #ifdef CONFIG_LV2_UI_SHOW
@@ -3611,6 +3623,25 @@ void qtractorLv2Plugin::idleEditor (void)
 		// Done.
 		m_ui_params.clear();
 	}
+
+#ifdef CONFIG_LV2_PORT_EVENT
+	// Try to make all port events at once now...
+	if (m_port_events.count() > 0) {
+		QHash<unsigned long, float>::ConstIterator iter
+			= m_port_events.constBegin();
+		const QHash<unsigned long, float>::ConstIterator& iter_end
+			= m_port_events.constEnd();
+		for ( ; iter != iter_end; ++iter) {
+			const unsigned long iIndex = iter.key();
+			const float fValue = iter.value();
+			qtractorPlugin::Param *pParam = findParam(iIndex);
+			if (pParam)
+				pParam->setValue(fValue, false);
+		}
+		// Done.
+		m_port_events.clear();
+	}
+#endif
 
 #ifdef CONFIG_LV2_MIDNAM
 	if (m_lv2_midnam_update > 0) {
@@ -3911,6 +3942,7 @@ void qtractorLv2Plugin::lv2_ui_port_write ( uint32_t port_index,
 	// updateParamValue(port_index, port_value, false);
 	m_ui_params.insert(port_index, port_value);
 }
+
 
 // LV2 UI portMap method.
 uint32_t qtractorLv2Plugin::lv2_ui_port_index ( const char *port_symbol )
@@ -4315,9 +4347,9 @@ void qtractorLv2Plugin::lv2_ui_port_event ( uint32_t port_index,
 						port_index = *(uint32_t *) (iter + 1);
 					else
 					if (iter->type == g_lv2_urids.atom_Float) {
-						const uint32_t buffer_size = iter->size;
+					//	const uint32_t buffer_size = iter->size;
 						const void *buffer = iter + 1;
-						lv2_ui_port_write(port_index, buffer_size, 0, buffer);
+						m_port_events.insert(port_index, *(float *) buffer);
 					}
 				}
 			}

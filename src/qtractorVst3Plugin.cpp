@@ -61,6 +61,8 @@
 #include <QFileInfo>
 #include <QMap>
 
+#include <QRegularExpression>
+
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #define CONFIG_VST3_XCB
@@ -84,7 +86,7 @@ using namespace Linux;
 static inline
 QString fromTChar ( const Vst::TChar *str )
 {
-	return QString::fromUtf16(reinterpret_cast<const ushort *> (str));
+	return QString::fromUtf16(reinterpret_cast<const char16_t *> (str));
 }
 
 
@@ -165,6 +167,8 @@ private:
 
 	Timer *m_pTimer;
 
+	unsigned int m_timerRefCount;
+
 	struct TimerItem
 	{
 		TimerItem(ITimerHandler *h, TimerInterval i)
@@ -176,7 +180,7 @@ private:
 	};
 
 	QHash<ITimerHandler *, TimerItem *> m_timers;
-	QHash<IEventHandler *, int> m_fileDescriptors;
+	QMultiHash<IEventHandler *, int> m_fileDescriptors;
 
 #ifdef CONFIG_VST3_XCB
 	xcb_connection_t   *m_pXcbConnection;
@@ -552,6 +556,8 @@ qtractorVst3PluginHost::qtractorVst3PluginHost (void)
 
 	m_pTimer = new Timer(this);
 
+	m_timerRefCount = 0;
+
 #ifdef CONFIG_VST3_XCB
 	m_pXcbConnection = nullptr;
 	m_iXcbFileDescriptor = 0;
@@ -634,11 +640,11 @@ uint32 PLUGIN_API qtractorVst3PluginHost::release (void)
 
 // QTimer stuff...
 //
-void qtractorVst3PluginHost::startTimer (int msecs)
-	{ return m_pTimer->start(msecs); }
+void qtractorVst3PluginHost::startTimer ( int msecs )
+	{ if (++m_timerRefCount == 1) m_pTimer->start(msecs); }
 
 void qtractorVst3PluginHost::stopTimer (void)
-	{ return m_pTimer->stop(); }
+	{ if (m_timerRefCount > 0 && --m_timerRefCount == 0) m_pTimer->stop(); }
 
 int qtractorVst3PluginHost::timerInterval (void) const
 	{ return m_pTimer->interval(); }
@@ -726,14 +732,15 @@ void qtractorVst3PluginHost::processEventHandlers (void)
 	}
 #endif
 
-	QHash<IEventHandler *, int>::ConstIterator iter
+	QMultiHash<IEventHandler *, int>::ConstIterator iter
 		= m_fileDescriptors.constBegin();
 	for ( ; iter != m_fileDescriptors.constEnd(); ++iter) {
-		const int fd = iter.value();
-		FD_SET(fd, &rfds);
-		FD_SET(fd, &wfds);
-		FD_SET(fd, &efds);
-		nfds = qMax(nfds, fd);
+		foreach (int fd, m_fileDescriptors.values(iter.key())) {
+			FD_SET(fd, &rfds);
+			FD_SET(fd, &wfds);
+			FD_SET(fd, &efds);
+			nfds = qMax(nfds, fd);
+		}
 	}
 
 	timeval timeout;
@@ -744,12 +751,13 @@ void qtractorVst3PluginHost::processEventHandlers (void)
 	if (result > 0)	{
 		iter = m_fileDescriptors.constBegin();
 		for ( ; iter != m_fileDescriptors.constEnd(); ++iter) {
-			const int fd = iter.value();
-			if (FD_ISSET(fd, &rfds) ||
-				FD_ISSET(fd, &wfds) ||
-				FD_ISSET(fd, &efds)) {
-				IEventHandler *handler = iter.key();
-				handler->onFDIsSet(fd);
+			foreach (int fd, m_fileDescriptors.values(iter.key())) {
+				if (FD_ISSET(fd, &rfds) ||
+					FD_ISSET(fd, &wfds) ||
+					FD_ISSET(fd, &efds)) {
+					IEventHandler *handler = iter.key();
+					handler->onFDIsSet(fd);
+				}
 			}
 		}
 	}
@@ -855,6 +863,7 @@ void qtractorVst3PluginHost::clear (void)
 	closeXcbConnection();
 #endif
 
+	m_timerRefCount = 0;
 	m_processRefCount = 0;
 
 	qDeleteAll(m_timers);
@@ -987,7 +996,7 @@ bool qtractorVst3PluginType::Impl::open ( unsigned long iIndex )
 	PFactoryInfo factoryInfo;
 	if (factory->getFactoryInfo(&factoryInfo) != kResultOk) {
 	#ifdef CONFIG_DEBUG
-		qDebug("vst3_test_plugin_type::Impl[%p]::open(\"%s\", %lu)"
+		qDebug("qtractorVst3PluginType::Impl[%p]::open(\"%s\", %lu)"
 			" *** Failed to retrieve plug-in factory information.", this,
 			m_pFile->filename().toUtf8().constData(), iIndex);
 	#endif
@@ -1121,6 +1130,16 @@ bool qtractorVst3PluginType::Impl::open ( unsigned long iIndex )
 
 			if (unitInfos) m_unitInfos = owned(unitInfos);
 
+			// Connect components...
+			if (m_component && m_controller) {
+				FUnknownPtr<Vst::IConnectionPoint> component_cp(m_component);
+				FUnknownPtr<Vst::IConnectionPoint> controller_cp(m_controller);
+				if (component_cp && controller_cp) {
+					component_cp->connect(controller_cp);
+					controller_cp->connect(component_cp);
+				}
+			}
+
 			return true;
 		}
 
@@ -1133,6 +1152,15 @@ bool qtractorVst3PluginType::Impl::open ( unsigned long iIndex )
 
 void qtractorVst3PluginType::Impl::close (void)
 {
+	if (m_component && m_controller) {
+		FUnknownPtr<Vst::IConnectionPoint> component_cp(m_component);
+		FUnknownPtr<Vst::IConnectionPoint> controller_cp(m_controller);
+		if (component_cp && controller_cp) {
+			component_cp->disconnect(controller_cp);
+			controller_cp->disconnect(component_cp);
+		}
+	}
+
 	m_unitInfos = nullptr;
 
 	if (m_component && m_controller &&
@@ -1166,7 +1194,7 @@ int qtractorVst3PluginType::Impl::numChannels (
 	for (int32 i = 0; i < nbuses; ++i) {
 		Vst::BusInfo busInfo;
 		if (m_component->getBusInfo(type, direction, i, busInfo) == kResultOk) {
-			if ((busInfo.busType == Vst::kMain) &&
+			if (/*(busInfo.busType == Vst::kMain) &&*/
 				(busInfo.flags & Vst::BusInfo::kDefaultActive))
 				nchannels += busInfo.channelCount;
 		}
@@ -1215,7 +1243,7 @@ bool qtractorVst3PluginType::open (void)
 
 	// Properties...
 	m_sName = m_pImpl->name();
-	m_sLabel = m_sName.simplified().replace(QRegExp("[\\s|\\.|\\-]+"), "_");
+	m_sLabel = m_sName.simplified().replace(QRegularExpression("[\\s|\\.|\\-]+"), "_");
 	m_iUniqueID = m_pImpl->uniqueID();
 
 	m_iAudioIns  = m_pImpl->numChannels(Vst::kAudio, Vst::kInput);
@@ -1958,7 +1986,7 @@ public:
 		if (!m_widget || m_resizing)
 			return kResultFalse;
 
-		m_resizing = false;
+		m_resizing = true;
 		const QSize size(
 			rect->right  - rect->left,
 			rect->bottom - rect->top);
@@ -1970,7 +1998,7 @@ public:
 			m_widget->setFixedSize(size);
 		else
 			m_widget->resize(size);
-		m_resizing = true;
+		m_resizing = false;
 
 		ViewRect rect0;
 		if (m_plugView->getSize(&rect0) != kResultOk)
@@ -2144,18 +2172,10 @@ qtractorVst3Plugin::Impl::~Impl (void)
 	qtractorVst3PluginType *pType
 		= static_cast<qtractorVst3PluginType *> (m_pPlugin->type());
 	if (pType) {
-		Vst::IComponent *component = pType->impl()->component();
 		Vst::IEditController *controller = pType->impl()->controller();
-		FUnknownPtr<Vst::IConnectionPoint> component_cp(component);
-		FUnknownPtr<Vst::IConnectionPoint> controller_cp(controller);
-		if (component_cp && controller_cp) {
-			component_cp->disconnect(controller_cp);
-			controller_cp->disconnect(component_cp);
-		}
 		if (controller)
 			controller->setComponentHandler(nullptr);
 	}
-
 
 	m_processor = nullptr;
 	m_handler = nullptr;
@@ -2185,14 +2205,6 @@ void qtractorVst3Plugin::Impl::initialize (void)
 	if (controller) {
 		m_handler = owned(NEW Handler(m_pPlugin));
 		controller->setComponentHandler(m_handler);
-	}
-
-	// Connect components...
-	FUnknownPtr<Vst::IConnectionPoint> component_cp(component);
-	FUnknownPtr<Vst::IConnectionPoint> controller_cp(controller);
-	if (component_cp && controller_cp) {
-		component_cp->connect(controller_cp);
-		controller_cp->connect(component_cp);
 	}
 
 	m_processor = FUnknownPtr<Vst::IAudioProcessor> (component);
@@ -2343,6 +2355,8 @@ bool qtractorVst3Plugin::Impl::openEditor (void)
 	g_hostContext.openXcbConnection();
 #endif
 
+	g_hostContext.startTimer(200);
+
 	Vst::IEditController *controller = pType->impl()->controller();
 	if (controller)
 		m_plugView = controller->createView(Vst::ViewType::kEditor);
@@ -2354,6 +2368,8 @@ bool qtractorVst3Plugin::Impl::openEditor (void)
 void qtractorVst3Plugin::Impl::closeEditor (void)
 {
 	m_plugView = nullptr;
+
+	g_hostContext.stopTimer();
 
 #ifdef CONFIG_VST3_XCB
 	g_hostContext.closeXcbConnection();
@@ -2428,16 +2444,29 @@ bool qtractorVst3Plugin::Impl::process_reset (
 	// Setup processor data struct...
 	m_process_data.numSamples             = nframes;
 	m_process_data.symbolicSampleSize     = Vst::kSample32;
-	m_process_data.numInputs              = 1;
-	m_process_data.numOutputs             = 1;
-	m_process_data.inputs                 = &m_buffers_in;
-	m_process_data.outputs                = &m_buffers_out;
+
+	if (pType->audioIns() > 0) {
+		m_process_data.numInputs          = 1;
+		m_process_data.inputs             = &m_buffers_in;
+	} else {
+		m_process_data.numInputs          = 0;
+		m_process_data.inputs             = nullptr;
+	}
+
+	if (pType->audioOuts() > 0) {
+		m_process_data.numOutputs         = 1;
+		m_process_data.outputs            = &m_buffers_out;
+	} else {
+		m_process_data.numOutputs         = 0;
+		m_process_data.outputs            = nullptr;
+	}
+
 	m_process_data.processContext         = g_hostContext.processContext();
 	m_process_data.inputEvents            = &m_events_in;
 	m_process_data.outputEvents           = &m_events_out;
 	m_process_data.inputParameterChanges  = &m_params_in;
 	m_process_data.outputParameterChanges = nullptr; //&m_params_out;
-
+	
 //	activate();
 
 	return true;
@@ -2769,8 +2798,7 @@ void qtractorVst3Plugin::Impl::activate ( Vst::IComponent *component,
 		Vst::BusInfo busInfo;
 		if (component->getBusInfo(type, direction, i, busInfo) == kResultOk) {
 			if (busInfo.flags & Vst::BusInfo::kDefaultActive) {
-				const bool state2 = state && (busInfo.busType == Vst::kMain);
-				component->activateBus(type, direction, i, state2);
+				component->activateBus(type, direction, i, state);
 			}
 		}
 	}
@@ -3592,16 +3620,23 @@ qtractorVst3Plugin::Param::Param (
 	qtractorVst3Plugin *pPlugin, unsigned long iIndex )
 	: qtractorPlugin::Param(pPlugin, iIndex), m_pImpl(nullptr)
 {
-	const unsigned long iMaxIndex = pPlugin->impl()->parameterCount();
-	if (iIndex < iMaxIndex) {
-		Vst::ParameterInfo paramInfo;
-		::memset(&paramInfo, 0, sizeof(Vst::ParameterInfo));
-		if (pPlugin->impl()->getParameterInfo(iIndex, paramInfo)) {
-			m_pImpl = new Impl(paramInfo);
-			setName(fromTChar(paramInfo.title));
-			setMinValue(0.0f);
-			setMaxValue(1.0f);
-			setDefaultValue(paramInfo.defaultNormalizedValue);
+	qtractorVst3PluginType *pType
+		= static_cast<qtractorVst3PluginType *> (pPlugin->type());
+	if (pType) {
+		Vst::IEditController *controller = pType->impl()->controller();
+		if (controller) {
+			const unsigned long iMaxIndex = controller->getParameterCount();
+			if (iIndex < iMaxIndex) {
+				Vst::ParameterInfo paramInfo;
+				::memset(&paramInfo, 0, sizeof(Vst::ParameterInfo));
+				if (controller->getParameterInfo(iIndex, paramInfo) == kResultOk) {
+					m_pImpl = new Impl(paramInfo);
+					setName(fromTChar(paramInfo.title));
+					setMinValue(0.0f);
+					setMaxValue(1.0f);
+					setDefaultValue(controller->getParamNormalized(paramInfo.id));
+				}
+			}
 		}
 	}
 }

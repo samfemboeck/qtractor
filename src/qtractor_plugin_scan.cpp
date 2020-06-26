@@ -1106,6 +1106,16 @@ public:
 
 				if (controller) m_controller = owned(controller);
 
+				// Connect components...
+				if (m_component && m_controller) {
+					FUnknownPtr<Vst::IConnectionPoint> component_cp(m_component);
+					FUnknownPtr<Vst::IConnectionPoint> controller_cp(m_controller);
+					if (component_cp && controller_cp) {
+						component_cp->connect(controller_cp);
+						controller_cp->connect(component_cp);
+					}
+				}
+
 				return true;
 			}
 
@@ -1117,6 +1127,15 @@ public:
 
 	void close_descriptor ()
 	{
+		if (m_component && m_controller) {
+			FUnknownPtr<Vst::IConnectionPoint> component_cp(m_component);
+			FUnknownPtr<Vst::IConnectionPoint> controller_cp(m_controller);
+			if (component_cp && controller_cp) {
+				component_cp->disconnect(controller_cp);
+				controller_cp->disconnect(component_cp);
+			}
+		}
+
 		if (m_component && m_controller &&
 			FUnknownPtr<Vst::IEditController> (m_component).getInterface()) {
 			m_controller->terminate();
@@ -1164,7 +1183,7 @@ public:
 		for (int32 i = 0; i < nbuses; ++i) {
 			Vst::BusInfo busInfo;
 			if (m_component->getBusInfo(type, direction, i, busInfo) == kResultOk) {
-				if ((busInfo.busType == Vst::kMain) &&
+				if (/*(busInfo.busType == Vst::kMain) &&*/
 					(busInfo.flags & Vst::BusInfo::kDefaultActive))
 					nchannels += busInfo.channelCount;
 			}

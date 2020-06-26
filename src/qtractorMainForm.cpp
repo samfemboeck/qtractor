@@ -113,8 +113,8 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFile>
-#include <QRegExp>
 #include <QUrl>
+#include <QRegularExpression>
 
 #include <QDomDocument>
 
@@ -2647,9 +2647,10 @@ QString qtractorMainForm::sessionBackupPath ( const QString& sFilename )
 		fi.setFile(QDir(fi.filePath()), sBackupName);
 	if (fi.exists()) {
 		int iBackupNo = 0;
-		const QRegExp rxBackupNo("\\.([0-9]+)$");
-		if (rxBackupNo.indexIn(sBackupName) >= 0) {
-			iBackupNo = rxBackupNo.cap(1).toInt();
+		QRegularExpression rxBackupNo("\\.([0-9]+)$");
+		QRegularExpressionMatch match = rxBackupNo.match(sBackupName);
+		if (match.hasMatch()) {
+			iBackupNo = match.captured(1).toInt();
 			sBackupName.remove(rxBackupNo);
 		}
 		sBackupName += ".%1";
@@ -6280,9 +6281,9 @@ void qtractorMainForm::stabilizeForm (void)
 //	m_ui.editCopyAction->setEnabled(bSelected);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	const QMimeData *pMimeData
-	    = QApplication::clipboard()->mimeData();
+		= QApplication::clipboard()->mimeData();
 	m_ui.editPasteAction->setEnabled(bClipboard
-	    || (pMimeData && pMimeData->hasUrls()));
+		|| (pMimeData && pMimeData->hasUrls()));
 #else
 	m_ui.editPasteAction->setEnabled(bClipboard);
 #endif
@@ -7386,10 +7387,10 @@ void qtractorMainForm::appendMessages( const QString& s )
 	statusBar()->showMessage(s, 3000);
 }
 
-void qtractorMainForm::appendMessagesColor( const QString& s, const QString& c )
+void qtractorMainForm::appendMessagesColor( const QString& s, const QColor& rgb )
 {
 	if (m_pMessages)
-		m_pMessages->appendMessagesColor(s, c);
+		m_pMessages->appendMessagesColor(s, rgb);
 
 	statusBar()->showMessage(s, 3000);
 }
@@ -7405,7 +7406,7 @@ void qtractorMainForm::appendMessagesError( const QString& s )
 	if (m_pMessages)
 		m_pMessages->show();
 
-	appendMessagesColor(s.simplified(), "#ff0000");
+	appendMessagesColor(s.simplified(), Qt::red);
 
 	QMessageBox::critical(this, tr("Error"), s);
 }
@@ -7595,7 +7596,7 @@ void qtractorMainForm::fastTimerSlot (void)
 		// Ensure track-view into visibility...
 		if (m_ui.transportFollowAction->isChecked())
 			m_pTracks->trackView()->ensureVisibleFrame(iPlayHead);
-		// Take the change to give some visual feedback...
+		// Take the chance to give some visual feedback...
 		if (m_iTransportUpdate > 0) {
 			updateTransportTime(iPlayHead);
 			m_pThumbView->updateThumb();
@@ -7844,7 +7845,7 @@ void qtractorMainForm::slowTimerSlot (void)
 	}
 
 	// Check if its time to stabilize main form...
-	if (m_iStabilizeTimer > 0 && --m_iStabilizeTimer < 1) {
+	if (m_iStabilizeTimer > 0/* && --m_iStabilizeTimer < 1 */) {
 		m_iStabilizeTimer = 0;
 		stabilizeForm();
 	}
@@ -8725,7 +8726,7 @@ void qtractorMainForm::contentsChanged (void)
 #endif
 
 	// HACK: Force immediate stabilization later...
-	m_iStabilizeTimer = 0;
+	//m_iStabilizeTimer = 0;
 
 	// Stabilize session toolbar widgets...
 //	m_pTempoSpinBox->setTempo(m_pSession->tempo(), false);
