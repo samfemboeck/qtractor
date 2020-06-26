@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(Qtractor, 0.9.14, rncbc@rncbc.org, qtractor)
+AC_INIT(Qtractor, 0.9.15, rncbc@rncbc.org, qtractor)
 
 AC_CONFIG_SRCDIR(src/qtractor.cpp)
 AC_CONFIG_HEADERS(src/config.h)
@@ -236,9 +236,9 @@ AC_ARG_ENABLE(lv2-patch,
   [ac_lv2_patch="yes"])
 
 AC_ARG_ENABLE(lv2-port-event,
-  AS_HELP_STRING([--enable-lv2-port-event], [enable LV2 plug-in Port-event support (EXPERIMENTAL) (default=no)]),
+  AS_HELP_STRING([--enable-lv2-port-event], [enable LV2 plug-in Port-event support (EXPERIMENTAL) (default=yes)]),
   [ac_lv2_port_event="$enableval"],
-  [ac_lv2_port_event="no"])
+  [ac_lv2_port_event="yes"])
 
 AC_ARG_ENABLE(lv2-time,
   AS_HELP_STRING([--enable-lv2-time], [enable LV2 plug-in Time support (default=yes)]),
@@ -530,7 +530,7 @@ AC_CACHE_CHECK([for Qt major version], [ac_cv_qt_version_major], [
    ac_cv_qt_version_major=$(($ac_cv_qt_version_major + 0))
 ])
 ac_qt_version_major=$ac_cv_qt_version_major
-if test $ac_qt_version_major -ne 5; then
+if test $ac_qt_version_major -lt 5; then
 	AC_PATH_TOOL(ac_cv_qmake, qmake-qt5, [no], $ac_path)
 	ac_qmake=$ac_cv_qmake
 fi

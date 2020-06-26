@@ -50,6 +50,8 @@
 #include <QDateTime>
 #include <QDir>
 
+#include <QRegularExpression>
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QDesktopServices>
 #else
@@ -207,13 +209,11 @@ void qtractorPluginFactory::updatePluginPaths (void)
 	// VST3 default path...
 	QStringList vst3_paths;
 	if (pOptions)
-		vst3_paths = pOptions->vstPaths;
+		vst3_paths = pOptions->vst3Paths;
 	if (vst3_paths.isEmpty()) {
 		QString sVst3Paths = ::getenv("VST3_PATH");
 		if (sVst3Paths.isEmpty())
-			sVst3Paths = ::getenv("VST3_PATH");
-		if (sVst3Paths.isEmpty())
-			sVst3Paths += default_paths("vst3");
+			sVst3Paths = default_paths("vst3");
 		vst3_paths = sVst3Paths.split(PATH_SEP);
 	}
 	m_paths.insert(qtractorPluginType::Vst3, vst3_paths);
@@ -981,7 +981,7 @@ qtractorDummyPluginType::qtractorDummyPluginType (
 	const QStringList& props = sText.split('|');
 
 	m_sName  = props.at(1);
-	m_sLabel = m_sName.simplified().replace(QRegExp("[\\s|\\.|\\-]+"), "_");
+	m_sLabel = m_sName.simplified().replace(QRegularExpression("[\\s|\\.|\\-]+"), "_");
 
 	const QStringList& audios = props.at(2).split(':');
 	m_iAudioIns  = audios.at(0).toUShort();

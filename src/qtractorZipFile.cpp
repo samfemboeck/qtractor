@@ -33,6 +33,8 @@
 
 #include "qtractorZipFile.h"
 
+#include <QRegularExpression>
+
 #define QTRACTOR_PROGRESS_BAR
 #ifdef  QTRACTOR_PROGRESS_BAR
 #include "qtractorMainForm.h"
@@ -73,6 +75,10 @@
 #include <utime.h>
 
 #define BUFF_SIZE 16384
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 8, 0)
+#define toSecsSinceEpoch	toTime_t
+#endif
 
 
 static inline unsigned int read_uint ( const unsigned char *data )
@@ -573,7 +579,7 @@ bool qtractorZipDevice::extractEntry (
 
 	// Set file time using utime...
 	struct utimbuf utb;
-	const long tse = read_msdos_date(lfh.last_mod_file).toTime_t();
+	const long tse = read_msdos_date(lfh.last_mod_file).toSecsSinceEpoch();
 	utb.actime = tse;
 	utb.modtime = tse;
 	if (::utime(fh.file_name.data(), &utb))
@@ -604,9 +610,9 @@ bool qtractorZipDevice::extractAll (void)
 
 	int iExtracted = 0;
 
-	QHash<QString, FileHeader>::ConstIterator iter
+	QMultiHash<QString, FileHeader>::ConstIterator iter
 		= file_headers.constBegin();
-	const QHash<QString, FileHeader>::ConstIterator& iter_end
+	const QMultiHash<QString, FileHeader>::ConstIterator& iter_end
 		= file_headers.constEnd();
 	for ( ; iter != iter_end; ++iter) {
 		if (extractEntry(iter.key(), iter.value()))
@@ -645,7 +651,7 @@ QString qtractorZipDevice::alias (
 	QString sAliasSuffix = info.suffix();
 
 	if (!sAliasPrefix.isEmpty())
-		sAliasPrefix.remove(QRegExp("[\\/]+$")); // remove any slash tail...
+		sAliasPrefix.remove(QRegularExpression("[\\/]+$")); // remove any slash tail...
 	if (!sAliasSuffix.isEmpty())
 		sAliasSuffix.prepend('.');
 
@@ -656,7 +662,7 @@ QString qtractorZipDevice::alias (
 	sAlias.append(sAliasSuffix);
 
 	if (!bTemp && !file_headers.contains(info.absoluteFilePath())) {
-		const QRegExp rxDashNumber("\\-[0-9]+$");
+		const QRegularExpression rxDashNumber("\\-[0-9]+$");
 		int i = 0;
 		while (file_aliases.contains(sAlias)) {
 			const QString sDashNumber = '-' + QString::number(++i);
@@ -696,10 +702,10 @@ bool qtractorZipDevice::addEntry (
 	if (sFakepath.isEmpty()) {
 		if (info.isAbsolute()) {
 			sFakepath = sFilepath;
-			sFakepath.remove(QRegExp('^' + QDir::rootPath()));
+			sFakepath.remove(QRegularExpression('^' + QDir::rootPath()));
 		} else {
 			sFakepath = info.filePath();
-			sFakepath.remove(QRegExp("^[\\./]+"));
+			sFakepath.remove(QRegularExpression("^[\\./]+"));
 		}
 	}
 
@@ -1033,9 +1039,9 @@ void qtractorZipFile::close (void)
 	m_pZip->device->seek(m_pZip->write_offset);
 
 	// Write new directory...
-	QHash<QString, FileHeader>::ConstIterator iter
+	QMultiHash<QString, FileHeader>::ConstIterator iter
 		= m_pZip->file_headers.constBegin();
-	const QHash<QString, FileHeader>::ConstIterator iter_end
+	const QMultiHash<QString, FileHeader>::ConstIterator iter_end
 		= m_pZip->file_headers.constEnd();
 	for ( ; iter != iter_end; ++iter) {
 		const FileHeader& fh = iter.value();
