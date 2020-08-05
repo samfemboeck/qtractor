@@ -1666,7 +1666,11 @@ qtractorTrack *qtractorTrackView::dragClipDrop (
 qtractorTrack *qtractorTrackView::dragClipDropEvent ( QDropEvent *pDropEvent )
 {
 	return dragClipDrop(
+	#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		viewportToContents(pDropEvent->position().toPoint()),
+	#else
 		viewportToContents(pDropEvent->pos()),
+	#endif
 		false, pDropEvent->mimeData());
 }
 
@@ -1759,7 +1763,11 @@ void qtractorTrackView::dragMoveEvent ( QDragMoveEvent *pDragMoveEvent )
 	}
 
 	// Kind of auto-scroll...
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	const QPoint& pos = viewportToContents(pDragMoveEvent->position().toPoint());
+#else
 	const QPoint& pos = viewportToContents(pDragMoveEvent->pos());
+#endif
 	ensureVisible(pos.x(), pos.y(), 24, 24);
 }
 
@@ -1945,7 +1953,11 @@ bool qtractorTrackView::dropClip (
 
 void qtractorTrackView::dropEvent ( QDropEvent *pDropEvent )
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	if (!dropClip(viewportToContents(pDropEvent->position().toPoint()), pDropEvent->mimeData())) {
+#else
 	if (!dropClip(viewportToContents(pDropEvent->pos()), pDropEvent->mimeData())) {
+#endif
 		qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
 		if (pMainForm)
 			pMainForm->dropEvent(pDropEvent);
@@ -1957,7 +1969,11 @@ void qtractorTrackView::dropEvent ( QDropEvent *pDropEvent )
 void qtractorTrackView::mousePressEvent ( QMouseEvent *pMouseEvent )
 {
 	// Which mouse state?
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	const QPoint& pos = viewportToContents(pMouseEvent->position().toPoint());
+#else
 	const QPoint& pos = viewportToContents(pMouseEvent->pos());
+#endif
 	const Qt::KeyboardModifiers& modifiers = pMouseEvent->modifiers();
 	bool bModifier = (modifiers & (Qt::ShiftModifier | Qt::ControlModifier));
 
@@ -2102,7 +2118,11 @@ void qtractorTrackView::mousePressEvent ( QMouseEvent *pMouseEvent )
 void qtractorTrackView::mouseMoveEvent ( QMouseEvent *pMouseEvent )
 {
 	// Are we already moving/dragging something?
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	const QPoint& pos = viewportToContents(pMouseEvent->position().toPoint());
+#else
 	const QPoint& pos = viewportToContents(pMouseEvent->pos());
+#endif
 	const Qt::KeyboardModifiers& modifiers = pMouseEvent->modifiers();
 
 	switch (m_dragState) {
@@ -2239,7 +2259,11 @@ void qtractorTrackView::mouseReleaseEvent ( QMouseEvent *pMouseEvent )
 	qtractorSession *pSession = qtractorSession::getInstance();
 	if (pSession) {
 		// Direct snap positioning...
+	#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		const QPoint& pos = viewportToContents(pMouseEvent->position().toPoint());
+	#else
 		const QPoint& pos = viewportToContents(pMouseEvent->pos());
+	#endif
 		const unsigned long iFrame = pSession->frameSnap(
 			pSession->frameFromPixel(m_posDrag.x() > 0 ? m_posDrag.x() : 0));
 		// Which mouse state?
@@ -2368,7 +2392,11 @@ void qtractorTrackView::mouseDoubleClickEvent ( QMouseEvent *pMouseEvent )
 {
 	qtractorScrollView::mouseDoubleClickEvent(pMouseEvent);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	const QPoint& pos = viewportToContents(pMouseEvent->position().toPoint());
+#else
 	const QPoint& pos = viewportToContents(pMouseEvent->pos());
+#endif
 
 	TrackViewInfo tvi;
 	qtractorTrack *pTrack = trackAt(pos, true, &tvi);

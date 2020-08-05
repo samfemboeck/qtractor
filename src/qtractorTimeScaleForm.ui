@@ -198,6 +198,9 @@
          <property name="text">
           <string>&amp;Tempo:</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignVCenter</set>
+         </property>
          <property name="buddy">
           <cstring>TempoSpinBox</cstring>
          </property>
@@ -278,6 +281,9 @@
         <widget class="QLabel" name="KeySignatureTextLabel">
          <property name="text">
           <string>&amp;Key signature:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignVCenter</set>
          </property>
          <property name="buddy">
           <cstring>KeySignatureAccidentalsComboBox</cstring>
@@ -386,6 +392,9 @@
         <widget class="QLabel" name="TempoFactorTextLabel">
          <property name="text">
           <string>Tempo &amp;scale factor:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignVCenter</set>
          </property>
          <property name="buddy">
           <cstring>TempoFactorSpinBox</cstring>
