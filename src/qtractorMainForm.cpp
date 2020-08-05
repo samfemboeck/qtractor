@@ -2981,6 +2981,18 @@ QString qtractorMainForm::sessionDir ( const QString& sFilename ) const
 }
 
 
+// Execute auto-save as soon as possible (quasi-immediately please).
+void qtractorMainForm::autoSaveAsap (void)
+{
+#ifdef CONFIG_DEBUG_0
+	qDebug("qtractorMainForm::autoSaveAsap()");
+#endif
+
+	if (m_pOptions->bAutoSaveEnabled)
+		m_iAutoSaveTimer = m_iAutoSavePeriod;
+}
+
+
 //-------------------------------------------------------------------------
 // qtractorMainForm -- File Action slots.
 
@@ -3885,7 +3897,7 @@ void qtractorMainForm::trackExportAudio (void)
 	const bool bAutoDeactivate = m_pSession->isAutoDeactivate();
 	m_pSession->setAutoDeactivate(false);
 
-	qtractorExportForm exportForm(this);
+	qtractorExportTrackForm exportForm(this);
 	exportForm.setExportType(qtractorTrack::Audio);
 	exportForm.exec();
 
@@ -3900,7 +3912,7 @@ void qtractorMainForm::trackExportMidi (void)
 	qDebug("qtractorMainForm::trackExportMidi()");
 #endif
 
-	qtractorExportForm exportForm(this);
+	qtractorExportTrackForm exportForm(this);
 	exportForm.setExportType(qtractorTrack::Midi);
 	exportForm.exec();
 }

@@ -52,6 +52,8 @@
 #include "qtractorTrackForm.h"
 #include "qtractorClipForm.h"
 
+#include "qtractorExportForm.h"
+
 #include "qtractorPasteRepeatForm.h"
 #include "qtractorTempoAdjustForm.h"
 
@@ -1196,13 +1198,25 @@ bool qtractorTracks::mergeExportAudioClips ( qtractorClipCommand *pClipCommand )
 	if (pAudioBus == nullptr)
 		return false;
 
+	int iFormat = -1; // alias qtractorAudioFileFactory::defaultFormat();
+#if 1//QTRACTOR_EXPORT_CLIP_FORM
+	qtractorExportClipForm exportForm(this);
+	exportForm.setExportTitle(tr("Merge/Export"));
+	exportForm.setExportType(qtractorTrack::Audio);
+	const QString& sExt = exportForm.exportExt();
+	QString sFilename = pSession->createFilePath(pTrack->trackName(), sExt);
+	exportForm.setExportPath(sFilename);
+	if (!exportForm.exec())
+		return false;
+	sFilename = exportForm.exportPath();
+	iFormat = exportForm.audioExportFormat();
+#else
 	const QString& sExt
 		= qtractorAudioFileFactory::defaultExt();
 	const QString& sTitle
 		= tr("Merge/Export Audio Clip");
 	const QString& sFilter
 		= qtractorAudioFileFactory::filters().join(";;");
-
 	QWidget *pParentWidget = nullptr;
 	QFileDialog::Options options;
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
@@ -1235,28 +1249,31 @@ bool qtractorTracks::mergeExportAudioClips ( qtractorClipCommand *pClipCommand )
 		return false;
 	QString sFilename = fileDialog.selectedFiles().first();
 #endif
+#endif	// !QTRACTOR_EXPORT_CLIP_FORM
+
 	if (sFilename.isEmpty() || sFilename.at(0) == '.')
 		return false;
 	if (QFileInfo(sFilename).suffix().isEmpty())
 		sFilename += '.' + sExt;
 
-	// Should take sometime...
-	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	const unsigned int iBufferSize
+		= pSession->audioEngine()->bufferSize();
 
 	qtractorAudioFile *pAudioFile
 		= qtractorAudioFileFactory::createAudioFile(sFilename,
-			pAudioBus->channels(), pSession->sampleRate());
-	if (pAudioFile == nullptr) {
-		QApplication::restoreOverrideCursor();
+			pAudioBus->channels(), pSession->sampleRate(),
+			iBufferSize, iFormat);
+	if (pAudioFile == nullptr)
 		return false;
-	}
 
 	// Open the file for writing...
 	if (!pAudioFile->open(sFilename, qtractorAudioFile::Write)) {
-		QApplication::restoreOverrideCursor();
 		delete pAudioFile;
 		return false;
 	}
+
+	// Should take sometime now...
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
 	// Start logging...
 	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
@@ -1272,7 +1289,6 @@ bool qtractorTracks::mergeExportAudioClips ( qtractorClipCommand *pClipCommand )
 	const qtractorClipSelect::ItemList::ConstIterator& iter_end = items.constEnd();
 
 	const unsigned short iChannels = pAudioBus->channels();
-	const unsigned int iBufferSize = pSession->audioEngine()->bufferSize();
 
 	// Multi-selection extents (in frames)...
 	QList<audioClipBufferItem *> list;
@@ -1347,13 +1363,14 @@ bool qtractorTracks::mergeExportAudioClips ( qtractorClipCommand *pClipCommand )
 			// Quite similar to qtractorAudioClip::process()...
 			const unsigned long iClipStart = pClip->clipStart();
 			const unsigned long iClipEnd   = iClipStart + pClip->clipLength();;
+			const float fGain = pClip->clipGain();
 			if (iFrameStart < iClipStart && iFrameEnd > iClipStart) {
 				const unsigned long iOffset = iFrameEnd - iClipStart;
 				while (!pBuff->inSync(0, 0))
 					pBuff->syncExport();
 				pBuff->readMix(ppFrames, iOffset,
 					iChannels, iClipStart - iFrameStart,
-					pClip->fadeInOutGain(iOffset));
+					fGain * pClip->fadeInOutGain(iOffset));
 			}
 			else
 			if (iFrameStart >= iClipStart && iFrameStart < iClipEnd) {
@@ -1361,7 +1378,7 @@ bool qtractorTracks::mergeExportAudioClips ( qtractorClipCommand *pClipCommand )
 				while (!pBuff->inSync(iFrame, iFrame))
 					pBuff->syncExport();
 				pBuff->readMix(ppFrames, iBufferSize, iChannels, 0,
-					pClip->fadeInOutGain(iFrameEnd - iClipStart));
+					fGain * pClip->fadeInOutGain(iFrameEnd - iClipStart));
 			}
 		}
 		// Actually write to merge audio file;
@@ -1466,16 +1483,27 @@ bool qtractorTracks::mergeExportMidiClips ( qtractorClipCommand *pClipCommand )
 	if (pSession == nullptr)
 		return false;
 
+	int iFormat = qtractorMidiClip::defaultFormat();
+#if 1//QTRACTOR_EXPORT_CLIP_FORM
+	qtractorExportClipForm exportForm(this);
+	exportForm.setExportTitle(tr("Merge/Export"));
+	exportForm.setExportType(qtractorTrack::Midi);
+	const QString& sExt = exportForm.exportExt();
+	QString sFilename = pSession->createFilePath(pTrack->trackName(), sExt);
+	exportForm.setExportPath(sFilename);
+	if (!exportForm.exec())
+		return false;
+	sFilename = exportForm.exportPath();
+	iFormat = exportForm.midiExportFormat();
+#else
 	// Merge MIDI Clip filename requester...
 	const QString  sExt("mid");
 	const QString& sTitle
 		= tr("Merge/Export MIDI Clip");
-
 	QStringList filters;
 	filters.append(tr("MIDI files (*.mid *.smf *.midi)"));
 	filters.append(tr("All files (*.*)"));
 	const QString& sFilter = filters.join(";;");
-
 	QWidget *pParentWidget = nullptr;
 	QFileDialog::Options options;
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
@@ -1508,6 +1536,8 @@ bool qtractorTracks::mergeExportMidiClips ( qtractorClipCommand *pClipCommand )
 		return false;
 	QString sFilename = fileDialog.selectedFiles().first();
 #endif
+#endif	// !QTRACTOR_EXPORT_CLIP_FORM
+
 	if (sFilename.isEmpty() || sFilename.at(0) == '.')
 		return false;
 	if (QFileInfo(sFilename).suffix().isEmpty())
@@ -1525,7 +1555,6 @@ bool qtractorTracks::mergeExportMidiClips ( qtractorClipCommand *pClipCommand )
 
 	// Write SMF header...
 	const unsigned short iTicksPerBeat = pSession->ticksPerBeat();
-	const unsigned short iFormat = qtractorMidiClip::defaultFormat();
 	const unsigned short iTracks = (iFormat == 0 ? 1 : 2);
 	if (!file.writeHeader(iFormat, iTracks, iTicksPerBeat)) {
 		QApplication::restoreOverrideCursor();
