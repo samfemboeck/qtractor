@@ -40,7 +40,6 @@ set (HEADERS
   qtractorDssiPlugin.h
   qtractorEngine.h
   qtractorEngineCommand.h
-  qtractorFifoBuffer.h
   qtractorFileList.h
   qtractorFileListView.h
   qtractorFiles.h
@@ -367,8 +366,8 @@ add_executable (${NAME}
 
 add_executable (${NAME}_plugin_scan qtractor_plugin_scan.cpp ${VST3SDK_SOURCES})
 
-set_target_properties (${NAME} PROPERTIES CXX_STANDARD 11)
-set_target_properties (${NAME}_plugin_scan PROPERTIES CXX_STANDARD 11)
+set_target_properties (${NAME} PROPERTIES CXX_STANDARD 17)
+set_target_properties (${NAME}_plugin_scan PROPERTIES CXX_STANDARD 17)
 
 if (WIN32)
   set_target_properties (${NAME} PROPERTIES WIN32_EXECUTABLE true)
