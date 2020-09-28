@@ -286,6 +286,7 @@ public:
 	bool bMidiScaleToolbar;
 	bool bMidiThumbToolbar;
 	int  iMidiDisplayFormat;
+	bool bMidiNoteNames;
 	bool bMidiNoteDuration;
 	bool bMidiNoteColor;
 	bool bMidiValueColor;

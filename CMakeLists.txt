@@ -2,7 +2,7 @@ project(QTRACTOR)
 
 cmake_minimum_required(VERSION 3.1)
 
-set (VERSION "0.9.17")
+set (VERSION "0.9.18")
 
 set (CONFIG_VERSION ${VERSION})
 execute_process (
@@ -12,8 +12,7 @@ execute_process (
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 if (GIT_DESCRIBE_RESULT EQUAL 0)
   set (VERSION "${GIT_DESCRIBE_OUTPUT}")
-  string (REGEX REPLACE "^[^_]+"   "" VERSION "${VERSION}")
-  string (REGEX REPLACE "^[_vV]+"  "" VERSION "${VERSION}")
+  string (REGEX REPLACE "^[^0-9]+" "" VERSION "${VERSION}")
   string (REGEX REPLACE "-g"   "git." VERSION "${VERSION}")
   string (REGEX REPLACE "[_|-]+"  "." VERSION "${VERSION}")
   execute_process (

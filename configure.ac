@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(Qtractor, 0.9.17, rncbc@rncbc.org, qtractor)
+AC_INIT(Qtractor, 0.9.18, rncbc@rncbc.org, qtractor)
 
 AC_CONFIG_SRCDIR(src/qtractor.cpp)
 AC_CONFIG_HEADERS(src/config.h)
@@ -10,7 +10,7 @@ AC_CONFIG_FILES(src/qtractor_plugin_scan.pri)
 AC_CACHE_VAL([ac_cv_build_version], [
    ac_cv_build_version=$(git describe --tags --dirty --abbrev=6 2>/dev/null)
    if test -n "$ac_cv_build_version"; then
-      ac_cv_build_version=$(echo $ac_cv_build_version | sed 's/^[[^_]]*[[_v]]//i')
+      ac_cv_build_version=$(echo $ac_cv_build_version | sed 's/^[[^0-9]]\+//')
       ac_cv_build_version=$(echo $ac_cv_build_version | sed 's/-g/git./')
       ac_cv_build_version=$(echo $ac_cv_build_version | sed 's/[[_|-]]\+/./g')
       ac_cv_build_version_extra=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
@@ -542,6 +542,9 @@ if test $ac_qt_version_major -lt 5; then
    AC_PATH_TOOL(ac_cv_qmake, qmake-qt5, [no], $ac_path)
    ac_qmake=$ac_cv_qmake
 fi
+if test $ac_qt_version_major -ge 6; then
+   ac_libsuil="no"
+fi
 
 if test "x$ac_qmake" = "xno"; then
    AC_MSG_ERROR([qmake-qt5 $ac_errmsg (qt5-devel)])
@@ -901,16 +904,16 @@ fi
 # Check for LV2 new UI instantiation availability (libsuil).
 if test "x$ac_libsuil" = "xyes"; then
    PKG_CHECK_MODULES([SUIL], [suil-0], [ac_libsuil="yes"], [ac_libsuil="no"])
-fi
-if test "x$ac_libsuil" = "xyes"; then
-   AC_DEFINE(CONFIG_LIBSUIL, 1, [Define if SUIL library is enabled.])
-   ac_cflags="$ac_cflags $SUIL_CFLAGS"
-   ac_libs="$ac_libs $SUIL_LIBS"
-   CFLAGS="$CFLAGS $SUIL_CFLAGS"
-   CPPFLAGS="$CPPFLAGS $SUIL_CFLAGS"
-   LIBS="$LIBS $SUIL_LIBS"
-else
-   AC_MSG_WARN([*** SUIL library will be disabled.])
+   if test "x$ac_libsuil" = "xyes"; then
+      AC_DEFINE(CONFIG_LIBSUIL, 1, [Define if SUIL library is enabled.])
+      ac_cflags="$ac_cflags $SUIL_CFLAGS"
+      ac_libs="$ac_libs $SUIL_LIBS"
+      CFLAGS="$CFLAGS $SUIL_CFLAGS"
+      CPPFLAGS="$CPPFLAGS $SUIL_CFLAGS"
+      LIBS="$LIBS $SUIL_LIBS"
+   else
+      AC_MSG_WARN([*** SUIL library will be disabled.])
+   fi
 fi
 
 if test "x$ac_libsuil" = "xyes"; then

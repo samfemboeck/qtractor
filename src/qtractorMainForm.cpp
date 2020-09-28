@@ -1774,7 +1774,11 @@ void qtractorMainForm::closeEvent ( QCloseEvent *pCloseEvent )
 	// Let's be sure about that...
 	if (queryClose()) {
 		pCloseEvent->accept();
+	#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+		QApplication::exit(0);
+	#else
 		QApplication::quit();
+	#endif
 	} else {
 		pCloseEvent->ignore();
 	}
@@ -5801,8 +5805,10 @@ void qtractorMainForm::helpAbout (void)
 #ifndef CONFIG_LV2_UI
 	list << tr("LV2 Plug-in UI support disabled.");
 #else
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #ifndef CONFIG_LIBSUIL
 	list << tr("LV2 Plug-in UI support (libsuil) disabled.");
+#endif
 #endif
 #ifndef CONFIG_LV2_EXTERNAL_UI
 	list << tr("LV2 Plug-in External UI support disabled.");

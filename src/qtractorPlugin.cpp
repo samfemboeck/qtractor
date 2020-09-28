@@ -1712,7 +1712,7 @@ void qtractorPluginList::setName ( const QString& sName )
 }
 
 
-// Main-parameters accessor.
+// Set all plugin chain number of channels.
 void qtractorPluginList::setChannels (
 	unsigned short iChannels, unsigned int iFlags )
 {
@@ -1750,16 +1750,20 @@ void qtractorPluginList::setChannels (
 	}
 
 	// Allocate all new interim buffers...
-	setChannelsEx(iChannels, false);
+	setChannelsEx(iChannels);
+
+	// Reset all plugins number of channels...
+	const bool bAudioOuts = resetChannels(iChannels, false);
 
 	// FIXME: This should be better managed...
-	if (m_pMidiManager)
+	if (m_pMidiManager) {
+		m_pMidiManager->setAudioOutputMonitorEx(bAudioOuts);
 		m_pMidiManager->updateInstruments();
+	}
 }
 
 
-void qtractorPluginList::setChannelsEx (
-	unsigned short iChannels, bool bReset )
+void qtractorPluginList::setChannelsEx ( unsigned short iChannels )
 {
 #if 0
 	// Maybe we don't need to change a thing here...
@@ -1767,11 +1771,9 @@ void qtractorPluginList::setChannelsEx (
 		return;
 #endif
 
-	unsigned short i;
-
 	// Delete old interim buffer...
 	if (m_pppBuffers[1]) {
-		for (i = 0; i < m_iChannels; ++i)
+		for (unsigned short i = 0; i < m_iChannels; ++i)
 			delete [] m_pppBuffers[1][i];
 		delete [] m_pppBuffers[1];
 		m_pppBuffers[1] = nullptr;
@@ -1780,37 +1782,41 @@ void qtractorPluginList::setChannelsEx (
 	// Go, go, go...
 	m_iChannels = iChannels;
 
-	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == nullptr)
-		return;
-
-	qtractorAudioEngine *pAudioEngine = pSession->audioEngine();
-	if (pAudioEngine == nullptr)
-		return;
-
-	const unsigned int iBufferSize = pAudioEngine->bufferSize();
-
-	// Allocate new interim buffer...
+	// Allocate new interim buffers...
 	if (m_iChannels > 0) {
-		m_pppBuffers[1] = new float * [m_iChannels];
-		for (i = 0; i < m_iChannels; ++i) {
-			m_pppBuffers[1][i] = new float [iBufferSize];
-			::memset(m_pppBuffers[1][i], 0, iBufferSize * sizeof(float));
-		}
+		qtractorAudioEngine *pAudioEngine = nullptr;
+		qtractorSession *pSession = qtractorSession::getInstance();
+		if (pSession)
+			pAudioEngine = pSession->audioEngine();
+		if (pAudioEngine) {
+			const unsigned int iBufferSize = pAudioEngine->bufferSize();
+			m_pppBuffers[1] = new float * [m_iChannels];
+			for (unsigned short i = 0; i < m_iChannels; ++i) {
+				m_pppBuffers[1][i] = new float [iBufferSize];
+				::memset(m_pppBuffers[1][i], 0, iBufferSize * sizeof(float));
+			}
+		}	// Gone terribly wrong...
+		else m_iChannels = 0;
 	}
+}
 
-	// Whether to turn on/off any audio monitors/meters...
+
+// Reset all plugin chain number of channels.
+bool qtractorPluginList::resetChannels (
+	unsigned short iChannels, bool bReset )
+{
+	// Whether to turn on/off any audio monitors/meters later...
 	unsigned short iAudioOuts = 0;
 
 	// Reset all plugin chain channels...
 	for (qtractorPlugin *pPlugin = first();
 			pPlugin; pPlugin = pPlugin->next()) {
-		if (bReset && m_iChannels > 0) {
+		if (bReset && iChannels > 0) {
 			pPlugin->freezeConfigs();
 			pPlugin->freezeValues();
 		}
-		pPlugin->setChannels(m_iChannels);
-		if (bReset && m_iChannels > 0) {
+		pPlugin->setChannels(iChannels);
+		if (bReset && iChannels > 0) {
 			pPlugin->realizeConfigs();
 			pPlugin->realizeValues();
 			pPlugin->releaseConfigs();
@@ -1820,8 +1826,7 @@ void qtractorPluginList::setChannelsEx (
 	}
 
 	// Turn on/off audio monitors/meters whether applicable...
-	if (m_pMidiManager)
-		m_pMidiManager->setAudioOutputMonitorEx(iAudioOuts > 0);
+	return (iAudioOuts > 0);
 }
 
 
