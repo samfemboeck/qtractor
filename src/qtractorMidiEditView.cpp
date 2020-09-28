@@ -47,6 +47,10 @@
 #include <QLinearGradient>
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#define horizontalAdvance  width
+#endif
+
 
 //----------------------------------------------------------------------------
 // qtractorMidiEditView -- MIDI sequence main view widget.
@@ -102,7 +106,7 @@ qtractorMidiEditView::qtractorMidiEditView (
 	qtractorScrollView::setMouseTracking(true);
 
 	const QFont& font = qtractorScrollView::font();
-	qtractorScrollView::setFont(QFont(font.family(), font.pointSize() - 1));
+	qtractorScrollView::setFont(QFont(font.family(), font.pointSize() - 3));
 
 //	QObject::connect(this, SIGNAL(contentsMoving(int,int)),
 //		this, SLOT(updatePixmap(int,int)));
@@ -263,11 +267,11 @@ void qtractorMidiEditView::updatePixmap ( int cx, int cy )
 		return;
 
 	const QPalette& pal = qtractorScrollView::palette();
-
 	const QColor& rgbBase  = pal.base().color();
-	const QColor& rgbDark  = pal.mid().color();
+	const QColor& rgbLine  = pal.mid().color();
 	const QColor& rgbLight = pal.midlight().color();
-	const QColor& rgbSharp = rgbBase.darker(110);
+	const QColor& rgbDark  = rgbBase.darker(110);
+	const bool bDark = (rgbBase.value() < 128);
 
 	m_pixmap = QPixmap(w, h);
 	m_pixmap.fill(rgbBase);
@@ -295,7 +299,7 @@ void qtractorMidiEditView::updatePixmap ( int cx, int cy )
 
 	// Draw horizontal lines...
 	painter.setPen(rgbLight);
-//	p.setBrush(rgbSharp);
+//	p.setBrush(rgbDark);
 	const int h1 = m_pEditor->editList()->itemHeight();
 	const int ch = qtractorScrollView::contentsHeight() - cy;
 	const int q = (cy / h1);
@@ -303,9 +307,14 @@ void qtractorMidiEditView::updatePixmap ( int cx, int cy )
 	int n = 127 - q;
 	int y = q * h1 - cy;
 	while (y < h && y < ch) {
-		int k = (n % 12);
+		const int k = (n % 12);
 		if (k == 1 || k == 3 || k == 6 || k == 8 || k == 10)
-			painter.fillRect(0, y + 1, w, h1, rgbSharp);
+			painter.fillRect(0, y + 1, w, h1, rgbDark);
+		if (k == 11) {
+			painter.setPen(rgbLine);
+			painter.drawLine(0, y - 1, w, y - 1);
+			painter.setPen(rgbLight);
+		}
 		painter.drawLine(0, y, w, y);
 		y += h1;
 		--n;
@@ -335,7 +344,7 @@ void qtractorMidiEditView::updatePixmap ( int cx, int cy )
 	while (x < w) {
 		const bool bBeatIsBar = pNode->beatIsBar(iBeat);
 		if (bBeatIsBar) {
-			painter.setPen(rgbDark);
+			painter.setPen(rgbLine);
 			painter.drawLine(x - 1, 0, x - 1, h);
 			if (m_pEditor->isSnapZebra() && (x > x2) && (++iBar & 1))
 				painter.fillRect(QRect(x2, 0, x - x2 + 1, h), zebra);
@@ -349,8 +358,8 @@ void qtractorMidiEditView::updatePixmap ( int cx, int cy )
 		}
 		if (iSnapPerBeat > 1) {
 			const int q = iPixelsPerBeat / iSnapPerBeat;
-			if (q > 4) {  
-				painter.setPen(rgbBase.value() < 0x7f
+			if (q > 4) {
+				painter.setPen(bDark
 					? rgbLight.darker(105) : rgbLight.lighter(120));
 				for (int i = 1; i < iSnapPerBeat; ++i) {
 					x = pTimeScale->pixelSnap(x + dx + q) - dx - 1;
@@ -383,7 +392,7 @@ void qtractorMidiEditView::updatePixmap ( int cx, int cy )
 				if (iSnapPerBeat > 1) {
 					const float q1 = q2 / float(iSnapPerBeat);
 					if (q1 > 4.0f) {
-						painter.setPen(rgbBase.value() < 0x7f
+						painter.setPen(bDark
 							? rgbLight.darker(105) : rgbLight.lighter(120));
 						float p1 = p2;
 						for (int j = 1; j < iSnapPerBeat; ++j) {
@@ -402,7 +411,7 @@ void qtractorMidiEditView::updatePixmap ( int cx, int cy )
 			}
 		}
 		// Bar line...
-		painter.setPen(rgbDark);
+		painter.setPen(rgbLine);
 		painter.drawLine(x2 - 1, 0, x2 - 1, h);
 		painter.setPen(rgbLight);
 		painter.drawLine(x2, 0, x2, h);
@@ -412,7 +421,7 @@ void qtractorMidiEditView::updatePixmap ( int cx, int cy )
 #endif
 
 	if (y > ch)
-		painter.fillRect(0, ch, w, h - ch, rgbDark);
+		painter.fillRect(0, ch, w, h - ch, rgbLine);
 
 	// Draw location marker lines...
 	qtractorTimeScale::Marker *pMarker
@@ -536,6 +545,9 @@ void qtractorMidiEditView::drawEvents ( QPainter& painter,
 	const int h1 = m_pEditor->editList()->itemHeight();
 	const int ch = qtractorScrollView::contentsHeight() - dy;
 
+	const QFontMetrics fm(qtractorScrollView::font());
+	const int hs = fm.ascent(); // fm.height() - 2;
+
 	QVector<QPoint> diamond;
 	if (bDrumMode) {
 		const int h2 = (h1 >> 1) + 1;
@@ -600,8 +612,16 @@ void qtractorMidiEditView::drawEvents ( QPainter& painter,
 					painter.drawPolygon(polyg); // diamond
 				} else {
 					painter.fillRect(x, y, w1, h1, rgbFore);
-					if (h1 > 3)
+					if (h1 > 3) {
 						painter.fillRect(x + 1, y + 1, w1 - 4, h1 - 3, rgbNote);
+						if (m_pEditor->isNoteNames() && hs < h1) {
+							const QString& sNoteName
+								= m_pEditor->noteName(pEvent->note());
+							painter.drawText(
+								QRect(x + 2, y + 1, w1 - 6, h1 - 4),
+								Qt::AlignTop | Qt::AlignLeft, sNoteName);
+						}
+					}
 				}
 			}
 		}
@@ -714,7 +734,7 @@ void qtractorMidiEditView::mousePressEvent ( QMouseEvent *pMouseEvent )
 	case Qt::LeftButton:
 		// Only the left-mouse-button was meaningful...
 		break;
-	case Qt::MidButton:
+	case Qt::MiddleButton:
 		// Mid-button direct positioning...
 		m_pEditor->selectAll(this, false);
 		if (pOptions && pOptions->bMidButtonModifier)

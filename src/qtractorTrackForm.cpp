@@ -222,11 +222,11 @@ qtractorTrackForm::qtractorTrackForm ( QWidget *pParent )
 		SIGNAL(toggled(bool)),
 		SLOT(trackTypeTempo(bool)));
 	QObject::connect(m_ui.InputBusNameComboBox,
-		SIGNAL(activated(const QString &)),
-		SLOT(inputBusNameChanged(const QString&)));
+		SIGNAL(activated(int)),
+		SLOT(inputBusNameChanged(int)));
 	QObject::connect(m_ui.OutputBusNameComboBox,
-		SIGNAL(activated(const QString &)),
-		SLOT(outputBusNameChanged(const QString&)));
+		SIGNAL(activated(int)),
+		SLOT(outputBusNameChanged(int)));
 	QObject::connect(m_ui.BusNameToolButton,
 		SIGNAL(clicked()),
 		SLOT(busNameClicked()));
@@ -237,8 +237,8 @@ qtractorTrackForm::qtractorTrackForm ( QWidget *pParent )
 		SIGNAL(valueChanged(int)),
 		SLOT(channelChanged(int)));
 	QObject::connect(m_ui.InstrumentComboBox,
-		SIGNAL(activated(const QString &)),
-		SLOT(instrumentChanged(const QString&)));
+		SIGNAL(activated(int)),
+		SLOT(instrumentChanged(int)));
 	QObject::connect(m_ui.BankSelMethodComboBox,
 		SIGNAL(activated(int)),
 		SLOT(bankSelMethodChanged(int)));
@@ -1309,20 +1309,20 @@ void qtractorTrackForm::trackTypeChanged (void)
 
 	updateTrackType(trackType);
 
-//	inputBusNameChanged(m_ui.InputBusNameComboBox->currentText());
-	outputBusNameChanged(m_ui.OutputBusNameComboBox->currentText());
+//	inputBusNameChanged(m_ui.InputBusNameComboBox->currentIndex());
+	outputBusNameChanged(m_ui.OutputBusNameComboBox->currentIndex());
 }
 
 
 // Make changes due to input-bus name.
-void qtractorTrackForm::inputBusNameChanged ( const QString& /* sBusName */ )
+void qtractorTrackForm::inputBusNameChanged ( int /* iInputBusName */ )
 {
 	changed();
 }
 
 
 // Make changes due to output-bus name.
-void qtractorTrackForm::outputBusNameChanged ( const QString& sBusName )
+void qtractorTrackForm::outputBusNameChanged ( int iOutputBusName )
 {
 	if (m_iDirtySetup > 0)
 		return;
@@ -1331,6 +1331,9 @@ void qtractorTrackForm::outputBusNameChanged ( const QString& sBusName )
 		return;
 
 	// (Re)initialize output bus properly...
+	const QString& sBusName
+		= m_ui.OutputBusNameComboBox->itemText(iOutputBusName);
+
 	const QString& sOutputBusName
 		= m_pTrack->outputBusName();
 	if (sOutputBusName != sBusName) {
@@ -1421,12 +1424,12 @@ void qtractorTrackForm::channelChanged ( int iChannel )
 
 
 // Make changes due to MIDI instrument.
-void qtractorTrackForm::instrumentChanged ( const QString& sInstrumentName )
+void qtractorTrackForm::instrumentChanged ( int iInstrument )
 {
 	if (m_iDirtySetup > 0)
 		return;
 
-	updateBanks(sInstrumentName,
+	updateBanks(m_ui.InputBusNameComboBox->itemText(iInstrument),
 		-1, // m_ui.BankSelMethodComboBox->currentItem(),
 		midiBank(),
 		midiProg());
