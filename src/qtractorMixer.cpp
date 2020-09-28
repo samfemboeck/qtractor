@@ -91,13 +91,9 @@ qtractorMonitorButton::qtractorMonitorButton (
 // Common initializer.
 void qtractorMonitorButton::initMonitorButton (void)
 {
-	QIcon icons;
-	icons.addPixmap(QPixmap(":/images/itemLedOff.png"),
-		QIcon::Normal, QIcon::Off);
-	icons.addPixmap(QPixmap(":/images/itemLedOn.png"),
-		QIcon::Normal, QIcon::On);
-	QPushButton::setIcon(icons);
+	QPushButton::setIcon(QPixmap(":/images/itemLedOff.png"));
 	QPushButton::setText(' ' + tr("monitor"));
+	QPushButton::setCheckable(true);
 
 	QObject::connect(this, SIGNAL(toggled(bool)), SLOT(toggledSlot(bool)));
 }
@@ -132,7 +128,13 @@ void qtractorMonitorButton::updateValue ( float fValue )
 {
 	// Avoid self-triggering...
 	const bool bBlockSignals = QPushButton::blockSignals(true);
-	QPushButton::setChecked(fValue > 0.0f);
+	if (fValue > 0.0f) {
+		QPushButton::setIcon(QPixmap(":/images/itemLedOn.png"));
+		QPushButton::setChecked(true);
+	} else {
+		QPushButton::setIcon(QPixmap(":/images/itemLedOff.png"));
+		QPushButton::setChecked(false);
+	}
 	QPushButton::blockSignals(bBlockSignals);
 }
 
@@ -401,7 +403,7 @@ void qtractorMixerStrip::initMixerStrip (void)
 		// Have we an audio monitor/meter?...
 		if (pAudioMonitor) {
 			const int iAudioChannels = pAudioMonitor->channels();
-			iFixedWidth += 12 * (iAudioChannels < 2	? 2 : iAudioChannels);
+			iFixedWidth += (iAudioChannels < 3 ? 24 : 8 * iAudioChannels);
 			m_pMixerMeter = new qtractorAudioMixerMeter(pAudioMonitor, this);
 		}
 		m_pPluginListView->setEnabled(true);
@@ -535,7 +537,7 @@ void qtractorMixerStrip::setMonitor ( qtractorMonitor *pMonitor )
 			const int iOldWidth = QFrame::width();
 			const int iAudioChannels = pAudioMonitor->channels();
 			const int iFixedWidth = 54
-				+ 12 * (iAudioChannels < 2 ? 2 : iAudioChannels);
+				+ (iAudioChannels < 3 ? 24 : 8 * iAudioChannels);
 			if (iFixedWidth != iOldWidth) {
 				QFrame::setFixedWidth(iFixedWidth);
 				m_pRack->updateWorkspace();
