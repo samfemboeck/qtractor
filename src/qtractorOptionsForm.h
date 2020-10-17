@@ -80,7 +80,6 @@ protected slots:
 	void removePluginPath();
 	void moveUpPluginPath();
 	void moveDownPluginPath();
-	void pluginPathsChanged();
 	void chooseLv2PresetDir();
 	void chooseMessagesFont();
 	void chooseMessagesLogPath();
@@ -131,7 +130,11 @@ private:
 	QStringList m_vst3Paths;
 	QStringList m_lv2Paths;
 
-	int m_iDirtyPluginPaths;
+	int m_iDirtyLadspaPaths;
+	int m_iDirtyDssiPaths;
+	int m_iDirtyVstPaths;
+	int m_iDirtyVst3Paths;
+	int m_iDirtyLv2Paths;
 
 	// Midi import settings handler.
 	qtractorMidiImportExtender *m_pMidiImportExtender;

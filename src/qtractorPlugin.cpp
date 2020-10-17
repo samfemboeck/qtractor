@@ -2521,6 +2521,17 @@ void qtractorPluginList::resetLatency (void)
 }
 
 
+// Plugin editors (GUI) visibility (auto-focus).
+void qtractorPluginList::setEditorVisibleAll ( bool bVisible )
+{
+	for (qtractorPlugin *pPlugin = first();
+			pPlugin; pPlugin = pPlugin->next()) {
+		if (pPlugin->isEditorVisible())
+			pPlugin->setEditorVisible(bVisible);
+	}
+}
+
+
 //-------------------------------------------------------------------------
 // qtractorPluginList::Document -- Plugins file import/export helper class.
 //

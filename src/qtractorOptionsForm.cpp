@@ -213,7 +213,12 @@ qtractorOptionsForm::qtractorOptionsForm ( QWidget *pParent )
 	// Initialize dirty control state.
 	m_iDirtyCount = 0;
 	m_iDirtyCustomColorThemes = 0;
-	m_iDirtyPluginPaths = 0;
+
+	m_iDirtyLadspaPaths = 0;
+	m_iDirtyDssiPaths   = 0;
+	m_iDirtyVstPaths    = 0;
+	m_iDirtyVst3Paths   = 0;
+	m_iDirtyLv2Paths    = 0;
 
 	// Try to restore old window positioning.
 	adjustSize();
@@ -698,6 +703,30 @@ void qtractorOptionsForm::setOptions ( qtractorOptions *pOptions )
 
 	m_ui.Lv2PresetDirComboBox->setEditText(m_pOptions->sLv2PresetDir);
 
+	qtractorPluginFactory *pPluginFactory = qtractorPluginFactory::getInstance();
+	if (pPluginFactory) {
+	#ifdef CONFIG_LADSPA
+		if (m_ladspaPaths.isEmpty())
+			m_ladspaPaths = pPluginFactory->pluginPaths(qtractorPluginType::Ladspa);
+	#endif
+	#ifdef CONFIG_DSSI
+		if (m_dssiPaths.isEmpty())
+			m_dssiPaths = pPluginFactory->pluginPaths(qtractorPluginType::Dssi);
+	#endif
+	#ifdef CONFIG_VST
+		if (m_vstPaths.isEmpty())
+			m_vstPaths = pPluginFactory->pluginPaths(qtractorPluginType::Vst);
+	#endif
+	#ifdef CONFIG_VST3
+		if (m_vst3Paths.isEmpty())
+			m_vst3Paths = pPluginFactory->pluginPaths(qtractorPluginType::Vst3);
+	#endif
+	#ifdef CONFIG_LV2
+		if (m_lv2Paths.isEmpty())
+			m_lv2Paths = pPluginFactory->pluginPaths(qtractorPluginType::Lv2);
+	#endif
+	}
+
 	// Plugin instruments options.
 	m_ui.AudioOutputBusCheckBox->setChecked(m_pOptions->bAudioOutputBus);
 	m_ui.AudioOutputAutoConnectCheckBox->setChecked(m_pOptions->bAudioOutputAutoConnect);
@@ -718,7 +747,12 @@ void qtractorOptionsForm::setOptions ( qtractorOptions *pOptions )
 
 	// Done. Restart clean.
 	m_iDirtyCount = 0;
-	m_iDirtyPluginPaths = 0;
+
+	m_iDirtyLadspaPaths = 0;
+	m_iDirtyDssiPaths   = 0;
+	m_iDirtyVstPaths    = 0;
+	m_iDirtyVst3Paths   = 0;
+	m_iDirtyLv2Paths    = 0;
 
 	stabilizeForm();
 }
@@ -814,12 +848,18 @@ void qtractorOptionsForm::accept (void)
 		m_pOptions->iBaseFontSize        = m_ui.BaseFontSizeComboBox->currentText().toInt();
 		// Plugin paths...
 		m_pOptions->iPluginType          = m_ui.PluginTypeComboBox->currentIndex() + 1;
-		m_pOptions->ladspaPaths          = m_ladspaPaths;
-		m_pOptions->dssiPaths            = m_dssiPaths;
-		m_pOptions->vstPaths             = m_vstPaths;
-		m_pOptions->vst3Paths            = m_vst3Paths;
-		m_pOptions->lv2Paths             = m_lv2Paths;
-		m_pOptions->sLv2PresetDir        = m_ui.Lv2PresetDirComboBox->currentText();
+		if (m_iDirtyLadspaPaths > 0)
+			m_pOptions->ladspaPaths      = m_ladspaPaths;
+		if (m_iDirtyDssiPaths > 0)
+			m_pOptions->dssiPaths        = m_dssiPaths;
+		if (m_iDirtyVstPaths > 0)
+			m_pOptions->vstPaths         = m_vstPaths;
+		if (m_iDirtyVst3Paths > 0)
+			m_pOptions->vst3Paths        = m_vst3Paths;
+		if (m_iDirtyLv2Paths > 0) {
+			m_pOptions->lv2Paths         = m_lv2Paths;
+			m_pOptions->sLv2PresetDir    = m_ui.Lv2PresetDirComboBox->currentText();
+		}
 		// Plugin instruments options.
 		m_pOptions->bAudioOutputBus      = m_ui.AudioOutputBusCheckBox->isChecked();
 		m_pOptions->bAudioOutputAutoConnect = m_ui.AudioOutputAutoConnectCheckBox->isChecked();
@@ -862,8 +902,11 @@ void qtractorOptionsForm::accept (void)
 		else
 			m_pOptions->sCustomStyleTheme.clear();
 		// Reset dirty flags.
-		if (m_iDirtyPluginPaths > 0) {
-			m_iDirtyPluginPaths = 0;
+		if (m_iDirtyLadspaPaths > 0 ||
+			m_iDirtyDssiPaths   > 0 ||
+			m_iDirtyVstPaths    > 0 ||
+			m_iDirtyVst3Paths   > 0 ||
+			m_iDirtyLv2Paths    > 0) {
 			qtractorPluginFactory *pPluginFactory
 				= qtractorPluginFactory::getInstance();
 			if (pPluginFactory) {
@@ -1329,18 +1372,23 @@ void qtractorOptionsForm::addPluginPath (void)
 	switch (typeHint) {
 	case qtractorPluginType::Ladspa:
 		m_ladspaPaths.append(sPluginPath);
+		++m_iDirtyLadspaPaths;
 		break;
 	case qtractorPluginType::Dssi:
 		m_dssiPaths.append(sPluginPath);
+		++m_iDirtyDssiPaths;
 		break;
 	case qtractorPluginType::Vst:
 		m_vstPaths.append(sPluginPath);
+		++m_iDirtyVstPaths;
 		break;
 	case qtractorPluginType::Vst3:
 		m_vst3Paths.append(sPluginPath);
+		++m_iDirtyVst3Paths;
 		break;
 	case qtractorPluginType::Lv2:
 		m_lv2Paths.append(sPluginPath);
+		++m_iDirtyLv2Paths;
 		break;
 	default:
 		return;
@@ -1359,7 +1407,7 @@ void qtractorOptionsForm::addPluginPath (void)
 	m_ui.PluginPathListWidget->setFocus();
 
 	selectPluginPath();
-	pluginPathsChanged();
+	changed();
 }
 
 
@@ -1388,18 +1436,23 @@ void qtractorOptionsForm::removePluginPath (void)
 	switch (typeHint) {
 	case qtractorPluginType::Ladspa:
 		m_ladspaPaths.removeAt(iPluginPath);
+		++m_iDirtyLadspaPaths;
 		break;
 	case qtractorPluginType::Dssi:
 		m_dssiPaths.removeAt(iPluginPath);
+		++m_iDirtyDssiPaths;
 		break;
 	case qtractorPluginType::Vst:
 		m_vstPaths.removeAt(iPluginPath);
+		++m_iDirtyVstPaths;
 		break;
 	case qtractorPluginType::Vst3:
 		m_vst3Paths.removeAt(iPluginPath);
+		++m_iDirtyVst3Paths;
 		break;
 	case qtractorPluginType::Lv2:
 		m_lv2Paths.removeAt(iPluginPath);
+		++m_iDirtyLv2Paths;
 		break;
 	default:
 		return;
@@ -1410,7 +1463,7 @@ void qtractorOptionsForm::removePluginPath (void)
 		delete pItem;
 
 	selectPluginPath();
-	pluginPathsChanged();
+	changed();
 }
 
 
@@ -1429,22 +1482,27 @@ void qtractorOptionsForm::moveUpPluginPath (void)
 	case qtractorPluginType::Ladspa:
 		sPluginPath = m_ladspaPaths.takeAt(iPluginPath);
 		m_ladspaPaths.insert(iPluginPath - 1, sPluginPath);
+		++m_iDirtyLadspaPaths;
 		break;
 	case qtractorPluginType::Dssi:
 		sPluginPath = m_dssiPaths.takeAt(iPluginPath);
 		m_dssiPaths.insert(iPluginPath - 1, sPluginPath);
+		++m_iDirtyDssiPaths;
 		break;
 	case qtractorPluginType::Vst:
 		sPluginPath = m_vstPaths.takeAt(iPluginPath);
 		m_vstPaths.insert(iPluginPath - 1, sPluginPath);
+		++m_iDirtyVstPaths;
 		break;
 	case qtractorPluginType::Vst3:
 		sPluginPath = m_vst3Paths.takeAt(iPluginPath);
 		m_vst3Paths.insert(iPluginPath - 1, sPluginPath);
+		++m_iDirtyVst3Paths;
 		break;
 	case qtractorPluginType::Lv2:
 		sPluginPath = m_lv2Paths.takeAt(iPluginPath);
 		m_lv2Paths.insert(iPluginPath - 1, sPluginPath);
+		++m_iDirtyLv2Paths;
 		break;
 	default:
 		return;
@@ -1459,7 +1517,7 @@ void qtractorOptionsForm::moveUpPluginPath (void)
 	}
 
 	selectPluginPath();
-	pluginPathsChanged();
+	changed();
 }
 
 
@@ -1478,22 +1536,27 @@ void qtractorOptionsForm::moveDownPluginPath (void)
 	case qtractorPluginType::Ladspa:
 		sPluginPath = m_ladspaPaths.takeAt(iPluginPath);
 		m_ladspaPaths.insert(iPluginPath + 1, sPluginPath);
+		++m_iDirtyLadspaPaths;
 		break;
 	case qtractorPluginType::Dssi:
 		sPluginPath = m_dssiPaths.takeAt(iPluginPath);
 		m_dssiPaths.insert(iPluginPath + 1, sPluginPath);
+		++m_iDirtyDssiPaths;
 		break;
 	case qtractorPluginType::Vst:
 		sPluginPath = m_vstPaths.takeAt(iPluginPath);
 		m_vstPaths.insert(iPluginPath + 1, sPluginPath);
+		++m_iDirtyVstPaths;
 		break;
 	case qtractorPluginType::Vst3:
 		sPluginPath = m_vst3Paths.takeAt(iPluginPath);
 		m_vst3Paths.insert(iPluginPath + 1, sPluginPath);
+		++m_iDirtyVst3Paths;
 		break;
 	case qtractorPluginType::Lv2:
 		sPluginPath = m_lv2Paths.takeAt(iPluginPath);
 		m_lv2Paths.insert(iPluginPath + 1, sPluginPath);
+		++m_iDirtyLv2Paths;
 		break;
 	default:
 		return;
@@ -1508,14 +1571,6 @@ void qtractorOptionsForm::moveDownPluginPath (void)
 	}
 
 	selectPluginPath();
-	pluginPathsChanged();
-}
-
-
-// Dirty up plugin-paths.
-void qtractorOptionsForm::pluginPathsChanged (void)
-{
-	++m_iDirtyPluginPaths;
 	changed();
 }
 
@@ -1561,7 +1616,8 @@ void qtractorOptionsForm::chooseLv2PresetDir (void)
 		m_ui.Lv2PresetDirComboBox->setFocus();
 	}
 
-	pluginPathsChanged();
+	++m_iDirtyLv2Paths;
+	changed();
 }
 
 

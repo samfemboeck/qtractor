@@ -24,6 +24,7 @@
 
 #include "qtractorScrollView.h"
 
+#include <QPainterPath>
 #include <QPixmap>
 
 
@@ -64,13 +65,8 @@ public:
 	// Overall contents update.
 	void updateContents();
 
-	// Piano keyboard note-on handler.
+	// Piano keyboard note-on/off handlers.
 	void dragNoteOn(int iNote, int iVelocity = 1);
-
-	// Piano keyboard note-on position handler.
-	void dragNoteOn(const QPoint& pos, int iVelocity = 1);
-
-	// Piano keyboard note-off handler.
 	void dragNoteOff();
 
 protected:
@@ -100,6 +96,15 @@ protected:
 
 	// Trap for help/tool-tip events.
 	bool eventFilter(QObject *pObject, QEvent *pEvent);
+
+	// Piano keyboard note-on/off handlers.
+	void dragNoteOn(const QPoint& pos, int iVelocity = 1);
+
+	// Piano keyboard note descriminator.
+	int noteAt(const QPoint& pos) const;
+
+	// Piano keyboard note-key shaper.
+	QPainterPath notePath(int iNote) const;
 
 protected slots:
 
@@ -131,7 +136,8 @@ private:
 	// The current note being keyed on.
 	int    m_iNoteOn;
 	int    m_iNoteVel;
-	QRect  m_rectNote;
+
+	QPainterPath  m_pathNote;
 };
 
 
