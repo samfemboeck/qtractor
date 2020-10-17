@@ -64,6 +64,9 @@ qtractorMidiEditView::qtractorMidiEditView (
 
 	m_eventType = qtractorMidiEvent::NOTEON;
 
+	m_iNoteOn  = -1;
+	m_iNoteVel = -1;
+
 	// Zoom tool widgets
 	m_pVzoomIn    = new QToolButton(this);
 	m_pVzoomOut   = new QToolButton(this);
@@ -216,6 +219,55 @@ void qtractorMidiEditView::setEventType (
 qtractorMidiEvent::EventType qtractorMidiEditView::eventType (void) const
 {
 	return m_eventType;
+}
+
+
+// Single note-on handler.
+void qtractorMidiEditView::dragNoteOn ( int iNote, int iVelocity )
+{
+	// If it ain't changed we won't change it ;)
+	if (iNote == m_iNoteOn && m_iNoteVel >= iVelocity)
+		return;
+
+	// Were we pending on some sounding note?
+	dragNoteOff();
+
+	// Are we allowed to preview this?
+	if (!m_pEditor->isSendNotes())
+		iVelocity = -1;
+
+	// Now for the sounding new one...
+	if (iNote >= 0) {
+		// This stands for the keyboard area...
+		QWidget *pViewport = qtractorScrollView::viewport();
+		const int wk = pViewport->width();
+		const int hk = m_pEditor->editList()->itemHeight();
+		const int xk = qtractorScrollView::contentsX();
+		const int yk = ((127 - iNote) * hk) + 1;
+		// This is the new note on...
+		m_iNoteOn = iNote;
+		m_iNoteVel = iVelocity;
+		m_rectNote.setRect(xk, yk, wk, hk);
+		// Otherwise, reset any pending note...
+		qtractorScrollView::viewport()->update(
+			QRect(contentsToViewport(m_rectNote.topLeft()),
+			m_rectNote.size()));
+	}
+}
+
+
+// Single note-on handler.
+void qtractorMidiEditView::dragNoteOff (void)
+{
+	if (m_iNoteOn < 0)
+		return;
+
+	// Turn off old note...
+	m_iNoteOn = m_iNoteVel = -1;
+
+	qtractorScrollView::viewport()->update(
+		QRect(contentsToViewport(m_rectNote.topLeft()),
+		m_rectNote.size()));
 }
 
 
@@ -617,9 +669,11 @@ void qtractorMidiEditView::drawEvents ( QPainter& painter,
 						if (m_pEditor->isNoteNames() && hs < h1) {
 							const QString& sNoteName
 								= m_pEditor->noteName(pEvent->note());
+							painter.setPen(rgbFore.darker(160));
 							painter.drawText(
 								QRect(x + 2, y + 1, w1 - 6, h1 - 4),
 								Qt::AlignTop | Qt::AlignLeft, sNoteName);
+							painter.setPen(rgbFore);
 						}
 					}
 				}
@@ -649,6 +703,15 @@ void qtractorMidiEditView::drawContents ( QPainter *pPainter, const QRect& rect 
 		pPainter->fillRect(xs, rect.top(), xs + ws, rect.bottom(), m_gradRight);
 #endif
 	m_pEditor->paintDragState(this, pPainter);
+
+	// Are we sticking in some note?
+	if (m_iNoteOn >= 0) {
+		pPainter->fillRect(QRect(
+			contentsToViewport(m_rectNote.topLeft()),
+			m_rectNote.size()),	m_iNoteVel > 0
+				? QColor(255,   0, 120, 40)
+				: QColor(120, 120, 255, 40));
+	}
 
 	// Draw special play/edit-head/tail headers...
 	const int cx = qtractorScrollView::contentsX();
