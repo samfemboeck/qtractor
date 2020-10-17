@@ -6,6 +6,21 @@ ChangeLog
 
 GIT HEAD
 
+- Plugin editors (GUIs) that are currently open on a track are now
+  brought up as top-level windows immediately when a track is made
+  current or highlighted (and Track / Auto Monitor is in effect).
+  (GH #277; auto-focus plugin GUI editor window on track select)
+  (EXPERIMENTAL)
+
+- MIDI clip editor mouse hovering effect extended to whole current
+  note line on main view (piano-roll eye-candy++); also, the white
+  keys on MIDI clip editor's virtual piano keyboard, are now fully
+  highlighted. (EXPERIMENTAL)
+
+- Plugin search paths (View > Options... > Plugins > Paths) now lists
+  all the default and actual existing paths, instead of a blank list.
+  (EXPERIMENTAL)
+
 - Undimmed octave divider lines on the piano-roll. (EXPERIMENTAL)
 
 - Fixed potential crash on changing audio output buses channel count.
