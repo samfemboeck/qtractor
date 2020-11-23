@@ -598,6 +598,7 @@ qtractorMainForm::qtractorMainForm (
 	// Track status.
 	pLabel = new QLabel(tr("Track"));
 	pLabel->setAlignment(Qt::AlignLeft);
+	pLabel->setMinimumWidth(120);
 	pLabel->setToolTip(tr("Current track name"));
 	pLabel->setAutoFillBackground(true);
 	m_statusItems[StatusName] = pLabel;
@@ -1318,6 +1319,7 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 	Qt::WindowFlags wflags = Qt::Window;
 	if (m_pOptions->bKeepToolsOnTop) {
 		wflags |= Qt::Tool;
+	//	wflags |= Qt::WindowStaysOnTopHint;
 		pParent = this;
 	}
 	// Other child/tools forms are also created right away...
@@ -5067,6 +5069,7 @@ void qtractorMainForm::viewOptions (void)
 	const bool    bOldCompletePath       = m_pOptions->bCompletePath;
 	const bool    bOldPeakAutoRemove     = m_pOptions->bPeakAutoRemove;
 	const bool    bOldKeepToolsOnTop     = m_pOptions->bKeepToolsOnTop;
+	const bool    bOldKeepEditorsOnTop   = m_pOptions->bKeepEditorsOnTop;
 	const int     iOldMaxRecentFiles     = m_pOptions->iMaxRecentFiles;
 	const int     iOldDisplayFormat      = m_pOptions->iDisplayFormat;
 	const int     iOldBaseFontSize       = m_pOptions->iBaseFontSize;
@@ -5195,6 +5198,9 @@ void qtractorMainForm::viewOptions (void)
 		if (( bOldKeepToolsOnTop && !m_pOptions->bKeepToolsOnTop) ||
 			(!bOldKeepToolsOnTop &&  m_pOptions->bKeepToolsOnTop))
 			iNeedRestart |= RestartProgram;
+		if (( bOldKeepEditorsOnTop && !m_pOptions->bKeepEditorsOnTop) ||
+			(!bOldKeepEditorsOnTop &&  m_pOptions->bKeepEditorsOnTop))
+			updateEditorForms();
 		if (sOldMessagesFont != m_pOptions->sMessagesFont)
 			updateMessagesFont();
 		if (( bOldMessagesLimit && !m_pOptions->bMessagesLimit) ||
@@ -7549,6 +7555,34 @@ void qtractorMainForm::removeEditorForm ( qtractorMidiEditorForm *pEditorForm )
 }
 
 
+void qtractorMainForm::updateEditorForms (void)
+{
+	if (m_pOptions == nullptr)
+		return;
+
+	Qt::WindowFlags wflags = Qt::Window;
+	if (m_pOptions->bKeepEditorsOnTop) {
+		wflags |= Qt::Tool;
+		wflags |= Qt::WindowStaysOnTopHint;
+	}
+
+	QListIterator<qtractorMidiEditorForm *> iter(m_editors);
+	while (iter.hasNext()) {
+		qtractorMidiEditorForm *pForm = iter.next();
+		const bool bVisible = pForm->isVisible();
+	#if 0//QTRACTOR_MIDI_EDITOR_TOOL_PARENT
+		if (m_pOptions->bKeepEditorsOnTop)
+			pForm->setParent(this);
+		else
+			pForm->setParent(nullptr);
+	#endif
+		pForm->setWindowFlags(wflags);
+		if (bVisible)
+			pForm->show();
+	}
+}
+
+
 //-------------------------------------------------------------------------
 // qtractorMainForm -- Timer stuff.
 
@@ -7708,7 +7742,7 @@ void qtractorMainForm::slowTimerSlot (void)
 				qtractorTimeScale::Cursor& cursor = pTimeScale->cursor();
 				qtractorTimeScale::Node *pNode = cursor.seekFrame(pos.frame);
 				if (pNode && pos.frame >= pNode->frame && (
-					qAbs(pNode->tempo - pos.beats_per_minute) > 0.01f ||
+					qAbs(pNode->tempo - pos.beats_per_minute) > 0.001f ||
 					pNode->beatsPerBar != (unsigned short) pos.beats_per_bar ||
 					(1 << pNode->beatDivisor) != (unsigned short) pos.beat_type)) {
 				#ifdef CONFIG_DEBUG

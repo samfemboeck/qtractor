@@ -436,6 +436,8 @@ protected:
 	void updateCustomColorTheme();
 	void updateCustomStyleTheme();
 
+	void updateEditorForms();
+
 	void updateContents(qtractorMidiEditor *pMidiEditor, bool bRefresh);
 	void updateDirtyCount(bool bDirtyCount);
 
