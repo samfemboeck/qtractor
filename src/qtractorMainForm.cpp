@@ -515,11 +515,8 @@ qtractorMainForm::qtractorMainForm (
 //	m_ui.timeToolbar->addSeparator();
 
 	// Tempo spin-box.
-	const QString sTempo("999.9 9/9");
+	const QString sTempo("+999 9/9");
 	m_pTempoSpinBox = new qtractorTempoSpinBox(m_ui.timeToolbar);
-//	m_pTempoSpinBox->setDecimals(1);
-//	m_pTempoSpinBox->setMinimum(1.0f);
-//	m_pTempoSpinBox->setMaximum(1000.0f);
 //	m_pTempoSpinBox->setFont(font);
 	m_pTempoSpinBox->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 	m_pTempoSpinBox->setMinimumSize(QSize(fm.horizontalAdvance(sTempo) + d, d) + pad);
@@ -1506,6 +1503,8 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 		m_pOptions->bAudioWsolaTimeStretch);
 	qtractorAudioBuffer::setDefaultWsolaQuickSeek(
 		m_pOptions->bAudioWsolaQuickSeek);
+	qtractorTrack::setTrackColorSaturation(
+		m_pOptions->iTrackColorSaturation);
 
 	// Set default custom spin-box edit mode (deferred)...
 	qtractorSpinBox::setEditMode(qtractorSpinBox::DeferredMode);
@@ -5078,6 +5077,7 @@ void qtractorMainForm::viewOptions (void)
 	const bool    bOldMidiMetroBus       = m_pOptions->bMidiMetroBus;
 	const int     iOldMidiMetroOffset    = m_pOptions->iMidiMetroOffset;
 	const bool    bOldSyncViewHold       = m_pOptions->bSyncViewHold;
+	const int     iOldTrackColorSaturation = m_pOptions->iTrackColorSaturation;
 	const QString sOldCustomColorTheme   = m_pOptions->sCustomColorTheme;
 	const QString sOldCustomStyleTheme   = m_pOptions->sCustomStyleTheme;
 #ifdef CONFIG_LV2
@@ -5264,6 +5264,10 @@ void qtractorMainForm::viewOptions (void)
 		if (( bOldSyncViewHold && !m_pOptions->bSyncViewHold) ||
 			(!bOldSyncViewHold &&  m_pOptions->bSyncViewHold))
 			updateSyncViewHold();
+		// Default track color saturation factor [0..400].
+		if (iOldTrackColorSaturation != m_pOptions->iTrackColorSaturation)
+			qtractorTrack::setTrackColorSaturation(
+				m_pOptions->iTrackColorSaturation);
 		// Warn if something will be only effective on next time.
 		if (iNeedRestart & RestartAny) {
 			QString sNeedRestart;
@@ -5925,6 +5929,12 @@ void qtractorMainForm::helpAbout (void)
 		sText += list.join("<br />\n");
 		sText += "</font></small><br />\n";
 	}
+	sText += "<br />\n";
+	sText += tr("Using: Qt %1").arg(qVersion());
+#if defined(QT_STATIC)
+	sText += "-static";
+#endif
+	sText += "<br />\n";
 	sText += "<br />\n";
 	sText += tr("Website") + ": <a href=\"" QTRACTOR_WEBSITE "\">" QTRACTOR_WEBSITE "</a><br />\n";
 	sText += "<br />\n";
