@@ -182,6 +182,9 @@ public:
 	int     iBeatDivisor;
 	int     iLoopRecordingMode;
 
+	// Session directory auto-name default.
+	bool    bAutoSessionDir;
+
 	// Paste-repeat convenient defaults.
 	int     iPasteRepeatCount;
 	bool    bPasteRepeatPeriod;
@@ -266,6 +269,7 @@ public:
 	bool bTrackViewSnapGrid;
 	bool bTrackViewToolTips;
 	bool bTrackViewCurveEdit;
+	int  iTrackColorSaturation;
 
 	// MIDI Editor options...
 	bool bMidiMenubar;
