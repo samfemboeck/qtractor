@@ -373,6 +373,10 @@ public:
 	// Update all plugin forms, if visible.
 	void refreshPluginForms();
 
+	// Default track color saturation factor [0..500].
+	static void setTrackColorSaturation(int iTrackColorSaturation);
+	static int trackColorSaturation();
+
 private:
 
 	qtractorSession *m_pSession;    // Session reference.
@@ -442,6 +446,9 @@ private:
 	class MidiProgramObserver;
 
 	MidiProgramObserver *m_pMidiProgramObserver;
+
+	// Default track color saturation factor [0..500].
+	static int g_iTrackColorSaturation;
 };
 
 
