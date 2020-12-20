@@ -6079,7 +6079,7 @@ que la prochaine fois que vous démarrerez %1.</translation>
     <message>
         <location filename="../qtractorMainForm.cpp" line="5925"/>
         <source>Using: Qt %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisant : Qt %1</translation>
     </message>
     <message>
         <location filename="../qtractorMainForm.cpp" line="6375"/>
@@ -11869,12 +11869,12 @@ existantes :</translation>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="502"/>
         <source>Whether to keep all editor windows on top of the main window</source>
-        <translation type="unfinished"></translation>
+        <translation>S&apos;il faut conserver toutes les fenêtres de l&apos;éditeur au dessus de la fenêtre principale</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="505"/>
         <source>Keep &amp;editor windows always on top</source>
-        <translation type="unfinished"></translation>
+        <translation>Conserver les fenêtres de l&apos;édit&amp;eur toujours au dessus</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="967"/>
@@ -12502,22 +12502,22 @@ existantes :</translation>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="2443"/>
         <source>&amp;Hold auto-scrolling (follow play-head) on edits</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Maintenir le défilement automatique (suivre la tête de lecture) lors des modifications</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="2469"/>
         <source>Trac&amp;k color saturation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Saturation de co&amp;uleur de piste : </translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="2488"/>
         <source>Default new track color saturation</source>
-        <translation type="unfinished"></translation>
+        <translation>Saturation par défaut de la couleur d&apos;une nouvelle piste</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="2491"/>
         <source> %</source>
-        <translation type="unfinished"> %</translation>
+        <translation> %</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="2763"/>
@@ -13579,12 +13579,12 @@ Are you sure?</source>
     <message>
         <location filename="../qtractorSessionForm.ui" line="93"/>
         <source>Whether to auto-name the session directory</source>
-        <translation type="unfinished"></translation>
+        <translation>S&apos;il faut nommer automatiquement le répertoire de session</translation>
     </message>
     <message>
         <location filename="../qtractorSessionForm.ui" line="96"/>
         <source>&amp;Auto</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Auto</translation>
     </message>
     <message>
         <location filename="../qtractorSessionForm.ui" line="129"/>
@@ -13723,13 +13723,13 @@ Are you sure?</source>
         <translation>Zoom vertical (%)</translation>
     </message>
     <message>
-        <location filename="../qtractorSessionForm.cpp" line="211"/>
-        <location filename="../qtractorSessionForm.cpp" line="269"/>
+        <location filename="../qtractorSessionForm.cpp" line="212"/>
+        <location filename="../qtractorSessionForm.cpp" line="270"/>
         <source>Warning</source>
         <translation>Attention</translation>
     </message>
     <message>
-        <location filename="../qtractorSessionForm.cpp" line="212"/>
+        <location filename="../qtractorSessionForm.cpp" line="213"/>
         <source>Session directory does not exist:
 
 &quot;%1&quot;
@@ -13742,7 +13742,7 @@ Do you want to create it?</source>
 Voulez-vous le créer ?</translation>
     </message>
     <message>
-        <location filename="../qtractorSessionForm.cpp" line="270"/>
+        <location filename="../qtractorSessionForm.cpp" line="271"/>
         <source>Some settings have been changed.
 
 Do you want to apply the changes?</source>
@@ -13751,7 +13751,7 @@ Do you want to apply the changes?</source>
 Voulez-vous appliquer les changements ?</translation>
     </message>
     <message>
-        <location filename="../qtractorSessionForm.cpp" line="350"/>
+        <location filename="../qtractorSessionForm.cpp" line="361"/>
         <source>Session Directory</source>
         <translation>Répertoire de session</translation>
     </message>
