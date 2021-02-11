@@ -1207,7 +1207,7 @@ const qtractorList<qtractorClip>& qtractorTrack::clips (void) const
 }
 
 
-// Insert a new clip in garanteed sorted fashion.
+// Insert a new clip in guaranteed sorted fashion.
 void qtractorTrack::addClip ( qtractorClip *pClip )
 {
 	// Preliminary settings...
@@ -1417,7 +1417,7 @@ qtractorTrack::Properties& qtractorTrack::properties (void)
 }
 
 
-// Reset state properties (as needed on copy/dublicate)
+// Reset state properties (as needed on copy/duplicate)
 void qtractorTrack::resetProperties (void)
 {
 	const bool bMonitor = m_props.monitor;
@@ -1576,7 +1576,6 @@ void qtractorTrack::process_curve ( unsigned long iFrame )
 	if (pCurveList && pCurveList->isProcess())
 		pCurveList->process(iFrame);
 }
-
 
 
 // Track paint method.

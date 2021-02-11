@@ -405,7 +405,7 @@ private:
 	FadeType m_fadeInType;              // Fade-in curve type.
 	FadeType m_fadeOutType;             // Fade-out curve type.
 
-	// Aproximations to exponential fade interpolation.
+	// Approximations to exponential fade interpolation.
 	FadeFunctor *m_pFadeInFunctor;
 	FadeFunctor *m_pFadeOutFunctor;
 

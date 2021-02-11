@@ -4,20 +4,25 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
-GIT HEAD
+0.9.20  2021-02-12  A Winter'21 Release.
+
+- Fixed and improved automation curve recording, whenever playback
+  is rolling (and also when isn't:)).
+
+- Fixed parsing/loading of large session bundle archive/zip files
+  (.qtz > 2GB).
+
+- Fixed LV2 plug-in UI X11 (native) resize.
 
 - Make NSM state file names independent to session display names,
-  keeping backward compatibility for old sessions. (EXPERIMENTAL)
+  keeping backward compatibility for old sessions.
 
 - Exiting, quitting or closing the main window while under NSM, now
-  promptly asks whether to save, discard or cancel as usual. (fixes
-  GH issue #292; EXPERIMENTAL)
+  promptly asks whether to save, discard or cancel as usual.
 
-- Re-improved Mixer multi-row layout (regression to a former patch
-  by Holger Marzen aka. bluebell, sorry).
+- Re-improved Mixer multi-row layout.
 
-- Fix incorrect destruction order for VST3 modules (as reported by
-  Robbert van der Helm on GH #291, thanks).
+- Fix incorrect destruction order for VST3 modules.
 
 
 0.9.19  2020-12-20  A Winter'20 Release.
@@ -878,7 +883,7 @@ GIT HEAD
 - Immediate visual sync has been added to main and MIDI clip editor
   thumb-views (a request by Frank Neumann, thanks).
 
-- Fixed an old MIDI clip editor contents disapearing bug, which
+- Fixed an old MIDI clip editor contents disappearing bug, which
   manifested when drawing free-hand (ie. Edit/Select Mode/Edit Draw is
   on) over and behind its start/beginning position (while in the lower
   view pane).
@@ -1656,7 +1661,7 @@ O.6.1  2014-04-29  Bitsy Sweet Beta
   support it, is now effectively and complete.
 
 - Custom connections for dedicated audio outputs from all plugin
-  chains in MIDI tracks or buses are back in business, hopefuly restored
+  chains in MIDI tracks or buses are back in business, hopefully restored
   gain on session load (ticket by yuba, thanks).
 
 - Track Properties dialog now dirty after any plugin related change
@@ -2026,7 +2031,7 @@ O.6.1  2014-04-29  Bitsy Sweet Beta
 
 - Some audio/MIDI content/media-file resource management is entering
   the scene, taking care of some file-system house-keeping, this gets
-  evident on unsaved/dead recorded files being automaticaly removed from
+  evident on unsaved/dead recorded files being automatically removed from
   the file-system, on session close.
 
 - Killed the old and entirely deprecated LV2 Save/Restore and Persist
@@ -3540,7 +3545,7 @@ C3).
   with captured events being recorded with erratic long delays.
 
 - Almost complete refactoring of the clumsy audio peak file classes,
-  possibly making it even clumsier but straight neverthless, with the
+  possibly making it even clumsier but straight nevertheless, with the
   noble and final aim to build it in-flight and draw the waveforms
   while recording is rolling.
 

@@ -194,7 +194,7 @@ public:
 	bool isLocked() const
 		{ return (m_state & Locked); }
 
-	// Ccapture/process state settlers.
+	// Capture/process state settlers.
 	void setCapture(bool bCapture);
 	void setProcess(bool bProcess);
 	void setLocked(bool bLocked);
@@ -202,11 +202,8 @@ public:
 	// The meta-processing automation procedure.
 	void process(unsigned long iFrame)
 	{
-		if (isProcess()) {
-			Node *pNode = seek(iFrame);
-			if (!isCapture())
-				m_observer.setValue(value(pNode, iFrame));
-		}
+		if (isProcess())
+			m_observer.setValue(value(iFrame));
 	}
 
 	void process() { process(m_cursor.frame()); }
@@ -215,7 +212,7 @@ public:
 	void capture(unsigned long iFrame)
 	{
 		if (isCapture())
-			addNode(iFrame, m_observer.value(), m_pEditList);
+			addNode(iFrame, m_observer.lastValue(), m_pEditList);
 	}
 
 	void capture() { capture(m_cursor.frame()); }
@@ -487,16 +484,6 @@ public:
 		qtractorCurve *pCurve = first();
 		while (pCurve) {
 			pCurve->setLength(iLength);
-			pCurve = pCurve->next();
-		}
-	}
-
-	// Record automation procedure.
-	void capture(unsigned long iFrame)
-	{
-		qtractorCurve *pCurve = first();
-		while (pCurve) {
-			pCurve->capture(iFrame);
 			pCurve = pCurve->next();
 		}
 	}
