@@ -209,7 +209,7 @@ Support
 -------
 
 Qtractor is free, Linux Audio [18] open source free software. For bug
-reports, feature requests, discussion forums, mailling lists, or any
+reports, feature requests, discussion forums, mailing lists, or any
 other matter related to the development of this piece of software,
 please use the Sourceforge project page (https://sourceforge.net/projects/qtractor).
 
@@ -298,8 +298,8 @@ References
      https://drobilla.net/software/suil/
 
 [16] Non/New Session Management (NSM)
+     (formerly http://non.tuxfamily.org/nsm/)
      https://linuxaudio.github.io/new-session-manager/
-    (formerly http://non.tuxfamily.org/nsm/)
 
 [17] libaubio, a library for real time audio labelling
      https://aubio.org

@@ -393,7 +393,7 @@ void qtractorTracks::zoomCenterPost ( const ZoomCenter& zc )
 	int cx = pSession->pixelFromFrame(zc.frame);
 	int cy = m_pTrackView->contentsY();
 
-	// Update the dependant views...
+	// Update the dependent views...
 	m_pTrackList->updateItems();
 	m_pTrackList->updateContentsHeight();
 	m_pTrackView->updateContentsWidth();
@@ -443,7 +443,7 @@ void qtractorTracks::updateContents ( bool bRefresh )
 		++iTrack;
 	}
 
-	// Update dependant views.
+	// Update dependent views.
 	if (iRefresh > 0) {
 		m_pTrackList->updateContentsHeight();
 		m_pTrackView->updateContentsWidth();

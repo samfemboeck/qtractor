@@ -229,7 +229,7 @@ qtractorMainForm::qtractorMainForm (
 	// Initialize some pointer references.
 	m_pOptions = nullptr;
 
-	// FIXME: This gotta go, somwhere in time...
+	// FIXME: This gotta go, somewhere in time...
 	m_pSession = new qtractorSession();
 	m_pTempoCursor = new qtractorTempoCursor();
 	m_pMessageList = new qtractorMessageList();
@@ -6613,11 +6613,11 @@ void qtractorMainForm::updateSessionPost (void)
 	// We're definitely clean...
 	qtractorSubject::resetQueue();
 
-	// Sync all process-enabled automation curves...
-	m_pSession->process_curve(m_iPlayHead);
-
 	// Update the session views...
 	viewRefresh();
+
+	// Sync all process-enabled automation curves...
+	m_pSession->process_curve(m_iPlayHead);
 
 	// Check for any pending nested messages...
 	if (!qtractorMessageList::isEmpty()) {
@@ -6670,7 +6670,7 @@ void qtractorMainForm::updateExportMenu (void)
 		}
 	}
 
-	// nb. audio export also applies to MIDI intrument tracks...
+	// nb. audio export also applies to MIDI instrument tracks...
 	m_ui.trackExportAudioAction->setEnabled(iAudioClips > 0 || iMidiClips > 0);
 	m_ui.trackExportMidiAction->setEnabled(iMidiClips > 0);
 }
@@ -8092,8 +8092,10 @@ void qtractorMainForm::audioBuffNotify ( unsigned int iBufferSize )
 
 
 #ifdef CONFIG_JACK_SESSION
+#if defined(Q_CC_GNU) || defined(Q_CC_MINGW)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 #endif
 
 // Custom (JACK) session event handler.
@@ -8169,7 +8171,9 @@ void qtractorMainForm::audioSessNotify ( void *pvSessionArg )
 }
 
 #ifdef CONFIG_JACK_SESSION
+#if defined(Q_CC_GNU) || defined(Q_CC_MINGW)
 #pragma GCC diagnostic pop
+#endif
 #endif
 
 
