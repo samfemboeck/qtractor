@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(qtractor)
+project(qtractor
+  VERSION 0.9.20
+  DESCRIPTION "An Audio/MIDI multi-track sequencer"
+  LANGUAGES C CXX)
 
-set (VERSION "0.9.20")
-
-set (CONFIG_VERSION ${VERSION})
+set (CONFIG_VERSION ${PROJECT_VERSION})
 execute_process (
   COMMAND git describe --tags --dirty --abbrev=6
   OUTPUT_VARIABLE GIT_DESCRIBE_OUTPUT
@@ -23,6 +24,8 @@ if (GIT_DESCRIBE_RESULT EQUAL 0)
   if (GIT_REVPARSE_RESULT EQUAL 0 AND NOT GIT_REVPARSE_OUTPUT STREQUAL "master")
     set (VERSION "${VERSION} [${GIT_REVPARSE_OUTPUT}]")
   endif ()
+else ()
+  set (VERSION "${PROJECT_VERSION}")
 endif ()
 
 set (PACKAGE_NAME "Qtractor")
@@ -181,7 +184,7 @@ endif ()
 find_package (QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package (Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Xml)
 
-if (CONFIG_LIBLO OR CONFIG_XUNIQUE)
+if (CONFIG_XUNIQUE)
   find_package (Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
 endif ()
 
@@ -763,7 +766,7 @@ show_option ("  JACK Session support . . . . . . . . . . . . . . ." CONFIG_JACK_
 show_option ("  JACK Latency support . . . . . . . . . . . . . . ." CONFIG_JACK_LATENCY)
 show_option ("  JACK Metadata support  . . . . . . . . . . . . . ." CONFIG_JACK_METADATA)
 message     ("")
-show_option ("  New Session Management (NSM) support . . . . . . ." CONFIG_NSM)
+show_option ("  Non/New Session Management (NSM) support . . . . ." CONFIG_NSM)
 message     ("")
 show_option ("  VeSTige header support . . . . . . . . . . . . . ." CONFIG_VESTIGE)
 show_option ("  Unique/Single instance support . . . . . . . . . ." CONFIG_XUNIQUE)

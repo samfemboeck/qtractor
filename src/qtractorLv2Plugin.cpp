@@ -1356,14 +1356,17 @@ static void qtractor_lv2_time_position_close ( qtractorLv2Plugin *pLv2Plugin )
 
 #undef signals // Collides with GTK symbology
 
+#if defined(Q_CC_GNU) || defined(Q_CC_MINGW)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
+#if defined(Q_CC_GNU) || defined(Q_CC_MINGW)
 #pragma GCC diagnostic pop
-
+#endif
 
 static void qtractor_lv2_ui_gtk2_on_size_request (
 	GtkWidget */*widget*/, GtkRequisition *req, gpointer user_data )
@@ -3476,8 +3479,7 @@ void qtractorLv2Plugin::openEditor ( QWidget */*pParent*/ )
 #ifdef CONFIG_LV2_UI_X11
 	if (!ui_supported && m_pQtWidget
 		&& m_lv2_ui_type == LV2_UI_TYPE_X11) {
-		// Override widget handle...
-		m_lv2_ui_widget = static_cast<LV2UI_Widget> (m_pQtWidget);
+		// Initialize widget event filter...
 		m_pQtFilter = new EventFilter(this, m_pQtWidget);
 	//	m_bQtDelete = true;
 		// LV2 UI resize control...
@@ -4163,6 +4165,25 @@ void qtractorLv2Plugin::lv2_ui_resize ( const QSize& size )
 	qDebug("qtractorLv2Plugin[%p]::lv2_ui_resize(%d, %d)",
 		this, size.width(), size.height());
 #endif
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
+#ifdef CONFIG_LV2_UI_X11
+	if (m_lv2_ui_type == LV2_UI_TYPE_X11
+		&& m_lv2_ui_widget
+	#ifdef CONFIG_LIBSUIL
+		&& m_suil_instance == nullptr
+	#endif
+	) {
+		const WId wid = WId(m_lv2_ui_widget);
+		QWindow *pWindow = QWindow::fromWinId(wid);
+		if (pWindow) {
+			pWindow->resize(size);
+			delete pWindow;
+		}
+	}
+#endif	// CONFIG_LV2_UI_X11
+#endif
+
 	const LV2UI_Resize *resize
 		= (const LV2UI_Resize *) lv2_ui_extension_data(LV2_UI__resize);
 	if (resize && resize->ui_resize) {
@@ -4175,8 +4196,10 @@ void qtractorLv2Plugin::lv2_ui_resize ( const QSize& size )
 
 
 #ifndef CONFIG_LIBSUIL
+#if defined(Q_CC_GNU) || defined(Q_CC_MINGW)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 #endif
 
 // Alternate UI instantiation stuff.
@@ -4393,7 +4416,9 @@ bool qtractorLv2Plugin::lv2_ui_instantiate (
 }
 
 #ifndef CONFIG_LIBSUIL
+#if defined(Q_CC_GNU) || defined(Q_CC_MINGW)
 #pragma GCC diagnostic pop
+#endif
 #endif
 
 
