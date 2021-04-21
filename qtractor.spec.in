@@ -17,7 +17,7 @@
 
 %define name    @PACKAGE_TARNAME@
 %define version @PACKAGE_VERSION@
-%define release 62
+%define release 63
 
 %define _prefix	@ac_prefix@
 
@@ -41,7 +41,7 @@ BuildRequires:	coreutils
 BuildRequires:	pkgconfig
 BuildRequires:	glibc-devel
 BuildRequires:	gcc-c++
-BuildRequires:	autoconf automake
+BuildRequires:	cmake
 %if %{defined fedora}
 BuildRequires:	qt5-qtbase-devel >= 5.1, qt5-linguist
 BuildRequires:	qt5-qtsvg-devel, qt5-qtwayland-devel
@@ -50,7 +50,7 @@ BuildRequires:	rubberband-devel
 BuildRequires:	aubio-devel >= 0.4.1
 BuildRequires:	ruby
 %else
-BuildRequires:	libqt5-qtbase-devel >= 5.1, libqt5-linguist
+BuildRequires:	libqt5-qtbase-devel >= 5.1, libqt5-linguist-devel
 BuildRequires:	libqt5-qtsvg-devel, libqt5-qtwayland-devel
 BuildRequires:	alsa-devel
 BuildRequires:	librubberband-devel
@@ -87,11 +87,10 @@ Linux Desktop Audio Workstation GUI, specially dedicated to
 the personal home-studio.
 
 %prep
-%setup
-[ -x ./autogen.sh ] && ./autogen.sh
+%setup -q
 
 %build
-%configure
+cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} .
 %__make %{?_smp_mflags}
 
 %install
@@ -151,7 +150,7 @@ the personal home-studio.
 - Winter'20 release.
 * Fri Oct 30 2020 Rui Nuno Capela <rncbc@rncbc.org> 0.9.18
 - Fall'20 release.
-* Thu Sep 15 2020 Rui Nuno Capela <rncbc@rncbc.org> 0.9.17
+* Tue Sep 15 2020 Rui Nuno Capela <rncbc@rncbc.org> 0.9.17
 - End-of-Summer'20 release.
 * Fri Aug  7 2020 Rui Nuno Capela <rncbc@rncbc.org> 0.9.16
 - Summer'20 release.

@@ -1,23 +1,27 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(qtractor
-  VERSION 0.9.21
+  VERSION 0.9.22
   DESCRIPTION "An Audio/MIDI multi-track sequencer"
   LANGUAGES C CXX)
 
 set (CONFIG_VERSION ${PROJECT_VERSION})
 execute_process (
   COMMAND git describe --tags --dirty --abbrev=6
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_DESCRIBE_OUTPUT
   RESULT_VARIABLE GIT_DESCRIBE_RESULT
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 if (GIT_DESCRIBE_RESULT EQUAL 0)
   set (VERSION "${GIT_DESCRIBE_OUTPUT}")
   string (REGEX REPLACE "^[^0-9]+" "" VERSION "${VERSION}")
+  string (REGEX REPLACE "^1_"      "" VERSION "${VERSION}")
+  string (REGEX REPLACE "^[_vV]+"  "" VERSION "${VERSION}")
   string (REGEX REPLACE "-g"   "git." VERSION "${VERSION}")
-  string (REGEX REPLACE "[_|-]+"  "." VERSION "${VERSION}")
+  string (REGEX REPLACE "[_|-]"   "." VERSION "${VERSION}")
   execute_process (
     COMMAND git rev-parse --abbrev-ref HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     OUTPUT_VARIABLE GIT_REVPARSE_OUTPUT
     RESULT_VARIABLE GIT_REVPARSE_RESULT
     OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -33,6 +37,9 @@ set (PACKAGE_VERSION "${VERSION}")
 set (PACKAGE_BUGREPORT "rncbc@rncbc.org")
 set (PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set (PACKAGE_TARNAME "qtractor")
+
+set (ac_version "${PROJECT_VERSION}")
+set (ac_prefix "${CMAKE_INSTALL_PREFIX}")
 
 set (CONFIG_BUILD_VERSION "${PACKAGE_VERSION}")
 
@@ -175,13 +182,29 @@ option (CONFIG_GRADIENT "Enable gradient eye-candy (default=yes)" 1)
 option (CONFIG_STACKTRACE "Enable debugger stack-trace (default=no)" 0)
 
 
+# Enable Qt6 build preference.
+option (CONFIG_QT6 "Enable Qt6 build (default=no)" 0)
+
+
 # Fix for new CMAKE_REQUIRED_LIBRARIES policy.
 if (POLICY CMP0075)
   cmake_policy (SET CMP0075 NEW)
 endif ()
 
-# Check for Qt
-find_package (QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
+# Check for Qt...
+if (CONFIG_QT6)
+  find_package (Qt6 QUIET)
+  if (NOT Qt6_FOUND)
+    set (CONFIG_QT6 0)
+  endif ()
+endif ()
+
+if (CONFIG_QT6)
+  find_package (QT QUIET NAMES Qt6)
+else ()
+  find_package (QT QUIET NAMES Qt5)
+endif ()
+
 find_package (Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Xml)
 
 if (CONFIG_XUNIQUE)
@@ -223,8 +246,15 @@ set (CONFIG_FLOAT32 1)
 
 # Check for SSE optimization.
 if (CONFIG_SSE)
-  add_compile_options (-msse -mfpmath=sse -ffast-math)
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "^x86" OR CMAKE_SYSTEM_PROCESSOR MATCHES "^i[3456]86")
+    check_include_file (xmmintrin.h HAVE_XMMINTRIN_H)
+    if (HAVE_XMMINTRIN_H)
+      add_compile_options (-msse -mfpmath=sse)
+    endif ()
+  endif ()
 endif ()
+
+add_compile_options (-ffast-math)
 
 # Checks for header files.
 if (UNIX AND NOT APPLE)
@@ -493,22 +523,6 @@ if (NOT CONFIG_LV2)
   set (CONFIG_LV2_UI 0)
 endif ()
 
-# Check for optional LILV library.
-if (CONFIG_LIBLILV)
-  pkg_check_modules (LILV IMPORTED_TARGET lilv-0)
-  if (LILV_FOUND)
-    include_directories (${LILV_INCLUDE_DIRS})
-    link_directories (${LILV_LIBRARY_DIRS})
-  # link_libraries (${LILV_LIBRARIES})
-    set (CMAKE_REQUIRED_LIBRARIES "${LILV_LIBRARIES};${CMAKE_REQUIRED_LIBRARIES}")
-    check_function_exists (lilv_file_uri_parse CONFIG_LILV_FILE_URI_PARSE)
-    check_function_exists (lilv_world_unload_resource CONFIG_LILV_WORLD_UNLOAD_RESOURCE)
-  else ()
-    message (WARNING "*** LILV library not found.")
-    set (CONFIG_LIBLILV 0)
-  endif ()
-endif ()
-
 if (CONFIG_LV2_UI)
   check_include_file(lv2/lv2plug.in/ns/extensions/ui/ui.h HAVE_LV2_UI_H)
   if (NOT HAVE_LV2_UI_H)
@@ -536,7 +550,58 @@ if (NOT CONFIG_LV2_UI)
   set (CONFIG_LV2_UI_X11 0)
 endif ()
 
-# Check for optional SUIL library.
+# Check for optional LILV library.
+if (CONFIG_LIBLILV)
+  pkg_check_modules (LILV IMPORTED_TARGET lilv-0)
+  if (LILV_FOUND)
+    include_directories (${LILV_INCLUDE_DIRS})
+    link_directories (${LILV_LIBRARY_DIRS})
+  # link_libraries (${LILV_LIBRARIES})
+    set (CMAKE_REQUIRED_LIBRARIES "${LILV_LIBRARIES};${CMAKE_REQUIRED_LIBRARIES}")
+    check_function_exists (lilv_file_uri_parse CONFIG_LILV_FILE_URI_PARSE)
+    check_function_exists (lilv_world_unload_resource CONFIG_LILV_WORLD_UNLOAD_RESOURCE)
+  else ()
+    message (WARNING "*** LILV library not found.")
+    set (CONFIG_LIBLILV 0)
+  endif ()
+endif ()
+
+if (NOT CONFIG_LIBLILV)
+  set (CONFIG_LV2 0)
+  set (CONFIG_LV2_EVENT 0)
+  set (CONFIG_LV2_ATOM 0)
+  set (CONFIG_LV2_CVPORT 0)
+  set (CONFIG_LV2_WORKER 0)
+  set (CONFIG_LV2_UI 0)
+  set (CONFIG_LV2_EXTERNAL_UI 0)
+  set (CONFIG_LV2_STATE 0)
+  set (CONFIG_LV2_STATE_FILES 0)
+  set (CONFIG_LV2_STATE_MAKE_PATH 0)
+  set (CONFIG_LV2_PROGRAMS 0)
+  set (CONFIG_LV2_MIDNAM 0)
+  set (CONFIG_LV2_PRESETS 0)
+  set (CONFIG_LV2_PATCH 0)
+  set (CONFIG_LV2_PORT_EVENT 0)
+  set (CONFIG_LV2_TIME 0)
+  set (CONFIG_LV2_TIME_POSITION 0)
+  set (CONFIG_LV2_OPTIONS 0)
+  set (CONFIG_LV2_BUF_SIZE 0)
+  set (CONFIG_LV2_PARAMETERS 0)
+  set (CONFIG_LV2_UI_TOUCH 0)
+  set (CONFIG_LV2_UI_REQ_VALUE 0)
+  set (CONFIG_LV2_UI_IDLE 0)
+  set (CONFIG_LV2_UI_SHOW 0)
+  set (CONFIG_LV2_UI_GTK2 0)
+  set (CONFIG_LV2_UI_X11 0)
+  set (CONFIG_LIBSUIL 0)
+endif ()
+
+# Disable libsuil upon Qt >= 6.0.0 ...
+if (CONFIG_LIBSUIL AND QT_VERSION_MAJOR GREATER_EQUAL 6)
+  set (CONFIG_LIBSUIL 0)
+endif ()
+
+# Check for LV2 new UI instantiation availability (libsuil).
 if (CONFIG_LIBSUIL)
   pkg_check_modules (SUIL IMPORTED_TARGET suil-0)
   if (SUIL_FOUND)
@@ -575,6 +640,7 @@ if (NOT CONFIG_LV2_ATOM)
   set (CONFIG_LV2_STATE 0)
   set (CONFIG_LV2_OPTIONS 0)
   set (CONFIG_LV2_TIME_POSITION 0)
+  set (CONFIG_LV2_PORT_EVENT 0)
 endif ()
 
 if (CONFIG_LV2_WORKER)
@@ -596,6 +662,7 @@ if (NOT CONFIG_LV2_STATE)
   set (CONFIG_LV2_STATE_MAKE_PATH 0)
   set (CONFIG_LV2_PRESETS 0)
   set (CONFIG_LV2_PATCH 0)
+  set (CONFIG_LV2_TIME 0)
 endif ()
 
 if (CONFIG_LV2_PROGRAMS)
@@ -716,7 +783,7 @@ macro (SHOW_OPTION text value)
 endmacro ()
 
 
-message   ("\n  ${PACKAGE_NAME} ${PACKAGE_VERSION}")
+message   ("\n  ${PACKAGE_NAME} ${PACKAGE_VERSION} (Qt ${QT_VERSION})")
 message   ("\n  Build target . . . . . . . . . . . . . . . . . . .: ${CONFIG_BUILD_TYPE}\n")
 show_option ("  JACK Audio Connection Kit support  . . . . . . . ." CONFIG_LIBJACK)
 show_option ("  ALSA MIDI Sequencer support  . . . . . . . . . . ." CONFIG_LIBASOUND)
@@ -766,7 +833,7 @@ show_option ("  JACK Session support . . . . . . . . . . . . . . ." CONFIG_JACK_
 show_option ("  JACK Latency support . . . . . . . . . . . . . . ." CONFIG_JACK_LATENCY)
 show_option ("  JACK Metadata support  . . . . . . . . . . . . . ." CONFIG_JACK_METADATA)
 message     ("")
-show_option ("  Non/New Session Management (NSM) support . . . . ." CONFIG_NSM)
+show_option ("  Non Session Management (NSM) support . . . . . . ." CONFIG_NSM)
 message     ("")
 show_option ("  VeSTige header support . . . . . . . . . . . . . ." CONFIG_VESTIGE)
 show_option ("  Unique/Single instance support . . . . . . . . . ." CONFIG_XUNIQUE)
