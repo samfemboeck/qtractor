@@ -1,7 +1,7 @@
 // qtractorOscControl.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2015, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2021, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -39,7 +39,7 @@
 
 // Constructor.
 qtractorOscPath::qtractorOscPath (
-	const QString& path, QVariant::Type vtype, QObject *pParent)
+	const QString& path, QMetaType::Type vtype, QObject *pParent)
 	: QObject(pParent), m_path(path), m_vtype(vtype),
 		m_host(QHostAddress::Null), m_port(0)
 {
@@ -52,7 +52,7 @@ const QString& qtractorOscPath::path (void) const
 	return m_path;
 }
 
-QVariant::Type qtractorOscPath::vtype (void) const
+QMetaType::Type qtractorOscPath::vtype (void) const
 {
 	return m_vtype;
 }
@@ -74,11 +74,22 @@ unsigned short qtractorOscPath::port (void) const
 void qtractorOscPath::notifyData (
 	const QVariant& v, const QHostAddress& host, unsigned short port )
 {
-	if (v.type() == m_vtype) {
+	if (m_vtype == vtype(v)) { 
 		m_host = host;
 		m_port = port;
 		emit dataSignal(v);
 	}
+}
+
+
+// Meta-type id caster. (static)
+QMetaType::Type qtractorOscPath::vtype ( const QVariant& v )
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	return static_cast<QMetaType::Type> (v.metaType().id());
+#else
+	return static_cast<QMetaType::Type> (v.type());
+#endif
 }
 
 
@@ -199,7 +210,7 @@ int qtractorOscSocket::writeData (
 
 // Constructor.
 qtractorOscNode::qtractorOscNode ( qtractorOscSocket::Type stype, QObject *pParent )
-	: QObject(pParent), m_socket(stype)
+	: qtractorOscPath(QString(), QMetaType::UnknownType, pParent), m_socket(stype)
 {
 }
 
@@ -261,20 +272,20 @@ QByteArray qtractorOscNode::reverse ( const QByteArray& a )
 void qtractorOscNode::parseArgs (
 	const QVariant& v, QString& types, QByteArray& args )
 {
-	switch (v.type()) {
-	case QVariant::Int:
+	switch (vtype(v)) {
+	case QMetaType::Int:
 		types += 'i';
 		args += fromInt(v.toInt());
 		break;
-	case QVariant::Double:
+	case QMetaType::Double:
 		types += 'f';
 		args += fromFloat(float(v.toDouble()));
 		break;
-	case QVariant::String:
+	case QMetaType::QString:
 		types += 's';
 		args += fromString(v.toString());
 		break;
-	case QVariant::List:
+	case QMetaType::QVariantList:
 	{
 		QListIterator<QVariant> iter(v.toList());
 		while (iter.hasNext())
@@ -302,7 +313,7 @@ QByteArray qtractorOscNode::message ( const QString& path, const QVariant& v )
 
 // Path registry methods.
 qtractorOscPath *qtractorOscNode::addPath (
-	const QString& path, QVariant::Type vtype )
+	const QString& path, QMetaType::Type vtype )
 {
 	qtractorOscPath *pOscPath = new qtractorOscPath(path, vtype, this);
 	m_paths.insert(pOscPath->path(), pOscPath);
@@ -310,7 +321,7 @@ qtractorOscPath *qtractorOscNode::addPath (
 }
 
 qtractorOscPath *qtractorOscNode::addPath (
-	const QString& path, QVariant::Type vtype,
+	const QString& path, QMetaType::Type vtype,
 	const QObject *receiver, const char *method )
 {
 	qtractorOscPath *pOscPath = addPath(path, vtype);
@@ -500,7 +511,7 @@ void qtractorOscClient::sendData ( const QString& path, const QVariant& v )
 
 
 // Kind of singleton reference.
-qtractorOscControl* qtractorOscControl::g_pOscControl = NULL;
+qtractorOscControl* qtractorOscControl::g_pOscControl = nullptr;
 
 
 // Contructor.
@@ -510,17 +521,17 @@ qtractorOscControl::qtractorOscControl ( unsigned short port )
 		qtractorOscSocket::Udp, QHostAddress::LocalHost, port);
 
 	// Add some command action slots
-	m_pOscServer->addPath("/AddAudioTrack", QVariant::String,
+	m_pOscServer->addPath("/AddAudioTrack", QMetaType::QString,
 		this, SLOT(addAudioTrackSlot(const QVariant&)));
-	m_pOscServer->addPath("/AddAudioClip", QVariant::List,
+	m_pOscServer->addPath("/AddAudioClip", QMetaType::QVariantList,
 		this, SLOT(addAudioClipSlot(const QVariant&)));
-	m_pOscServer->addPath("/AddAudioClipUniqueTrack", QVariant::List,
+	m_pOscServer->addPath("/AddAudioClipUniqueTrack", QMetaType::QVariantList,
 		this, SLOT(addAudioClipUniqueTrackSlot(const QVariant&)));
-	m_pOscServer->addPath("/EnsureUniqueTrack", QVariant::String,
+	m_pOscServer->addPath("/EnsureUniqueTrack", QMetaType::QString,
 		this, SLOT(ensureUniqueTrackSlot(const QVariant&)));
-	m_pOscServer->addPath("/SetGlobalTempo", QVariant::List,
+	m_pOscServer->addPath("/SetGlobalTempo", QMetaType::QVariantList,
 		this, SLOT(setGlobalTempoSlot(const QVariant&)));
-	m_pOscServer->addPath("/AdvanceLoopRange", QVariant::List,
+	m_pOscServer->addPath("/AdvanceLoopRange", QMetaType::QVariantList,
 		this, SLOT(advanceLoopRangeSlot(const QVariant&)));
 
 	// Pseudo-singleton reference setup.
@@ -532,7 +543,7 @@ qtractorOscControl::qtractorOscControl ( unsigned short port )
 qtractorOscControl::~qtractorOscControl (void)
 {
 	// Pseudo-singleton reference shut-down.
-	g_pOscControl = NULL;
+	g_pOscControl = nullptr;
 
 	delete m_pOscServer;
 }

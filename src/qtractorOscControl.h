@@ -1,7 +1,7 @@
 // qtractorOscControl.h
 //
 /****************************************************************************
-   Copyright (C) 2005-2015, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2021, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -55,11 +55,11 @@ class qtractorOscPath : public QObject
 public:
 
 	// Constructors.
-	qtractorOscPath(const QString& path, QVariant::Type vtype, QObject *pParent = 0);
+	qtractorOscPath(const QString& path, QMetaType::Type vtype, QObject *pParent = 0);
 
 	// Instance properties accessors.
 	const QString& path() const;
-	QVariant::Type vtype() const;
+	QMetaType::Type vtype() const;
 
 	// Transient properties accessors.
 	const QHostAddress& host() const;
@@ -73,15 +73,20 @@ signals:
 
 	void dataSignal(const QVariant& v);
 
+protected:
+
+	// Meta-type id caster.
+	static QMetaType::Type vtype(const QVariant& v);
+
 private:
 
 	// Instance properties.
-	QString        m_path;
-	QVariant::Type m_vtype;
+	QString         m_path;
+	QMetaType::Type m_vtype;
 
 	// Transient properties.
-	QHostAddress   m_host;
-	unsigned short m_port;
+	QHostAddress    m_host;
+	unsigned short  m_port;
 };
 
 
@@ -128,7 +133,7 @@ private:
 //---------------------------------------------------------------------------
 // qtractorOscNode - decl.
 
-class qtractorOscNode : public QObject
+class qtractorOscNode : public qtractorOscPath
 {
 	Q_OBJECT
 
@@ -136,9 +141,9 @@ public:
 
 	// Path registry methods.
 	qtractorOscPath *addPath(const QString& path,
-		QVariant::Type vtype = QVariant::Invalid);
+		QMetaType::Type vtype = QMetaType::UnknownType);
 	qtractorOscPath *addPath(const QString& path,
-		QVariant::Type vtype, const QObject *receiver, const char *method);
+		QMetaType::Type vtype, const QObject *receiver, const char *method);
 
 	void removePath(qtractorOscPath *pOscPath);
 
@@ -240,7 +245,7 @@ public:
 public slots:
 
 	// Data senders.
-	void sendData(const QString& path, const QVariant& v = QVariant::Invalid);
+	void sendData(const QString& path, const QVariant& v);
 
 private:
 
