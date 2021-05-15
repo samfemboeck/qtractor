@@ -239,6 +239,10 @@ else ()
   if (NOT DL_LIBRARY)
     message (FATAL_ERROR "*** dl library not found.")
   endif ()
+  find_library (PTHREAD_LIBRARY pthread)
+  if (NOT PTHREAD_LIBRARY)
+    message (FATAL_ERROR "*** pthread library not found.")
+  endif ()
 endif ()
 
 # Check for IEEE 32bit float optimizations.
