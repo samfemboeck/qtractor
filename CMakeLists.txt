@@ -210,9 +210,9 @@ endif ()
 
 find_package (Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets Xml)
 
-if (CONFIG_XUNIQUE)
+#if (CONFIG_XUNIQUE)
   find_package (Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
-endif ()
+#endif ()
 
 find_package (Qt${QT_VERSION_MAJOR}LinguistTools)
 
