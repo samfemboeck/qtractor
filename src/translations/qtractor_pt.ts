@@ -11740,42 +11740,42 @@ Edição do começo/tamanho dos marcadores (azul) definem a mudança de velocida
     <message>
         <location filename="../qtractorOptionsForm.ui" line="3706"/>
         <source>Blacklist</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista Maldita</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="3729"/>
         <source>Plugin blacklist path</source>
-        <translation type="unfinished"></translation>
+        <translation>Caminho de Plugins malditos</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="3757"/>
         <source>Browse plugin blacklist path</source>
-        <translation type="unfinished"></translation>
+        <translation>Navegar caminho de plugins malditos</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="3788"/>
         <source>Add plugin blacklist path</source>
-        <translation type="unfinished"></translation>
+        <translation>Adicionar caminho à lista de Plugins Malditos</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="3815"/>
         <source>Plugin blacklist paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Caminhos da lista de Plugins Malditos</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="3846"/>
         <source>Remove plugin blacklist path</source>
-        <translation type="unfinished"></translation>
+        <translation>Remover caminho da lista de Plugins malditos</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="3890"/>
         <source>Clear plugin blacklist paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Limpar caminhos na Lista de Plugins malditos</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="3893"/>
         <source>&amp;Clear</source>
-        <translation type="unfinished">&amp;Limpar</translation>
+        <translation>&amp;Limpar</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1557"/>
@@ -12537,12 +12537,12 @@ Você quer mesmo manter as alterações?</translation>
     <message>
         <location filename="../qtractorOptionsForm.cpp" line="1668"/>
         <source>Plug-in Blacklist</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista de Plugins malditos</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.cpp" line="1671"/>
         <source>Plug-in files (*.%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivos de Plug-in(*.%1)</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1662"/>
@@ -13498,17 +13498,17 @@ Posso continuar?</translation>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.cpp" line="347"/>
+        <location filename="../qtractorPluginSelectForm.cpp" line="336"/>
         <source>RT</source>
         <translation>RT</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.cpp" line="345"/>
+        <location filename="../qtractorPluginSelectForm.cpp" line="334"/>
         <source>EXT</source>
         <translation>EXT</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.cpp" line="343"/>
+        <location filename="../qtractorPluginSelectForm.cpp" line="332"/>
         <source>GUI</source>
         <translation>GUI</translation>
     </message>
@@ -13568,11 +13568,6 @@ Posso continuar?</translation>
         <translation>Plugins disponíveis</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="205"/>
-        <source>Activate plugin on insert</source>
-        <translation>Ativar plugin no Insertor</translation>
-    </message>
-    <message>
         <location filename="../qtractorPluginSelectForm.ui" line="161"/>
         <source>Control</source>
         <translation>Controle</translation>
@@ -13588,22 +13583,17 @@ Posso continuar?</translation>
         <translation>Instâncias</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="202"/>
-        <source>&amp;Activate</source>
-        <translation>&amp;Ativar</translation>
-    </message>
-    <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="234"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="237"/>
         <source>Plugin scanning in progress...</source>
         <translation>Procura por plugins em processo...</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="241"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="202"/>
         <source>Rescan for available plugins (refresh)</source>
         <translation>Procurar novamente por plugins (atualizar)</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="244"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="205"/>
         <source>&amp;Rescan</source>
         <translation>&amp;Atualizar</translation>
     </message>
@@ -14684,8 +14674,8 @@ Você deseja descartar essas alterações?</translation>
     </message>
     <message>
         <location filename="../qtractorTrackForm.cpp" line="204"/>
-        <location filename="../qtractorTrackForm.cpp" line="841"/>
-        <location filename="../qtractorTrackForm.cpp" line="955"/>
+        <location filename="../qtractorTrackForm.cpp" line="843"/>
+        <location filename="../qtractorTrackForm.cpp" line="957"/>
         <source>(None)</source>
         <translation>(Nada)</translation>
     </message>
@@ -14699,17 +14689,17 @@ Do you want to apply the changes?</source>
 Você quer mesmo manter as alterações?</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackForm.cpp" line="1209"/>
+        <location filename="../qtractorTrackForm.cpp" line="1211"/>
         <source>Image files (%1)</source>
         <translation>Arquivos de Imagem (%1)</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackForm.cpp" line="1210"/>
+        <location filename="../qtractorTrackForm.cpp" line="1212"/>
         <source>All files (*.*)</source>
         <translation>Todos os arquivos (*.*)</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackForm.cpp" line="1206"/>
+        <location filename="../qtractorTrackForm.cpp" line="1208"/>
         <source>Track Icon</source>
         <translation>Figura da Pista</translation>
     </message>
@@ -14769,7 +14759,7 @@ Você quer mesmo manter as alterações?</translation>
         <translation>Visualização / Cores</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackForm.cpp" line="639"/>
+        <location filename="../qtractorTrackForm.cpp" line="641"/>
         <source>(No instrument)</source>
         <translation>(Sem instumento)</translation>
     </message>
@@ -14869,12 +14859,12 @@ Você quer mesmo manter as alterações?</translation>
         <translation>Remover plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackForm.cpp" line="1494"/>
+        <location filename="../qtractorTrackForm.cpp" line="1496"/>
         <source>Foreground Color</source>
         <translation>Cor do Primeiro Plano</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackForm.cpp" line="1520"/>
+        <location filename="../qtractorTrackForm.cpp" line="1522"/>
         <source>Background Color</source>
         <translation>Cor do segundo plano</translation>
     </message>
