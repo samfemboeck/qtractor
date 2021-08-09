@@ -1293,7 +1293,7 @@ void qtractorMixerRack::cleanStrips ( int iMark )
 		else ++strip;
 	}
 
-	m_pRackWidget->workspace()->adjustSize();
+	m_pRackWidget->updateWorkspace();
 	m_pRackWidget->workspace()->setUpdatesEnabled(true);
 }
 
