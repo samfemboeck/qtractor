@@ -2136,6 +2136,8 @@ bool qtractorMainForm::saveSession ( bool bPrompt )
 			options |= QFileDialog::DontUseNativeDialog;
 			pParentWidget = QWidget::window();
 		}
+		// Always avoid to store session on extracted direactories...
+		sFilename = sessionArchivePath(sFilename);
 		// Try to rename as if a backup is about...
 		sFilename = sessionBackupPath(sFilename);
 	#if 1//QT_VERSION < QT_VERSION_CHECK(4, 4, 0)
@@ -2526,6 +2528,7 @@ bool qtractorMainForm::loadSessionFileEx (
 				m_pOptions->iMidiMmcDevice = pMidiEngine->mmcDevice();
 				m_pOptions->iMidiSppMode   = int(pMidiEngine->sppMode());
 				m_pOptions->iMidiClockMode = int(pMidiEngine->clockMode());
+				m_pOptions->bMidiResetAllControllers = pMidiEngine->isResetAllControllers();
 			}
 			// Save it good...
 			m_pOptions->saveOptions();
@@ -2639,6 +2642,7 @@ bool qtractorMainForm::saveSessionFileEx (
 				m_pOptions->iMidiMmcDevice = int(pMidiEngine->mmcDevice());
 				m_pOptions->iMidiSppMode   = int(pMidiEngine->sppMode());
 				m_pOptions->iMidiClockMode = int(pMidiEngine->clockMode());
+				m_pOptions->bMidiResetAllControllers = pMidiEngine->isResetAllControllers();
 			}
 			// Do not set (next) default session directory on zip/archives...
 			if ((iFlags & qtractorDocument::Archive) == 0)
@@ -2667,7 +2671,7 @@ bool qtractorMainForm::saveSessionFileEx (
 }
 
 
-QString qtractorMainForm::sessionBackupPath ( const QString& sFilename )
+QString qtractorMainForm::sessionBackupPath ( const QString& sFilename ) const
 {
 	QFileInfo fi(sFilename);
 
@@ -2692,6 +2696,32 @@ QString qtractorMainForm::sessionBackupPath ( const QString& sFilename )
 			fi.setFile(dir, sBackupName.arg(++iBackupNo));
 	}
 
+	return fi.absoluteFilePath();
+}
+
+
+// Whenever on some Save As... situation:
+// better check whether the target directory
+// is one of the extracted archives/zip ones...
+//
+QString qtractorMainForm::sessionArchivePath ( const QString& sFilename ) const
+{
+	QFileInfo fi(sFilename);
+#ifdef CONFIG_LIBZ
+	const QStringList& paths
+		= qtractorDocument::extractedArchives();
+	if (!paths.isEmpty()) {
+		QStringListIterator iter(paths);
+		while (iter.hasNext()) {
+			const QString& sPath = iter.next();
+			if (sPath == fi.absolutePath()) {
+				const QString& sDir
+					= QFileInfo(sPath).absolutePath();
+				fi.setFile(sDir, fi.fileName());
+			}
+		}
+	}
+#endif
 	return fi.absoluteFilePath();
 }
 
@@ -5073,6 +5103,7 @@ void qtractorMainForm::viewOptions (void)
 	const int     iOldMidiMmcMode        = m_pOptions->iMidiMmcMode;
 	const int     iOldMidiSppMode        = m_pOptions->iMidiSppMode;
 	const int     iOldMidiClockMode      = m_pOptions->iMidiClockMode;
+	const bool    bOldMidiResetAllControllers = m_pOptions->bMidiResetAllControllers;
 	const int     iOldMidiCaptureQuantize = m_pOptions->iMidiCaptureQuantize;
 	const int     iOldMidiQueueTimer     = m_pOptions->iMidiQueueTimer;
 	const bool    bOldMidiDriftCorrect   = m_pOptions->bMidiDriftCorrect;
@@ -5230,6 +5261,8 @@ void qtractorMainForm::viewOptions (void)
 			(iOldMidiMmcMode   != m_pOptions->iMidiMmcMode)   ||
 			(iOldMidiSppMode   != m_pOptions->iMidiSppMode)   ||
 			(iOldMidiClockMode != m_pOptions->iMidiClockMode) ||
+			( bOldMidiResetAllControllers && !m_pOptions->bMidiResetAllControllers) ||
+			(!bOldMidiResetAllControllers &&  m_pOptions->bMidiResetAllControllers) ||
 			(iOldMidiCaptureQuantize != m_pOptions->iMidiCaptureQuantize)) {
 			++m_iDirtyCount; // Fake session properties change.
 			updateMidiControlModes();
@@ -5981,16 +6014,17 @@ void qtractorMainForm::helpAboutQt (void)
 
 bool qtractorMainForm::setPlaying ( bool bPlaying )
 {
-	// In case of (re)starting playback, send now
-	// all tracks MIDI bank select/program changes...
-	if (bPlaying)
-		m_pSession->resetAllMidiControllers(true); // Force conditional!
-
 	// Toggle engine play status...
 	m_pSession->setPlaying(bPlaying);
 
 	// We must start/stop certain things...
-	if (!bPlaying) {
+	if (bPlaying) {
+		// In case of (re)starting playback, send now
+		// all tracks MIDI bank select/program changes...
+		m_pSession->resetAllMidiControllers(true);
+		// Start something?...
+		++m_iTransportUpdate;
+	} else {
 		// Shutdown recording anyway...
 		if (m_pSession->isRecording() && setRecording(false)) {
 			// Send MMC RECORD_EXIT command...
@@ -6014,8 +6048,7 @@ bool qtractorMainForm::setPlaying ( bool bPlaying )
 		}
 		if (pCurveCommand)
 			m_pSession->commands()->push(pCurveCommand);
-	}	// Start something... ;)
-	else ++m_iTransportUpdate;
+	}
 
 	// Done with playback switch...
 	return true;
@@ -6497,7 +6530,6 @@ bool qtractorMainForm::startSession (void)
 		// Get on with the special ALSA sequencer notifier...
 		qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
 		if (pMidiEngine && pMidiEngine->alsaNotifier()) {
-			m_pSession->resetAllMidiControllers(false); // Deferred++
 			QObject::connect(pMidiEngine->alsaNotifier(),
 				SIGNAL(activated(int)),
 				SLOT(alsaNotify()));
@@ -6636,6 +6668,9 @@ void qtractorMainForm::updateSessionPost (void)
 		}
 		qtractorMessageList::clear();
 	}
+
+	// Reset/reset all MIDI controllers (conditional)...
+	m_pSession->resetAllMidiControllers(false);
 
 	// Ah, make it stand right.
 	if (m_pTracks)
@@ -6841,6 +6876,7 @@ void qtractorMainForm::updateMidiControlModes (void)
 	pMidiEngine->setMmcMode(qtractorBus::BusMode(m_pOptions->iMidiMmcMode));
 	pMidiEngine->setSppMode(qtractorBus::BusMode(m_pOptions->iMidiSppMode));
 	pMidiEngine->setClockMode(qtractorBus::BusMode(m_pOptions->iMidiClockMode));
+	pMidiEngine->setResetAllControllers(m_pOptions->bMidiResetAllControllers);
 }
 
 
