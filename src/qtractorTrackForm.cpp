@@ -1628,6 +1628,9 @@ void qtractorTrackForm::updateOutputBusName ( const QString& sBusName )
 	if (m_pTrack == nullptr)
 		return;
 
+	if (sBusName == m_pTrack->outputBusName())
+		return;
+
 	qtractorSession *pSession = m_pTrack->session();
 	if (pSession == nullptr)
 		return;
