@@ -4,6 +4,24 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+GIT HEAD
+
+- Clip/File Loop Set menu command is now a toggle. (EXPERIMENTAL)
+
+- Fixed problem with punch-in/out and loop-recording being lost when
+  stopping the play-head right after and between the loop-start and
+  punch-in points, even though at least one cycle or take is through.
+
+- Dropped autotools (autoconf, automake, etc.) build system.
+
+- A more verbose warning question is issued, on whether to continue
+  saving to an existing zip/archive directory and accept to replace
+  and erase all its current data in the future. (EXPERIMENTAL)
+
+- Fixed potential crash on session close or application exit, when
+  some plugins have been removed. (EXPERIMENTAL)
+
+
 0.9.24  2021-10-16  An Autumn'21 Release.
 
 - A new option has been added to reset/resend all MIDI track/channel
