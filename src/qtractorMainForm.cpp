@@ -2587,7 +2587,8 @@ bool qtractorMainForm::saveSessionFileEx (
 	if (sSuffix == qtractorDocument::archiveExt()) {
 		iFlags |= qtractorDocument::Archive;
 		info.setFile(info.path() + QDir::separator() + info.completeBaseName());
-		if (info.exists() && info.isDir()) {
+		if (info.exists() && info.isDir() &&
+			!qtractorDocument::extractedArchives().contains(info.filePath())) {
 			bool bConfirmArchive = true;
 			if  (m_pOptions && m_pOptions->bConfirmArchive) {
 				const QString& sTitle
