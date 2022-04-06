@@ -508,23 +508,29 @@ if (UNIX AND NOT APPLE)
   install (FILES ${QM_FILES}
     DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/translations)
   install (FILES images/${PROJECT_NAME}.png
+    RENAME org.rncbc.${PROJECT_NAME}.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps)
   install (FILES images/${PROJECT_NAME}.svg
+    RENAME org.rncbc.${PROJECT_NAME}.svg
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
   install (FILES appdata/org.rncbc.${PROJECT_NAME}.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
   install (FILES appdata/org.rncbc.${PROJECT_NAME}.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
-  install (FILES mimetypes/${PROJECT_NAME}.xml
+  install (FILES mimetypes/org.rncbc.${PROJECT_NAME}.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages)
-  install (FILES mimetypes/application-x-${PROJECT_NAME}-session.png
-      mimetypes/application-x-${PROJECT_NAME}-template.png
-      mimetypes/application-x-${PROJECT_NAME}-archive.png
+  install (FILES mimetypes/org.rncbc.${PROJECT_NAME}.application-x-${PROJECT_NAME}-session.png
+      mimetypes/org.rncbc.${PROJECT_NAME}.application-x-${PROJECT_NAME}-template.png
+      mimetypes/org.rncbc.${PROJECT_NAME}.application-x-${PROJECT_NAME}-archive.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/mimetypes)
-  install (FILES mimetypes/application-x-${PROJECT_NAME}-session.svg
-      mimetypes/application-x-${PROJECT_NAME}-template.svg
-      mimetypes/application-x-${PROJECT_NAME}-archive.svg
+  install (FILES mimetypes/org.rncbc.${PROJECT_NAME}.application-x-${PROJECT_NAME}-session.svg
+      mimetypes/org.rncbc.${PROJECT_NAME}.application-x-${PROJECT_NAME}-template.svg
+      mimetypes/org.rncbc.${PROJECT_NAME}.application-x-${PROJECT_NAME}-archive.svg
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/mimetypes)
+  install (FILES man1/${PROJECT_NAME}.1
+    DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+  install (FILES man1/${PROJECT_NAME}.fr.1
+    DESTINATION ${CMAKE_INSTALL_MANDIR}/fr/man1 RENAME ${PROJECT_NAME}.1)
 endif ()
 
 if (WIN32)
