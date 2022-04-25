@@ -4,6 +4,21 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+GIT HEAD
+
+- Set auto-backward play-head location also when clicking on main
+  track-view header/time-ruler and on thumb-view. (EXPERIMENTAL)
+
+- Fixed LV2 plug-in buffer-size initialization, esp. affecting the
+  the ZynReverb LV2 playback. (re. GH issue #332) (EXPERIMENTAL)
+
+- Export Tracks dialog last range selection is now rememmbered.
+
+- Fixed the out-of-process plugin scanner path resolution on some
+  self-container(ized) formats eg. AppImage and possibly Flatpak,
+  (EXPERIMENTAL)
+  
+
 0.9.26  2022-04-09  A Spring'22 Release.
 
 - Main application icon is now presented in scalable format (SVG).
