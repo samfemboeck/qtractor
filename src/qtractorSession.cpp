@@ -1,7 +1,7 @@
 // qtractorSession.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2021, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -64,6 +64,7 @@
 void qtractorSession::Properties::clear (void)
 {
 	sessionDir = QDir().absolutePath();
+
 	sessionName.clear();
 	description.clear();
 	timeScale.clear();
@@ -358,8 +359,11 @@ qtractorInstrumentList *qtractorSession::instruments (void) const
 void qtractorSession::setSessionDir ( const QString& sSessionDir )
 {
 	const QDir sdir(sSessionDir);
-	if (sdir.exists())
+	if (sdir.exists()) {
 		m_props.sessionDir = sdir.absolutePath();
+		if (!QFileInfo(m_props.sessionDir).isWritable())
+			m_props.sessionDir = QDir::homePath();
+	}
 }
 
 const QString& qtractorSession::sessionDir (void) const
