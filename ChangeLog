@@ -6,6 +6,31 @@ ChangeLog
 
 GIT HEAD
 
+- Reviewed LV2 plug-in UI Touch feature/interface. (EXPERIMENTAL)
+
+- Auto-unlink MIDI clips when pasted/placed with Ctrl+click/Enter.
+  (EXPERIMENTAL) (GH issue #343)
+
+- Fixed LV2 plug-ins UI X11 (native) initial size. (EXPERIMENTAL)
+
+- Fixed implicit deactivation when a plugin is removed from chain.
+  (GH issue #341) (EXPERIMENTAL)
+
+- Fixed audio clip export, normalize and tempo-adjust when audio
+  file number of channels is disparately greater than respective
+  track's output bus count. (EXPERIMENTAL)
+
+- Fixed one killer lurking in MIDI Controller... modeless dialog
+  instantiation. (EXPERIMENTAL) (GH issue #339)
+
+- Fixed non-effective automation curve node editing. (EXPERIMENTAL)
+
+- Track/Export Tracks... dialog ranges are not capped to current
+  session-end anymore. (EXPERIMENTAL)
+
+- Fixed MIDI clip editor vertical-zooming when using the [Ctrl+]
+  mouse-wheel.
+
 - Set auto-backward play-head location also when clicking on main
   track-view header/time-ruler and on thumb-view. (EXPERIMENTAL)
 
@@ -874,14 +899,14 @@ GIT HEAD
 - Automation curve node editing auto-smoothing revisited; also fixed
   input MIDI RPN/NRPN running status processing, which was crippling
   some plug-in automation curve nodes, when saved in high-resolution
-14-bit mode.
+  14-bit mode.
 
 - Fixed the visual play-head position (vertical red line) while
   zooming in or out horizontally.
 
 - Almost complete overhaul on the configure script command line
   options, wrt. installation directories specification, eg. --prefix,
---bindir, --libdir, --datadir and --mandir.
+  --bindir, --libdir, --datadir and --mandir.
 
 - LV2 Plug-in worker/schedule fix: make request/response ring-buffer
   writes in one go, hopefully atomic (suggested patch by Stefan
@@ -1174,7 +1199,7 @@ GIT HEAD
 - Fixed port on MIDI 14-bit controllers input caching.
 
 - Fixed false value readings on the MIDI clip editor (aka. piano
--roll) tool-tips, when dragging a note velocity or controller value
+  -roll) tool-tips, when dragging a note velocity or controller value
   outside the acceptable nominal range (eg. 0-127).
 
 - Added LV2_BUF_SIZE__nominalBlockLength option support (patch by
@@ -1219,7 +1244,7 @@ GIT HEAD
 
 - Fixed missing Track and Clip sub-menus from Edit/context-menu that
   were found AWOL ever since after the Lazy Tachyon beta release (>
-0.6.6).
+  0.6.6).
 
 - An off-by-one bar position (as in BBT, bar, beat and ticks) has been
   purportedly fixed as long as LV2 Time/Position atom event transfer
@@ -2174,9 +2199,8 @@ O.6.1  2014-04-29  Bitsy Sweet Beta
 - Session properties dialog now asks to create a new session directory
   if the given one does not currently exist.
 
-- MIDI note names and their respective octave numbers are now
-  compliant with the ISO standard where middle C (60) is now C4 (was
-C3).
+- MIDI note names and their respective octave numbers are now compliant
+  with the ISO standard where middle C (60) is now C4 (was C3).
 
 - Fixed audible glitch/pop at the beginning of an audio clip with long
   quadratic or cubic shaped fade-in (reported by Lougi Verona, thanks).
@@ -2509,15 +2533,15 @@ C3).
   fixed.
 
 - Session and track names are now sanitized from slashes (fixes bug#
-625798@bugs.debian.org).
+  625798@bugs.debian.org).
 
 - Mouse wheel effect to sliders is now reversed.
 
-- An appropriate export filename is now suggested as default
-  (Track/export Tracks...).
+- An appropriate export filename is now suggested as default (Track
+  /Export Tracks...).
 
 - Follow-playhead automatism is now temporarily suspended while mouse
-  cursor hovering prompts for any editing action (applies to main track-
+  cursor hovering prompts for any editing action (applies to main track
   view and MIDI clip editor/piano-roll).
 
 - Audio vs. MIDI time drift correction now takes jack_frame_time() as
@@ -3328,7 +3352,7 @@ C3).
   Ctrl keyboard modifiers and clicking their respective toolbar buttons.
 
 - Default session/MIDI resolution has been set to 960 ticks per beat
-(960 TPQN, where a beat equals a quarter-note); it is worth of note
+  (960 TPQN, where a beat equals a quarter-note); it is worth of note
   that the previous default resolution was set to one order of magnitude
   lower, ie. 96 TPQN ;).
 
@@ -3343,7 +3367,7 @@ C3).
 - Converted obsolete QMessageBox forms to standard buttons.
 
 - Transport/Rewind and Fast-forward commands may now be set to double
--speed, by pressing the Shift or Ctrl modifiers while clicking their
+  speed, by pressing the Shift or Ctrl modifiers while clicking their
   respective tool buttons.
 
 - MIDI clip editor zoom ratios are now saved and preserved across
@@ -3386,9 +3410,8 @@ C3).
 - Zoom mode option introduced (on menu View/Zoom/Horizontal, Vertical,
   All).
 
-- Tempo beat type is a new session property; however it is not yet
-  user modifiable and currently disabled to default MIDI quarter note
-(1/4).
+- Tempo beat type is a new session property; however it is not yet user
+  modifiable and currently disabled to default MIDI quarter note (1/4).
 
 - All open MIDI clip editor time-scales are now updated and corrected
   when the main session time base changes (tempo, time-signature,
@@ -3593,7 +3616,7 @@ C3).
   severe crippling nuisance regarding input monitoring and all mighty
   user experience after recording a simple take; for instance, as the
   bottom line goes, there's no need to un-arm a track from its record
--enabled state anymore, for just recorded material get heard on
+  enabled state anymore, for just recorded material get heard on
   immediate playback; kick  on the jam!
 
 - Playhead position overflow fixed on negative MMC STEP commands.
