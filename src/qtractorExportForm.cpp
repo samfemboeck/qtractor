@@ -49,7 +49,9 @@ qtractorExportForm::qtractorExportForm ( QWidget *pParent )
 {
 	// Setup UI struct...
 	m_ui.setupUi(this);
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 1, 0)
+	QDialog::setWindowIcon(QIcon(":/images/qtractor.png"));
+#endif
 	// Window modality (let plugin/tool windows rave around).
 	QDialog::setWindowModality(Qt::ApplicationModal);
 
@@ -474,10 +476,10 @@ void qtractorExportForm::rangeChanged (void)
 		iExportStart = pSession->sessionStart();
 		iExportEnd   = pSession->sessionEnd();
 	}
-
+#if 0
 	if (iExportEnd > pSession->sessionEnd())
 		iExportEnd = pSession->sessionEnd();
-
+#endif
 	m_ui.ExportStartSpinBox->setValue(iExportStart, false);
 	m_ui.ExportEndSpinBox->setValue(iExportEnd, false);
 
