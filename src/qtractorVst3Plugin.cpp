@@ -54,8 +54,6 @@
 #include <QTimer>
 #include <QTimerEvent>
 
-#include <QSocketNotifier>
-
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QCloseEvent>
@@ -64,6 +62,19 @@
 #include <QMap>
 
 #include <QRegularExpression>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#define CONFIG_VST3_XCB
+#endif
+
+#ifdef CONFIG_VST3_XCB
+#include <xcb/xcb.h>
+#endif
+
+#if 0//QTRACTOR_VST3_EDITOR_TOOL
+#include "qtractorMainForm.h"
+#include "qtractorOptions.h"
+#endif
 
 
 using namespace Steinberg;
@@ -169,28 +180,10 @@ private:
 
 	QHash<ITimerHandler *, TimerItem *> m_timers;
 
-	struct EventHandlerItem
-	{
-		EventHandlerItem(int fd)
-			: r_notifier(nullptr), w_notifier(nullptr) { reset(fd); }
-
-		~EventHandlerItem() { reset(0); };
-
-		void reset(int fd)
-		{
-			if (r_notifier) { delete r_notifier; r_notifier = nullptr; }
-			if (w_notifier) { delete w_notifier; w_notifier = nullptr; }
-			if (fd) {
-				r_notifier = new QSocketNotifier(fd, QSocketNotifier::Read);
-				w_notifier = new QSocketNotifier(fd, QSocketNotifier::Write);
-			}
-		}
-
-		QSocketNotifier *r_notifier;
-		QSocketNotifier *w_notifier;
-	};
-
-	QHash<IEventHandler *, EventHandlerItem *> m_eventHandlers;
+#ifdef CONFIG_VST3_XCB
+	xcb_connection_t   *m_pXcbConnection;
+	int                 m_iXcbFileDescriptor;
+#endif
 
 	Vst::ProcessContext m_processContext;
 	unsigned int        m_processRefCount;
@@ -834,8 +827,8 @@ public:
 
 	// Constructor.
 	Impl (qtractorPluginFile *pFile) : m_pFile(pFile),
-			m_component(nullptr), m_controller(nullptr),
-			m_unitInfos(nullptr), m_iUniqueID(0) {}
+		m_component(nullptr), m_controller(nullptr),
+		m_unitInfos(nullptr), m_iUniqueID(0) {}
 
 	// Destructor.
 	~Impl () { close(); }
@@ -2338,7 +2331,8 @@ tresult qtractorVst3Plugin::Impl::notify ( Vst::IMessage *message )
 }
 
 
-// Audio processor stuff (TODO)...
+// Audio processor stuff...
+//
 bool qtractorVst3Plugin::Impl::process_reset (
 	qtractorAudioEngine *pAudioEngine )
 {
@@ -3090,6 +3084,8 @@ void qtractorVst3Plugin::updateParam (
 // All parameters update method.
 void qtractorVst3Plugin::updateParamValues ( bool bUpdate )
 {
+	int nupdate = 0;
+
 	// Make sure all cached parameter values are in sync
 	// with plugin parameter values; update cache otherwise.
 	const qtractorPlugin::Params& params = qtractorPlugin::params();
@@ -3102,10 +3098,13 @@ void qtractorVst3Plugin::updateParamValues ( bool bUpdate )
 			const float fValue = float(m_pImpl->getParameter(id));
 			if (pParam->value() != fValue) {
 				pParam->setValue(fValue, bUpdate);
-				updateFormDirtyCount();
+				++nupdate;
 			}
 		}
 	}
+
+	if (nupdate > 0)
+		updateFormDirtyCount();
 }
 
 
@@ -3151,13 +3150,15 @@ void qtractorVst3Plugin::freezeConfigs (void)
 	if (!type()->isConfigure())
 		return;
 
+	clearConfigs();
+
 	QByteArray data;
 
 	if (!m_pImpl->getState(data))
 		return;
 
 #ifdef CONFIG_DEBUG
-	qDebug("qtractorVstPlugin[%p]::freezeConfigs() chunk.size=%d", this, int(data.size()));
+	qDebug("qtractorVst3Plugin[%p]::freezeConfigs() data.size=%d", this, int(data.size()));
 #endif
 
 	// Set special plugin configuration item (base64 encoded)...
@@ -3224,7 +3225,20 @@ void qtractorVst3Plugin::openEditor ( QWidget *pParent )
 		return;
 	}
 
-	m_pEditorWidget = new EditorWidget(pParent, Qt::Window);
+	// What style do we create tool childs?
+	Qt::WindowFlags wflags = Qt::Window;
+#if 0//QTRACTOR_VST3_EDITOR_TOOL
+	qtractorOptions *pOptions = qtractorOptions::getInstance();
+	if (pOptions && pOptions->bKeepToolsOnTop) {
+		wflags |= Qt::Tool;
+	//	wflags |= Qt::WindowStaysOnTopHint;
+		// Make sure it has a parent...
+		if (pParent == nullptr)
+			pParent = qtractorMainForm::getInstance();
+	}
+#endif
+
+	m_pEditorWidget = new EditorWidget(pParent, wflags);
 	m_pEditorWidget->setAttribute(Qt::WA_QuitOnClose, false);
 	m_pEditorWidget->setWindowTitle(pType->name());
 	m_pEditorWidget->setPlugin(this);
@@ -3431,7 +3445,7 @@ void qtractorVst3Plugin::process (
 						pMidiBuffer->push(&ev, event.sampleOffset);
 				}
 			}
-			pMidiManager->vst3_buffer_swap();
+			pMidiManager->swapOutputBuffers();
 		} else {
 			pMidiManager->resetOutputBuffers();
 		}
