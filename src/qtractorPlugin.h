@@ -120,7 +120,7 @@ class qtractorPluginType
 public:
 
 	// Have hints for plugin paths.
-	enum Hint { Any = 0, Ladspa, Dssi, Vst, Vst3, Lv2, Insert, AuxSend };
+	enum Hint { Any = 0, Ladspa, Dssi, Vst, Vst3, Clap, Lv2, Insert, AuxSend };
 
 	// Constructor.
 	qtractorPluginType(qtractorPluginFile *pFile, unsigned long iIndex,
@@ -279,6 +279,8 @@ public:
 
 	// Parameters list accessors.
 	void addParam(Param *pParam);
+	void removeParam(Param *pParam);
+	void clearParams();
 
 	Param *findParam(unsigned long iIndex) const
 		{ return m_params.value(iIndex, nullptr); }
@@ -296,6 +298,8 @@ public:
 
 	// Properties registry accessors.
 	void addProperty(Property *pProp);
+	void removeProperty(Property *pProp);
+	void clearProperties();
 
 	Property *findProperty(unsigned long iProperty) const
 		{ return m_properties.value(iProperty, nullptr); }
@@ -347,6 +351,19 @@ public:
 
 	// Provisional program/patch accessor.
 	virtual bool getProgram(int /*iIndex*/, Program& /*program*/) const
+		{ return false; }
+
+	// Note name descriptor.
+	struct NoteName
+	{
+		int     bank;
+		int     prog;
+		int     note;
+		QString name;
+	};
+
+	// Provisional note name accessor.
+	virtual bool getNoteName(int /*iIndex*/, NoteName& /*note*/) const
 		{ return false; }
 
 	// MIDI continuous controller handler.
@@ -409,7 +426,7 @@ public:
 
 	// Special plugin form methods.
 	void openForm(QWidget *pParent = nullptr);
-	void closeForm();
+	void closeForm(bool bForce = false);
 
 	bool isFormVisible() const;
 
