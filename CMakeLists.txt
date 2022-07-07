@@ -163,6 +163,9 @@ option (CONFIG_LV2_UI_GTKMM2 "Enable LV2 plug-in UI GTKMM2 native support (defau
 
 option (CONFIG_LV2_UI_X11 "Enable LV2 plug-in UI X11 native support (default=yes)" 1)
 
+# Enable CLAP support.
+option (CONFIG_CLAP "Enable CLAP plug-in support (default=yes)" 1)
+
 # Enable JACK session support.
 option (CONFIG_JACK_SESSION "Enable JACK session support (default=yes)" 1)
 
@@ -751,6 +754,7 @@ show_option ("  LADSPA plug-in support . . . . . . . . . . . . . ." CONFIG_LADSP
 show_option ("  DSSI plug-in support . . . . . . . . . . . . . . ." CONFIG_DSSI)
 show_option ("  VST plug-in support  . . . . . . . . . . . . . . ." CONFIG_VST)
 show_option ("  VST3 plug-in support . . . . . . . . . . . . . . ." CONFIG_VST3)
+show_option ("  CLAP plug-in support (EXPERIMENTAL)  . . . . . . ." CONFIG_CLAP)
 show_option ("  LV2 plug-in support  . . . . . . . . . . . . . . ." CONFIG_LV2)
 show_option ("  LV2 plug-in support (liblilv)  . . . . . . . . . ." CONFIG_LIBLILV)
 show_option ("  LV2 plug-in UI support . . . . . . . . . . . . . ." CONFIG_LV2_UI)

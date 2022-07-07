@@ -2327,6 +2327,9 @@ bool qtractorMainForm::closeSession (void)
 	#ifdef CONFIG_VST3
 		qtractorVst3Plugin::clearAll();
 	#endif
+	#ifdef CONFIG_CLAP
+		qtractorClapPlugin::clearAll();
+	#endif
 	#ifdef CONFIG_LV2
 		qtractorLv2PluginType::lv2_close();
 	#endif
@@ -5921,6 +5924,9 @@ void qtractorMainForm::helpAbout (void)
 #ifndef CONFIG_VST3
 	list << tr("VST3 Plug-in support disabled.");
 #endif
+#ifndef CONFIG_CLAP
+	list << tr("CLAP Plug-in support disabled.");
+#endif
 #ifndef CONFIG_LV2
 	list << tr("LV2 Plug-in support disabled.");
 #else
@@ -7770,6 +7776,10 @@ void qtractorMainForm::fastTimerSlot (void)
 	// Crispy plugin LV2 UI idle-updates...
 	qtractorLv2Plugin::idleEditorAll();
 #endif
+#endif
+#ifdef CONFIG_CLAP
+	// Crispy plugin CLAP UI idle-updates...
+	qtractorClapPlugin::idleEditorAll();
 #endif
 #ifdef CONFIG_VST
 	// Crispy plugin VST UI idle-updates...
