@@ -23,7 +23,6 @@
 #include "qtractorAudioEngine.h"
 #include "qtractorAudioMonitor.h"
 #include "qtractorAudioBuffer.h"
-#include "qtractorAudioClip.h"
 
 #include "qtractorSession.h"
 
@@ -35,8 +34,6 @@
 #include "qtractorMidiManager.h"
 #include "qtractorPlugin.h"
 #include "qtractorClip.h"
-
-#include "qtractorCurveFile.h"
 
 #include "qtractorMainForm.h"
 
@@ -553,6 +550,9 @@ qtractorAudioEngine::qtractorAudioEngine ( qtractorSession *pSession )
 	// JACK timebase mode control.
 	m_bTimebase = true;
 	m_iTimebase = 0;
+
+	// Time(base)/BBT time info.
+	::memset(&m_timeInfo, 0, sizeof(TimeInfo));
 }
 
 
@@ -786,6 +786,9 @@ bool qtractorAudioEngine::activate (void)
 		qtractorAudioEngine_property_change, this);
 #endif
 
+	// Initialize time(base) information for sure...
+	updateTimeInfo(0);
+
 	// Reset all dependable monitoring...
 	resetAllMonitors();
 
@@ -935,6 +938,15 @@ void qtractorAudioEngine::clean (void)
 }
 
 
+// Whether we're in the audio/real-time thread...
+static thread_local bool g_bProcessing = false;
+
+bool qtractorAudioEngine::isProcessing (void)
+{
+	return g_bProcessing;
+}
+
+
 // Process cycle executive.
 int qtractorAudioEngine::process ( unsigned int nframes )
 {
@@ -965,6 +977,9 @@ int qtractorAudioEngine::process ( unsigned int nframes )
 	// Session RT-safeness lock...
 	if (!pSession->acquire())
 		return 0;
+
+	// We're in the audio/real-time thread...
+	g_bProcessing = true;
 
 	// Track whether audio output buses
 	// buses needs monitoring while idle...
@@ -1013,17 +1028,12 @@ int qtractorAudioEngine::process ( unsigned int nframes )
 		ATOMIC_SET(&m_playerLock, 0);
 	}
 
-#ifdef CONFIG_VST3
-	qtractorVst3Plugin::updateTime(this);
-#endif
-#ifdef CONFIG_CLAP
-	qtractorClapPlugin::updateTime(this);
-#endif
-#ifdef CONFIG_LV2
-#ifdef CONFIG_LV2_TIME
-	qtractorLv2Plugin::updateTime(this);
-#endif
-#endif
+	// This the legal process cycle frame range...
+	unsigned long iFrameStart = pAudioCursor->frame();
+	unsigned long iFrameEnd   = iFrameStart + nframes;
+
+	// Update time(base) info...
+	updateTimeInfo(iFrameStart);
 
 	// MIDI plugin manager processing...
 	qtractorMidiManager *pMidiManager
@@ -1086,13 +1096,10 @@ int qtractorAudioEngine::process ( unsigned int nframes )
 		}
 		// Done as idle...
 		pAudioCursor->process(nframes);
+		g_bProcessing = false;
 		pSession->release();
 		return 0;
 	}
-
-	// This the legal process cycle frame range...
-	unsigned long iFrameStart = pAudioCursor->frame();
-	unsigned long iFrameEnd   = iFrameStart + nframes;
 
 	// Metronome stuff...
 	if (m_bMetronome && m_pMetroBus && iFrameEnd > m_iMetroBeatStart) {
@@ -1134,6 +1141,8 @@ int qtractorAudioEngine::process ( unsigned int nframes )
 				if (m_transportMode & qtractorBus::Output)
 					jack_transport_locate(m_pJackClient, iFrameStart);
 				pAudioCursor->seek(iFrameStart);
+				// Update time(base) info...
+				updateTimeInfo(iFrameStart);
 			}
 		}
 	}
@@ -1177,6 +1186,7 @@ int qtractorAudioEngine::process ( unsigned int nframes )
 	pSession->midiEngine()->sync();
 
 	// Release RT-safeness lock...
+	g_bProcessing = false;
 	pSession->release();
 
 	// Process session stuff...
@@ -1224,12 +1234,8 @@ void qtractorAudioEngine::process_export ( unsigned int nframes )
 	if (iFrameStart < m_iExportEnd) {
 		// Prepare mix-down buffer...
 		m_pExportBuffer->process_prepare(nframes);
-		// Force/sync every audio clip approaching...
-	#ifdef CONFIG_LV2
-	#ifdef CONFIG_LV2_TIME
-		qtractorLv2Plugin::updateTime(this);
-	#endif
-	#endif
+		// Update time(base) info...
+		updateTimeInfo(iFrameStart);
 		// Perform all tracks processing...
 		int iTrack = 0;
 		for (qtractorTrack *pTrack = pSession->tracks().first();
@@ -1302,9 +1308,54 @@ void qtractorAudioEngine::process_export ( unsigned int nframes )
 }
 
 
+// Update time(base)/BBT info.
+void qtractorAudioEngine::updateTimeInfo ( unsigned long iFrame )
+{
+	qtractorSession *pSession = session();
+	qtractorTimeScale::Cursor& cursor = pSession->timeScale()->cursor();
+	qtractorTimeScale::Node *pNode = cursor.seekFrame(iFrame);
+
+	m_timeInfo.frame = iFrame;
+	m_timeInfo.playing = (isPlaying() || isFreewheel());
+	m_timeInfo.sampleRate = sampleRate();
+	m_timeInfo.tempo = pNode->tempo;
+	m_timeInfo.beatsPerBar  = pNode->beatsPerBar;
+	m_timeInfo.ticksPerBeat = pNode->ticksPerBeat;
+	m_timeInfo.beatType = (1 << pNode->beatDivisor);
+	m_timeInfo.beats = float(pNode->beat);
+	m_timeInfo.tick = pNode->tickFromFrame(iFrame) - pNode->tick;
+	const float beats = float(m_timeInfo.tick) / float(m_timeInfo.ticksPerBeat);
+	m_timeInfo.beats += beats;
+	m_timeInfo.bar = pNode->bar + (unsigned short) beats / m_timeInfo.beatsPerBar;
+	m_timeInfo.beat = (unsigned int) beats;
+	if (m_timeInfo.tick >= (unsigned long) m_timeInfo.ticksPerBeat)
+		m_timeInfo.tick -= (unsigned long) (m_timeInfo.beat * m_timeInfo.ticksPerBeat);
+	if (m_timeInfo.beat >= (unsigned int) m_timeInfo.beatsPerBar)
+		m_timeInfo.beat -= (unsigned int) (m_timeInfo.bar * m_timeInfo.beatsPerBar);
+	m_timeInfo.barBeats = beats - float(m_timeInfo.beat)
+		- float(m_timeInfo.tick) / float(m_timeInfo.ticksPerBeat);
+
+	++m_timeInfo.bar;
+	++m_timeInfo.beat;
+
+#ifdef CONFIG_VST3
+	qtractorVst3Plugin::updateTime(this);
+#endif
+#ifdef CONFIG_CLAP
+	qtractorClapPlugin::updateTime(this);
+#endif
+#ifdef CONFIG_LV2
+#ifdef CONFIG_LV2_TIME
+	qtractorLv2Plugin::updateTime(this);
+#endif
+#endif
+}
+
+
 // JACK timebase master callback.
 void qtractorAudioEngine::timebase ( jack_position_t *pPos, int iNewPos )
 {
+#if 0//QTRACTOR_TIMEBASE_OLD
 	qtractorSession *pSession = session();
 	qtractorTimeScale::Cursor& cursor = pSession->timeScale()->cursor();
 	qtractorTimeScale::Node *pNode = cursor.seekFrame(pPos->frame);
@@ -1329,7 +1380,21 @@ void qtractorAudioEngine::timebase ( jack_position_t *pPos, int iNewPos )
 	pPos->ticks_per_beat   = pNode->ticksPerBeat;
 	pPos->beats_per_minute = pNode->tempo;
 	pPos->beat_type        = float(1 << pNode->beatDivisor);
-
+#else
+	// Check for major gaps to last known JACK transport position...
+	if (qAbs(long(pPos->frame) - long(m_timeInfo.frame)) > long(m_iBufferSize))
+		updateTimeInfo(pPos->frame);
+	// Time frame code in bars.beats.ticks ...
+	pPos->valid = JackPositionBBT;
+	pPos->bar   = m_timeInfo.bar;
+	pPos->beat  = m_timeInfo.beat;
+	pPos->tick  = m_timeInfo.tick;
+	// Keep current tempo (BPM)...
+	pPos->beats_per_bar    = m_timeInfo.beatsPerBar;
+	pPos->ticks_per_beat   = m_timeInfo.ticksPerBeat;
+	pPos->beats_per_minute = m_timeInfo.tempo;
+	pPos->beat_type        = m_timeInfo.beatType;
+#endif
 	// Tell that we've been here...
 	if (iNewPos) ++m_iTimebase;
 }

@@ -1,7 +1,7 @@
 // qtractorTrackForm.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2021, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -203,24 +203,25 @@ qtractorTrackForm::qtractorTrackForm ( QWidget *pParent )
 	addIconMenuAction(tr("&Violin"), ":/images/trackIconViolin1.png");
 	m_pIconMenu->addSeparator();
 	m_pIconMenu->addAction(tr("(None)"), this, SLOT(trackIconAction()));
-	m_ui.TrackIconPushButton->setMenu(m_pIconMenu);
+	m_ui.TrackIconToolButton->setMenu(m_pIconMenu);
+	m_ui.TrackIconToolButton->setPopupMode(QToolButton::InstantPopup);
 
 	// UI signal/slot connections...
 	QObject::connect(m_ui.TrackNameTextEdit,
 		SIGNAL(textChanged()),
 		SLOT(changed()));
-	QObject::connect(m_ui.TrackIconPushButton,
+	QObject::connect(m_ui.TrackIconToolButton,
 		SIGNAL(clicked()),
 		SLOT(trackIconClicked()));
 	QObject::connect(m_ui.AudioRadioButton,
-		SIGNAL(toggled(bool)),
-		SLOT(trackTypeAudio(bool)));
+		SIGNAL(clicked()),
+		SLOT(trackTypeChanged()));
 	QObject::connect(m_ui.MidiRadioButton,
-		SIGNAL(toggled(bool)),
-		SLOT(trackTypeMidi(bool)));
+		SIGNAL(clicked()),
+		SLOT(trackTypeChanged()));
 	QObject::connect(m_ui.TempoRadioButton,
-		SIGNAL(toggled(bool)),
-		SLOT(trackTypeTempo(bool)));
+		SIGNAL(clicked()),
+		SLOT(trackTypeChanged()));
 	QObject::connect(m_ui.InputBusNameComboBox,
 		SIGNAL(activated(int)),
 		SLOT(inputBusNameChanged(int)));
@@ -1313,6 +1314,34 @@ void qtractorTrackForm::trackTypeChanged (void)
 
 //	inputBusNameChanged(m_ui.InputBusNameComboBox->currentIndex());
 	outputBusNameChanged(m_ui.OutputBusNameComboBox->currentIndex());
+
+	// FIXME: Plugin-list initial number of audio output channels...
+	qtractorPluginList *pPluginList = m_pTrack->pluginList();
+	if (pPluginList && m_pTrack->session()) {
+		unsigned short iChannels = pPluginList->channels();
+		// Somehow switching track-types might zero it...
+		if (iChannels == 0) {
+			qtractorAudioEngine *pAudioEngine
+				= (m_pTrack->session())->audioEngine();
+			if (pAudioEngine) {
+				for (qtractorBus *pBus = pAudioEngine->buses().first();
+						pBus; pBus = pBus->next()) {
+					if (pBus->busMode() & qtractorBus::Output) {
+						qtractorAudioBus *pAudioBus
+							= static_cast<qtractorAudioBus *> (pBus);
+						if (pAudioBus)
+							iChannels = pAudioBus->channels();
+						break;
+					}
+				}
+			}
+		}
+		// Have we some?...
+		if (iChannels > 0) {
+			const unsigned int iFlags = pPluginList->flags();
+			pPluginList->setChannels(iChannels, iFlags);
+		}
+	}
 }
 
 
@@ -1725,19 +1754,19 @@ void qtractorTrackForm::addIconMenuAction (
 // Track icon refresh.
 void qtractorTrackForm::trackIconChanged (void)
 {
-	QPalette pal(m_ui.TrackIconPushButton->palette());
+	QPalette pal(m_ui.TrackIconToolButton->palette());
 	pal.setColor(QPalette::ButtonText, m_props.background);
 	pal.setColor(QPalette::Button, m_props.foreground.lighter());
-	m_ui.TrackIconPushButton->setPalette(pal);
+	m_ui.TrackIconToolButton->setPalette(pal);
 
 	const QPixmap pm(m_props.trackIcon);
 	if (!pm.isNull()) {
-		const QSize& size = m_ui.TrackIconPushButton->size() - QSize(8, 8);
-		m_ui.TrackIconPushButton->setIconSize(size);
-		m_ui.TrackIconPushButton->setIcon(
+		const QSize& size = m_ui.TrackIconToolButton->size() - QSize(8, 8);
+		m_ui.TrackIconToolButton->setIconSize(size);
+		m_ui.TrackIconToolButton->setIcon(
 			pm.scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 	}
-	else m_ui.TrackIconPushButton->setIcon(pm);
+	else m_ui.TrackIconToolButton->setIcon(pm);
 
 	changed();
 }

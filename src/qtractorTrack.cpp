@@ -1,7 +1,7 @@
 // qtractorTrack.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2021, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -548,7 +548,7 @@ bool qtractorTrack::open (void)
 			pAudioBus = pMidiManager->audioOutputBus();
 		if (pAudioBus == nullptr) {
 			// Output bus gets to be the first available output bus...
-			for (qtractorBus *pBus = (pAudioEngine->buses()).first();
+			for (qtractorBus *pBus = pAudioEngine->buses().first();
 					pBus; pBus = pBus->next()) {
 				if (pBus->busMode() & qtractorBus::Output) {
 					pAudioBus = static_cast<qtractorAudioBus *> (pBus);
@@ -755,7 +755,7 @@ void qtractorTrack::setTrackType ( qtractorTrack::TrackType trackType )
 	// Set new track type, now...
 	m_props.trackType = trackType;
 
-	if (m_props.trackType == qtractorTrack::Tempo) {
+<	if (m_props.trackType == qtractorTrack::Tempo) {
 		if (!m_pTempoCurve) {
 			qtractorTempoCurve *pTempoCurve = new qtractorTempoCurve(m_pSession->timeScale(), tempoObserver()->subject());
 			setTrackTempoCurve(pTempoCurve);
@@ -770,7 +770,8 @@ void qtractorTrack::setTrackType ( qtractorTrack::TrackType trackType )
 	}
 
 	// Acquire a new midi-tag and setup new plugin-list flags...
-	unsigned int iFlags = qtractorPluginList::Track;
+=	unsigned int iFlags = qtractorPluginList::Track;
+	// Get current audio output bus for the plugin list...
 	if (m_props.trackType == qtractorTrack::Midi) {
 		m_pSession->acquireMidiTag(this);
 		iFlags |= qtractorPluginList::Midi;
