@@ -755,7 +755,7 @@ void qtractorTrack::setTrackType ( qtractorTrack::TrackType trackType )
 	// Set new track type, now...
 	m_props.trackType = trackType;
 
-<	if (m_props.trackType == qtractorTrack::Tempo) {
+	if (m_props.trackType == qtractorTrack::Tempo) {
 		if (!m_pTempoCurve) {
 			qtractorTempoCurve *pTempoCurve = new qtractorTempoCurve(m_pSession->timeScale(), tempoObserver()->subject());
 			setTrackTempoCurve(pTempoCurve);
@@ -770,7 +770,7 @@ void qtractorTrack::setTrackType ( qtractorTrack::TrackType trackType )
 	}
 
 	// Acquire a new midi-tag and setup new plugin-list flags...
-=	unsigned int iFlags = qtractorPluginList::Track;
+	unsigned int iFlags = qtractorPluginList::Track;
 	// Get current audio output bus for the plugin list...
 	if (m_props.trackType == qtractorTrack::Midi) {
 		m_pSession->acquireMidiTag(this);
