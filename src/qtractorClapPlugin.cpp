@@ -26,7 +26,6 @@
 #include "qtractorClapPlugin.h"
 
 #include "qtractorSession.h"
-#include "qtractorSessionCursor.h"
 #include "qtractorAudioEngine.h"
 #include "qtractorMidiManager.h"
 #include "qtractorCurve.h"
@@ -52,11 +51,6 @@
 #endif
 
 #include "qtractorMainForm.h"
-
-
-// FIXME: Whether we're in the main or audio-thread...
-//
-thread_local bool g_audio_thread = false;
 
 
 //-----------------------------------------------------------------------------
@@ -1299,36 +1293,28 @@ void qtractorClapPluginHost::updateTransport ( qtractorAudioEngine *pAudioEngine
 	if (m_transportRefCount < 1)
 		return;
 
-	jack_position_t pos;
-	jack_transport_state_t state;
+	const qtractorAudioEngine::TimeInfo& timeInfo
+		= pAudioEngine->timeInfo();
 
-	if (pAudioEngine->isFreewheel()) {
-		pos.frame = pAudioEngine->sessionCursor()->frame();
-		pAudioEngine->timebase(&pos, 0);
-		state = JackTransportRolling; // Fake transport rolling...
-	} else {
-		state = ::jack_transport_query(pAudioEngine->jackClient(), &pos);
-	}
-
-	if (state == JackTransportRolling)
+	if (timeInfo.playing)
 		m_transport.flags |=  CLAP_TRANSPORT_IS_PLAYING;
 	else
 		m_transport.flags &= ~CLAP_TRANSPORT_IS_PLAYING;
 
 	m_transport.flags |= CLAP_TRANSPORT_HAS_SECONDS_TIMELINE;
 	m_transport.song_pos_seconds = CLAP_SECTIME_FACTOR *
-		double(pos.frame) / double(pos.frame_rate);
+		double(timeInfo.frame) / double(pAudioEngine->sampleRate());
 
-	if (pos.valid & JackPositionBBT) {
-		m_transport.flags |= CLAP_TRANSPORT_HAS_TEMPO;
-		m_transport.tempo  = pos.beats_per_minute;
-		m_transport.flags |= CLAP_TRANSPORT_HAS_TIME_SIGNATURE;
-		m_transport.tsig_num = uint16_t(pos.beats_per_bar);
-		m_transport.tsig_denom = uint16_t(pos.beat_type);
-	} else {
-		m_transport.flags &= ~CLAP_TRANSPORT_HAS_TEMPO;
-		m_transport.flags &= ~CLAP_TRANSPORT_HAS_TIME_SIGNATURE;
-	}
+	m_transport.flags |= CLAP_TRANSPORT_HAS_BEATS_TIMELINE;
+	m_transport.song_pos_beats = CLAP_BEATTIME_FACTOR *	double(timeInfo.beats);
+	m_transport.bar_start = CLAP_BEATTIME_FACTOR * double(timeInfo.barBeats);
+	m_transport.bar_number = timeInfo.bar;
+
+	m_transport.flags |= CLAP_TRANSPORT_HAS_TEMPO;
+	m_transport.tempo  = timeInfo.tempo;
+	m_transport.flags |= CLAP_TRANSPORT_HAS_TIME_SIGNATURE;
+	m_transport.tsig_num = uint16_t(timeInfo.beatsPerBar);
+	m_transport.tsig_denom = uint16_t(timeInfo.beatType);
 }
 
 
@@ -1650,8 +1636,6 @@ void qtractorClapPlugin::Impl::process (
 	if (!m_activated)
 		return;
 
-	g_audio_thread = true;
-
 	if (!m_processing && !m_sleeping) {
 		plugin_params_flush();
 		g_host.transportAddRef();
@@ -1678,8 +1662,6 @@ void qtractorClapPlugin::Impl::process (
 		// Transfer parameter changes...
 		process_params_out();
 	}
-
-	g_audio_thread = false;
 }
 
 
@@ -1950,7 +1932,7 @@ void qtractorClapPlugin::Impl::host_request_callback ( const clap_host *host )
 //
 void qtractorClapPlugin::Impl::plugin_request_restart (void)
 {
-	if (m_restarting || g_audio_thread)
+	if (m_restarting || qtractorAudioEngine::isProcessing())
 		return;
 
 	m_restarting = true;
@@ -2364,14 +2346,14 @@ void qtractorClapPlugin::Impl::plugin_on_posix_fd (
 bool qtractorClapPlugin::Impl::host_is_main_thread (
 	const clap_host *host )
 {
-	return !g_audio_thread;
+	return !qtractorAudioEngine::isProcessing();
 }
 
 
 bool qtractorClapPlugin::Impl::host_is_audio_thread (
 	const clap_host *host )
 {
-	return  g_audio_thread;
+	return  qtractorAudioEngine::isProcessing();
 }
 
 

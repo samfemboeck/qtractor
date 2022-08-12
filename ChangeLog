@@ -6,10 +6,20 @@ ChangeLog
 
 GIT HEAD
 
+- Complete overhaul of the time(base)/BBT host information for most
+  plug-in types: VST, VST3, CLAP and LV2. (EXPERIMENTAL)
+  
+- Improved key-signature editing and display on Tempo Map / Markers
+  (time-scale) management dialog. (EXPERIMENTAL)
+
+- Fixed plugin selection, when creating and switching initial track
+  type, from audio to MIDI and vice-versa. (EXPERIMENTAL)
+
 - Fixed typos and updated some old MIDI GM2 Controller names.
 
 - Add current system user-name to the singleton/unique application
-  instance identifier. (EXPERIMENTAL)
+  instance identifier (when explicitly opted in at build configure
+  time). (EXPERIMENTAL)
 
 
 0.9.27  2022-07-07  An Early-Summer'22 Release.
@@ -366,7 +376,7 @@ GIT HEAD
 
 0.9.12  2019-12-28  The Winter'19 Release.
 
-- Basic key-signature has been added to tempo, time -signature and
+- Basic key-signature has been added to tempo, time-signature and
   location markers map.
 
 - MIDI Clip editor (aka. piano-roll) horizontal and vertical splitter

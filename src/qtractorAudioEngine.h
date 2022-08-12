@@ -241,6 +241,32 @@ public:
 	// Reset all audio monitoring...
 	void resetAllMonitors();
 
+	// Whether we're in the audio/real-time thread...
+	static bool isProcessing();
+
+	// Time(base)/BBT info.
+	struct TimeInfo
+	{
+		unsigned long  frame;
+		bool           playing;
+		unsigned int   sampleRate;
+		float          tempo;
+		unsigned short ticksPerBeat;
+		unsigned short beatsPerBar;
+		unsigned short beatType;
+		float          beats;
+		unsigned short bar;
+		unsigned int   beat;
+		unsigned int   tick;
+		float          barBeats;
+	};
+
+	const TimeInfo& timeInfo() const
+		{ return m_timeInfo; }
+
+	// Update time(base)/BBT info.
+	void updateTimeInfo(unsigned long iFrame);
+
 protected:
 
 	// Concrete device (de)activation methods.
@@ -344,6 +370,9 @@ private:
 	// JACK Timebase mode and control.
 	bool                 m_bTimebase;
 	unsigned int         m_iTimebase;
+
+	// Time(base)/BBT time info.
+	TimeInfo             m_timeInfo;
 };
 
 

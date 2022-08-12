@@ -1,7 +1,7 @@
 // qtractorAudioMonitor.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2021, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -164,8 +164,8 @@ static inline void neon_process_ramp ( float *pFrames, unsigned int iFrames,
 	float __attribute__ ((aligned (16))) fInitGainIter[4] = {
 		fGainIter,
 		fGainIter + fGainStepSingle,
-		fGainIter + 2.0 * fGainStepSingle,
-		fGainIter + 3.0 * fGainStepSingle };
+		fGainIter + 2.0f * fGainStepSingle,
+		fGainIter + 3.0f * fGainStepSingle };
 
 	const float fGainStep = 4.0f * fGainStepSingle;
 	float32x4_t vGainIter = vld1q_f32(fInitGainIter);
