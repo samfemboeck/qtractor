@@ -478,10 +478,10 @@ qtractorOptionsForm::qtractorOptionsForm ( QWidget *pParent )
 	QObject::connect(m_ui.Lv2PresetDirComboBox,
 		SIGNAL(editTextChanged(const QString&)),
 		SLOT(pluginPathsChanged()));
-#endif
 	QObject::connect(m_ui.Lv2PresetDirToolButton,
 		SIGNAL(clicked()),
 		SLOT(chooseLv2PresetDir()));
+#endif
 	QObject::connect(m_ui.AudioOutputBusCheckBox,
 		SIGNAL(stateChanged(int)),
 		SLOT(changed()));
@@ -781,6 +781,7 @@ void qtractorOptionsForm::setOptions ( qtractorOptions *pOptions )
 
 	m_ui.PluginBlacklistWidget->clear();
 	m_ui.PluginBlacklistWidget->addItems(pPluginFactory->blacklist());
+	m_ui.PluginBlacklistComboBox->setEditText(QString());
 
 	choosePluginType(iPluginType);
 	selectPluginBlacklist();
@@ -1712,12 +1713,17 @@ void qtractorOptionsForm::choosePluginBlacklist (void)
 {
 	QString sFilename;
 
-	const QString  sExt("so");
 	const QString& sTitle
 		= tr("Plug-in Blacklist");
 
+	QStringList exts;
+	exts.append("so");
+#ifdef CONFIG_CLAP
+	exts.append("clap");
+#endif
+
 	QStringList filters;
-	filters.append(tr("Plug-in files (*.%1)").arg(sExt));
+	filters.append(tr("Plug-in files (*.%1)").arg(exts.join(" *.")));
 	filters.append(tr("All files (*.*)"));
 	const QString& sFilter = filters.join(";;");
 
@@ -1793,7 +1799,8 @@ void qtractorOptionsForm::selectPluginBlacklist (void)
 		= m_ui.PluginBlacklistWidget->currentRow();
 
 	m_ui.PluginBlacklistRemoveToolButton->setEnabled(iBlacklist >= 0);
-	m_ui.PluginBlacklistClearToolButton->setEnabled(iBlacklist >= 0);
+	m_ui.PluginBlacklistClearToolButton->setEnabled(
+		m_ui.PluginBlacklistWidget->count() > 0);
 }
 
 
