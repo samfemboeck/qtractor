@@ -15,11 +15,11 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-%define name    @PACKAGE_TARNAME@
-%define version @PACKAGE_VERSION@
-%define release 71.1
+%define name    qtractor
+%define version 0.9.29
+%define release 72.1
 
-%define _prefix	@ac_prefix@
+%define _prefix	/usr
 
 %if %{defined fedora}
 %define debug_package %{nil}
@@ -139,7 +139,7 @@ the personal home-studio.
 
 %build
 %if 0%{?sle_version} == 150200 && 0%{?is_opensuse}
-source /opt/qt6.3-static/bin/qt6.3-static-env.sh
+source /opt/qt6.4-static/bin/qt6.4-static-env.sh
 %endif
 CXX=%{CXX} \
 cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} -Wno-dev -B build
@@ -195,6 +195,8 @@ cmake --install build
 %{_datadir}/man/fr/man1/%{name}.1.gz
 
 %changelog
+* Wed Oct  5 2022 Rui Nuno Capela <rncbc@rncbc.org> 0.9.29
+- An Early-Autumn'22 Release.
 * Sat Sep  3 2022 Rui Nuno Capela <rncbc@rncbc.org> 0.9.28
 - A Late-Summer'22 Release.
 * Thu Jul  7 2022 Rui Nuno Capela <rncbc@rncbc.org> 0.9.27

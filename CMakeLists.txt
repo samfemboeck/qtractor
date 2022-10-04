@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.15)
 
 project (qtractor
-  VERSION 0.9.28
+  VERSION 0.9.29
   DESCRIPTION "An Audio/MIDI multi-track sequencer"
   LANGUAGES C CXX)
 
@@ -37,9 +37,6 @@ set (PACKAGE_VERSION "${VERSION}")
 set (PACKAGE_BUGREPORT "rncbc@rncbc.org")
 set (PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set (PACKAGE_TARNAME "qtractor")
-
-set (ac_version "${PROJECT_VERSION}")
-set (ac_prefix "${CMAKE_INSTALL_PREFIX}")
 
 set (CONFIG_BUILD_VERSION "${PACKAGE_VERSION}")
 
@@ -719,11 +716,6 @@ endif ()
 
 
 add_subdirectory (src)
-
-
-if (UNIX AND NOT APPLE)
-  configure_file (${PROJECT_NAME}.spec.in ${PROJECT_NAME}.spec IMMEDIATE @ONLY)
-endif ()
 
 
 # Configuration status
