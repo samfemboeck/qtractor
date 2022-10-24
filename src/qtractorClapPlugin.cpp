@@ -392,7 +392,8 @@ void qtractorClapPluginType::Impl::close (void)
 // Constructor.
 qtractorClapPluginType::qtractorClapPluginType (
 	qtractorPluginFile *pFile, unsigned long iIndex )
-	: qtractorPluginType(pFile, iIndex, Clap), m_pImpl(new Impl(pFile))
+	: qtractorPluginType(pFile, iIndex, Clap), m_pImpl(new Impl(pFile)),
+		m_iMidiDialectIns(0), m_iMidiDialectOuts(0)
 {
 }
 
@@ -461,6 +462,8 @@ bool qtractorClapPluginType::open (void)
 
 	m_iMidiIns = 0;
 	m_iMidiOuts = 0;
+	m_iMidiDialectIns = 0;
+	m_iMidiDialectOuts = 0;
 	const clap_plugin_note_ports *note_ports
 		= static_cast<const clap_plugin_note_ports *> (
 			plugin->get_extension(plugin, CLAP_EXT_NOTE_PORTS));
@@ -471,7 +474,8 @@ bool qtractorClapPluginType::open (void)
 			::memset(&info, 0, sizeof(info));
 			if (note_ports->get(plugin, i, true, &info)) {
 				if (info.supported_dialects & CLAP_NOTE_DIALECT_MIDI)
-					++m_iMidiIns;
+					++m_iMidiDialectIns;
+				++m_iMidiIns;
 			}
 		}
 		const uint32_t nouts = note_ports->count(plugin, false);
@@ -479,7 +483,8 @@ bool qtractorClapPluginType::open (void)
 			::memset(&info, 0, sizeof(info));
 			if (note_ports->get(plugin, i, false, &info)) {
 				if (info.supported_dialects & CLAP_NOTE_DIALECT_MIDI)
-					++m_iMidiOuts;
+					++m_iMidiDialectOuts;
+				++m_iMidiOuts;
 			}
 		}
 	}
@@ -835,6 +840,10 @@ public:
 	// Reinitialize the plugin instance...
 	void plugin_request_restart ();
 
+	// MIDI specific dialect port counters (accessors).
+	int midiDialectIns() const;
+	int midiDialectOuts() const;
+
 protected:
 
 	// Plugin module (de)initializers.
@@ -1055,6 +1064,7 @@ private:
 	// Processor parameters.
 	unsigned int m_srate;
 	unsigned int m_nframes;
+	unsigned int m_nframes_max;
 
 	// Audio processor buffers.
 	clap_audio_buffer m_audio_ins;
@@ -1330,7 +1340,7 @@ qtractorClapPlugin::Impl::Impl ( qtractorClapPlugin *pPlugin )
 		m_gui(nullptr), m_state(nullptr), m_note_names(nullptr),
 		m_params_flush(false), m_activated(false), m_sleeping(false),
 		m_processing(false), m_restarting(false),
-		m_srate(44100), m_nframes(0)
+		m_srate(44100), m_nframes(0), m_nframes_max(0)
 {
 	qtractorClapPluginHost::setup(&m_host, this);
 	m_host.get_extension = qtractorClapPlugin::Impl::get_extension;
@@ -1447,12 +1457,12 @@ void qtractorClapPlugin::Impl::activate (void)
 	if (m_activated)
 		return;
 
-	if (m_srate < 2 || m_nframes < 2)
+	if (m_srate < 2 || m_nframes < 2 || m_nframes_max < 2)
 		return;
 
 	plugin_params_request_flush();
 
-	if (!m_plugin->activate(m_plugin, double(m_srate), m_nframes, m_nframes))
+	if (!m_plugin->activate(m_plugin, double(m_srate), m_nframes, m_nframes_max))
 		return;
 
 	m_activated = true;
@@ -1499,6 +1509,7 @@ bool qtractorClapPlugin::Impl::process_reset (
 
 	m_srate = pAudioEngine->sampleRate();
 	m_nframes = pAudioEngine->bufferSize();
+	m_nframes_max = pAudioEngine->bufferSizeEx();
 
 	::memset(&m_audio_ins, 0, sizeof(m_audio_ins));
 	m_audio_ins.channel_count = pType->audioIns();
@@ -1534,6 +1545,8 @@ void qtractorClapPlugin::Impl::process_midi_in (
 	unsigned char *data, unsigned int size,
 	unsigned long offset, unsigned short port )
 {
+	const int midi_dialect_ins = midiDialectIns();
+
 	for (unsigned int i = 0; i < size; ++i) {
 
 		// channel status
@@ -1553,7 +1566,8 @@ void qtractorClapPlugin::Impl::process_midi_in (
 
 		// program change
 		// after-touch
-		if (status == 0xc0 || status == 0xd0) {
+		if ((midi_dialect_ins > 0) &&
+			(status == 0xc0 || status == 0xd0)) {
 			clap_event_midi ev;
 			ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
 			ev.header.type = CLAP_EVENT_MIDI;
@@ -1610,7 +1624,8 @@ void qtractorClapPlugin::Impl::process_midi_in (
 		// key pressure/poly.aftertouch
 		// control-change
 		// pitch-bend
-		if (status == 0xa0 || status == 0xb0 || status == 0xe0) {
+		if ((midi_dialect_ins > 0) &&
+			(status == 0xa0 || status == 0xb0 || status == 0xe0)) {
 			clap_event_midi ev;
 			ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
 			ev.header.type = CLAP_EVENT_MIDI;
@@ -2428,6 +2443,23 @@ void qtractorClapPlugin::Impl::process_params_out (void)
 			m_params_out.push(eh);
 		}
 	}
+}
+
+
+// MIDI specific dialect port counters (accessors).
+int qtractorClapPlugin::Impl::midiDialectIns (void) const
+{
+	qtractorClapPluginType *pType
+		= static_cast<qtractorClapPluginType *> (m_pPlugin->type());
+	return (pType ? pType->midiDialectIns() : 0);
+}
+
+
+int qtractorClapPlugin::Impl::midiDialectOuts (void) const
+{
+	qtractorClapPluginType *pType
+		= static_cast<qtractorClapPluginType *> (m_pPlugin->type());
+	return (pType ? pType->midiDialectOuts() : 0);
 }
 
 
