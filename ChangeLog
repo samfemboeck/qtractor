@@ -4,15 +4,24 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+GIT HEAD
+
+- Although being deprecated to use, JACK Session support is hopefuly
+  fixed, once again. (GH issue #366) (EXPERIMENTAL)
+
+- Better discriminate CLAP Plug-in specific note events and strict
+  MIDI dialect event processing. (EXPERIMENTAL)
+
+
 0.9.29  2022-10-05  An Early-Autumn'22 Release.
 
-- Capture same time(stamp) note-off tracking and postponing is
-  now on trial, hopefully mitigating a legato issue, reported
-  to MIDI wind instruments (EWI). (EXPERIMENTAL)
+- Capture same time(stamp) note-off tracking and postponing is now
+  on trial, hopefully mitigating a legato issue, reported to MIDI
+  wind instruments (EWI). (EXPERIMENTAL)
 
-- Fixed an old window parenting (aka z-level) issue, related to
-  the Add Track and Track Properties dialogs and whether called
-  from the main or mixer menus.
+- Fixed an old window parenting (aka z-level) issue, related to the
+  Add Track and Track Properties dialogs and whether called from the
+  main or mixer menus.
 
 - Fixed the out-of-process plugin scanner terminating too soon and
   sometimes miss some very last results.
