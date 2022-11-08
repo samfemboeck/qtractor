@@ -257,7 +257,7 @@ public:
 
 		// Alternate (secondary) time-sig helper methods
 		unsigned short beatsPerBar2() const;
-		unsigned short ticksPerBeat2() const;
+		unsigned int ticksPerBeat2() const;
 
 		// Node keys.
 		unsigned long  frame;
@@ -274,7 +274,7 @@ public:
 		unsigned short bars;
 		bool           attached;
 
-		unsigned short ticksPerBeat;
+		unsigned int   ticksPerBeat;
 
 	protected:
 
