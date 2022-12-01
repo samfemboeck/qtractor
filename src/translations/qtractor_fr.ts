@@ -56,7 +56,7 @@ Audio :	%1 canaux, %2 Hz</translation>
     </message>
     <message>
         <location filename="../qtractorAudioFile.cpp" line="137"/>
-        <location filename="../qtractorVstPlugin.cpp" line="1579"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="1579"/>
         <source>All files (*.*)</source>
         <translation>Tous les fichiers (*.*)</translation>
     </message>
@@ -703,7 +703,7 @@ MIDI:	</translation>
         <translation>propriétés de la piste</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="784"/>
+        <location filename="../qtractorTrackCommand.cpp" line="786"/>
         <source>Track assignment failed:
 
 Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
@@ -712,37 +712,37 @@ Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
 Piste : &quot;%1&quot; Entrée: &quot;%2&quot; Sortie: &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="863"/>
+        <location filename="../qtractorTrackCommand.cpp" line="865"/>
         <source>track record</source>
         <translation>piste enregistrer</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="866"/>
+        <location filename="../qtractorTrackCommand.cpp" line="868"/>
         <source>track mute</source>
         <translation>piste muet</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="869"/>
+        <location filename="../qtractorTrackCommand.cpp" line="871"/>
         <source>track solo</source>
         <translation>piste solo</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1043"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1048"/>
         <source>track monitor</source>
         <translation>piste contrôler</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1151"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1156"/>
         <source>track gain</source>
         <translation>piste gain</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1240"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1245"/>
         <source>track pan</source>
         <translation>piste panoramique</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1327"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1332"/>
         <source>track instrument</source>
         <translation>piste instrument</translation>
     </message>
@@ -777,14 +777,14 @@ Piste : &quot;%1&quot; Entrée: &quot;%2&quot; Sortie: &quot;%3&quot;</translati
         <translation>Inconnu</translation>
     </message>
     <message>
-        <location filename="../qtractorVstPlugin.cpp" line="656"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="656"/>
         <source>Product: </source>
         <translation>Produit :</translation>
     </message>
     <message>
         <location filename="../qtractorClapPlugin.cpp" line="557"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="664"/>
         <location filename="../qtractorVst3Plugin.cpp" line="1330"/>
-        <location filename="../qtractorVstPlugin.cpp" line="664"/>
         <source>Vendor: </source>
         <translation>Vendeur :</translation>
     </message>
@@ -800,13 +800,13 @@ Piste : &quot;%1&quot; Entrée: &quot;%2&quot; Sortie: &quot;%3&quot;</translati
     </message>
     <message>
         <location filename="../qtractorClapPlugin.cpp" line="541"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="672"/>
         <location filename="../qtractorVst3Plugin.cpp" line="1303"/>
-        <location filename="../qtractorVstPlugin.cpp" line="672"/>
         <source>Version: </source>
         <translation>Version : </translation>
     </message>
     <message>
-        <location filename="../qtractorVstPlugin.cpp" line="1576"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="1576"/>
         <source>%1 (*.%2)</source>
         <translation>%1 (*.%2)</translation>
     </message>
@@ -6057,11 +6057,6 @@ que la prochaine fois que vous démarrerez %1.</translation>
         <translation>Support des greffons DSSI désactivé.</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5914"/>
-        <source>VST Plug-in support disabled.</source>
-        <translation>Support des greffons VST désactivé.</translation>
-    </message>
-    <message>
         <location filename="../qtractorMainForm.cpp" line="5920"/>
         <source>CLAP Plug-in support disabled.</source>
         <translation>Le support des greffons CLAP est désactivé.</translation>
@@ -6189,6 +6184,11 @@ est hautement recommandé.</translation>
         <location filename="../qtractorMainForm.cpp" line="512"/>
         <source>Current time (play-head)</source>
         <translation>Temps courant (tête de lecture)</translation>
+    </message>
+    <message>
+        <location filename="../qtractorMainForm.cpp" line="5914"/>
+        <source>VST2 Plug-in support disabled.</source>
+        <translation type="unfinished">Support des greffons VST3 désactivé. {2 ?}</translation>
     </message>
     <message>
         <location filename="../qtractorMainForm.cpp" line="5917"/>

@@ -55,7 +55,7 @@ Audio:	%1 channels, %2 Hz</source>
     </message>
     <message>
         <location filename="../qtractorAudioFile.cpp" line="137"/>
-        <location filename="../qtractorVstPlugin.cpp" line="1579"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="1579"/>
         <source>All files (*.*)</source>
         <translation>Все файлы (*.*)</translation>
     </message>
@@ -424,44 +424,44 @@ MIDI:	</translation>
         <translation>свойства дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="784"/>
+        <location filename="../qtractorTrackCommand.cpp" line="786"/>
         <source>Track assignment failed:
 
 Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="863"/>
+        <location filename="../qtractorTrackCommand.cpp" line="865"/>
         <source>track record</source>
         <translation>запись дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="866"/>
+        <location filename="../qtractorTrackCommand.cpp" line="868"/>
         <source>track mute</source>
         <translation>приглушение дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="869"/>
+        <location filename="../qtractorTrackCommand.cpp" line="871"/>
         <source>track solo</source>
         <translation>солирование дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1043"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1048"/>
         <source>track monitor</source>
         <translation>мониторинг дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1151"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1156"/>
         <source>track gain</source>
         <translation>усиление дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1240"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1245"/>
         <source>track pan</source>
         <translation>панорама дорожки</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1327"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1332"/>
         <source>track instrument</source>
         <translation type="unfinished"></translation>
     </message>
@@ -496,14 +496,14 @@ Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
         <translation>Неизвестно</translation>
     </message>
     <message>
-        <location filename="../qtractorVstPlugin.cpp" line="656"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="656"/>
         <source>Product: </source>
         <translation>Продукт: </translation>
     </message>
     <message>
         <location filename="../qtractorClapPlugin.cpp" line="557"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="664"/>
         <location filename="../qtractorVst3Plugin.cpp" line="1330"/>
-        <location filename="../qtractorVstPlugin.cpp" line="664"/>
         <source>Vendor: </source>
         <translation>Производитель: </translation>
     </message>
@@ -519,13 +519,13 @@ Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
     </message>
     <message>
         <location filename="../qtractorClapPlugin.cpp" line="541"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="672"/>
         <location filename="../qtractorVst3Plugin.cpp" line="1303"/>
-        <location filename="../qtractorVstPlugin.cpp" line="672"/>
         <source>Version: </source>
         <translation>Версия: </translation>
     </message>
     <message>
-        <location filename="../qtractorVstPlugin.cpp" line="1576"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="1576"/>
         <source>%1 (*.%2)</source>
         <translation>%1 (*.%2)</translation>
     </message>
@@ -2915,6 +2915,11 @@ Do you want to crash-recover from it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../qtractorMainForm.cpp" line="5914"/>
+        <source>VST2 Plug-in support disabled.</source>
+        <translation type="unfinished">Поддержка плагинов VST3 отключена. {2 ?}</translation>
+    </message>
+    <message>
         <location filename="../qtractorMainForm.cpp" line="5917"/>
         <source>VST3 Plug-in support disabled.</source>
         <translation>Поддержка плагинов VST3 отключена.</translation>
@@ -3373,11 +3378,6 @@ next time you start this %1.</source>
         <location filename="../qtractorMainForm.cpp" line="5911"/>
         <source>DSSI Plug-in support disabled.</source>
         <translation>Поддержка эффектов DSSI отключена.</translation>
-    </message>
-    <message>
-        <location filename="../qtractorMainForm.cpp" line="5914"/>
-        <source>VST Plug-in support disabled.</source>
-        <translation>Поддержка плагинов VST отключена.</translation>
     </message>
     <message>
         <location filename="../qtractorMainForm.cpp" line="5941"/>

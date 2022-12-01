@@ -1165,7 +1165,7 @@ QList<qtractorTrack *> qtractorTrackList::selectedTracks (
 			tracks.append(pTrack);
 	}
 
-	// Currentt selection is either empty or
+	// Current selection is either empty or
 	// given track is not currently selected...
 	if (!bSelected) {
 		tracks.clear();
