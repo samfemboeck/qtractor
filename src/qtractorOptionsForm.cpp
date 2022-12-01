@@ -188,9 +188,9 @@ qtractorOptionsForm::qtractorOptionsForm ( QWidget *pParent )
 	m_ui.PluginTypeComboBox->addItem(
 		qtractorPluginType::textFromHint(qtractorPluginType::Dssi));
 #endif
-#ifdef CONFIG_VST
+#ifdef CONFIG_VST2
 	m_ui.PluginTypeComboBox->addItem(
-		qtractorPluginType::textFromHint(qtractorPluginType::Vst));
+		qtractorPluginType::textFromHint(qtractorPluginType::Vst2));
 #endif
 #ifdef CONFIG_VST3
 	m_ui.PluginTypeComboBox->addItem(
@@ -217,7 +217,7 @@ qtractorOptionsForm::qtractorOptionsForm ( QWidget *pParent )
 
 	m_iDirtyLadspaPaths = 0;
 	m_iDirtyDssiPaths   = 0;
-	m_iDirtyVstPaths    = 0;
+	m_iDirtyVst2Paths   = 0;
 	m_iDirtyVst3Paths   = 0;
 	m_iDirtyClapPaths   = 0;
 	m_iDirtyLv2Paths    = 0;
@@ -733,7 +733,7 @@ void qtractorOptionsForm::setOptions ( qtractorOptions *pOptions )
 	// Plugin path initialization...
 	m_ladspaPaths = m_pOptions->ladspaPaths;
 	m_dssiPaths   = m_pOptions->dssiPaths;
-	m_vstPaths    = m_pOptions->vstPaths;
+	m_vst2Paths   = m_pOptions->vst2Paths;
 	m_vst3Paths   = m_pOptions->vst3Paths;
 	m_lv2Paths    = m_pOptions->lv2Paths;
 
@@ -749,9 +749,9 @@ void qtractorOptionsForm::setOptions ( qtractorOptions *pOptions )
 		if (m_dssiPaths.isEmpty())
 			m_dssiPaths = pPluginFactory->pluginPaths(qtractorPluginType::Dssi);
 	#endif
-	#ifdef CONFIG_VST
-		if (m_vstPaths.isEmpty())
-			m_vstPaths = pPluginFactory->pluginPaths(qtractorPluginType::Vst);
+	#ifdef CONFIG_VST2
+		if (m_vst2Paths.isEmpty())
+			m_vst2Paths = pPluginFactory->pluginPaths(qtractorPluginType::Vst2);
 	#endif
 	#ifdef CONFIG_VST3
 		if (m_vst3Paths.isEmpty())
@@ -798,7 +798,7 @@ void qtractorOptionsForm::setOptions ( qtractorOptions *pOptions )
 
 	m_iDirtyLadspaPaths = 0;
 	m_iDirtyDssiPaths   = 0;
-	m_iDirtyVstPaths    = 0;
+	m_iDirtyVst2Paths   = 0;
 	m_iDirtyVst3Paths   = 0;
 	m_iDirtyClapPaths   = 0;
 	m_iDirtyLv2Paths    = 0;
@@ -902,8 +902,8 @@ void qtractorOptionsForm::accept (void)
 			m_pOptions->ladspaPaths      = m_ladspaPaths;
 		if (m_iDirtyDssiPaths > 0)
 			m_pOptions->dssiPaths        = m_dssiPaths;
-		if (m_iDirtyVstPaths > 0)
-			m_pOptions->vstPaths         = m_vstPaths;
+		if (m_iDirtyVst2Paths > 0)
+			m_pOptions->vst2Paths        = m_vst2Paths;
 		if (m_iDirtyVst3Paths > 0)
 			m_pOptions->vst3Paths        = m_vst3Paths;
 		if (m_iDirtyClapPaths > 0)
@@ -963,7 +963,7 @@ void qtractorOptionsForm::accept (void)
 		if (pPluginFactory) {
 			if (m_iDirtyLadspaPaths > 0 ||
 				m_iDirtyDssiPaths   > 0 ||
-				m_iDirtyVstPaths    > 0 ||
+				m_iDirtyVst2Paths   > 0 ||
 				m_iDirtyVst3Paths   > 0 ||
 				m_iDirtyClapPaths   > 0 ||
 				m_iDirtyLv2Paths    > 0) {
@@ -1340,8 +1340,8 @@ void qtractorOptionsForm::choosePluginType ( int iPluginType )
 	case qtractorPluginType::Dssi:
 		paths = m_dssiPaths;
 		break;
-	case qtractorPluginType::Vst:
-		paths = m_vstPaths;
+	case qtractorPluginType::Vst2:
+		paths = m_vst2Paths;
 		break;
 	case qtractorPluginType::Vst3:
 		paths = m_vst3Paths;
@@ -1439,9 +1439,9 @@ void qtractorOptionsForm::addPluginPath (void)
 		m_dssiPaths.append(sPluginPath);
 		++m_iDirtyDssiPaths;
 		break;
-	case qtractorPluginType::Vst:
-		m_vstPaths.append(sPluginPath);
-		++m_iDirtyVstPaths;
+	case qtractorPluginType::Vst2:
+		m_vst2Paths.append(sPluginPath);
+		++m_iDirtyVst2Paths;
 		break;
 	case qtractorPluginType::Vst3:
 		m_vst3Paths.append(sPluginPath);
@@ -1507,9 +1507,9 @@ void qtractorOptionsForm::removePluginPath (void)
 		m_dssiPaths.removeAt(iPluginPath);
 		++m_iDirtyDssiPaths;
 		break;
-	case qtractorPluginType::Vst:
-		m_vstPaths.removeAt(iPluginPath);
-		++m_iDirtyVstPaths;
+	case qtractorPluginType::Vst2:
+		m_vst2Paths.removeAt(iPluginPath);
+		++m_iDirtyVst2Paths;
 		break;
 	case qtractorPluginType::Vst3:
 		m_vst3Paths.removeAt(iPluginPath);
@@ -1558,10 +1558,10 @@ void qtractorOptionsForm::moveUpPluginPath (void)
 		m_dssiPaths.insert(iPluginPath - 1, sPluginPath);
 		++m_iDirtyDssiPaths;
 		break;
-	case qtractorPluginType::Vst:
-		sPluginPath = m_vstPaths.takeAt(iPluginPath);
-		m_vstPaths.insert(iPluginPath - 1, sPluginPath);
-		++m_iDirtyVstPaths;
+	case qtractorPluginType::Vst2:
+		sPluginPath = m_vst2Paths.takeAt(iPluginPath);
+		m_vst2Paths.insert(iPluginPath - 1, sPluginPath);
+		++m_iDirtyVst2Paths;
 		break;
 	case qtractorPluginType::Vst3:
 		sPluginPath = m_vst3Paths.takeAt(iPluginPath);
@@ -1617,10 +1617,10 @@ void qtractorOptionsForm::moveDownPluginPath (void)
 		m_dssiPaths.insert(iPluginPath + 1, sPluginPath);
 		++m_iDirtyDssiPaths;
 		break;
-	case qtractorPluginType::Vst:
-		sPluginPath = m_vstPaths.takeAt(iPluginPath);
-		m_vstPaths.insert(iPluginPath + 1, sPluginPath);
-		++m_iDirtyVstPaths;
+	case qtractorPluginType::Vst2:
+		sPluginPath = m_vst2Paths.takeAt(iPluginPath);
+		m_vst2Paths.insert(iPluginPath + 1, sPluginPath);
+		++m_iDirtyVst2Paths;
 		break;
 	case qtractorPluginType::Vst3:
 		sPluginPath = m_vst3Paths.takeAt(iPluginPath);

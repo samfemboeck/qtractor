@@ -56,7 +56,7 @@ Audio:	%1 channels, %2 Hz</source>
     </message>
     <message>
         <location filename="../qtractorAudioFile.cpp" line="137"/>
-        <location filename="../qtractorVstPlugin.cpp" line="1579"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="1579"/>
         <source>All files (*.*)</source>
         <translation>全ファイル (*.*)</translation>
     </message>
@@ -703,7 +703,7 @@ MIDI:	</translation>
         <translation>トラックのプロパティー</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="784"/>
+        <location filename="../qtractorTrackCommand.cpp" line="786"/>
         <source>Track assignment failed:
 
 Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
@@ -712,37 +712,37 @@ Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
 トラック: &quot;%1&quot; 入力: &quot;%2&quot; 出力: &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="863"/>
+        <location filename="../qtractorTrackCommand.cpp" line="865"/>
         <source>track record</source>
         <translation>トラックを録音</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="866"/>
+        <location filename="../qtractorTrackCommand.cpp" line="868"/>
         <source>track mute</source>
         <translation>トラックミュート</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="869"/>
+        <location filename="../qtractorTrackCommand.cpp" line="871"/>
         <source>track solo</source>
         <translation>トラックをソロ</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1043"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1048"/>
         <source>track monitor</source>
         <translation>トラックモニター</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1151"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1156"/>
         <source>track gain</source>
         <translation>トラックゲイン</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1240"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1245"/>
         <source>track pan</source>
         <translation>トラックパニング</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackCommand.cpp" line="1327"/>
+        <location filename="../qtractorTrackCommand.cpp" line="1332"/>
         <source>track instrument</source>
         <translation>トラックのインストルメント</translation>
     </message>
@@ -777,14 +777,14 @@ Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
         <translation>不明</translation>
     </message>
     <message>
-        <location filename="../qtractorVstPlugin.cpp" line="656"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="656"/>
         <source>Product: </source>
         <translation>プロダクト: </translation>
     </message>
     <message>
         <location filename="../qtractorClapPlugin.cpp" line="557"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="664"/>
         <location filename="../qtractorVst3Plugin.cpp" line="1330"/>
-        <location filename="../qtractorVstPlugin.cpp" line="664"/>
         <source>Vendor: </source>
         <translation>ベンダー: </translation>
     </message>
@@ -800,13 +800,13 @@ Track: &quot;%1&quot; Input: &quot;%2&quot; Output: &quot;%3&quot;</source>
     </message>
     <message>
         <location filename="../qtractorClapPlugin.cpp" line="541"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="672"/>
         <location filename="../qtractorVst3Plugin.cpp" line="1303"/>
-        <location filename="../qtractorVstPlugin.cpp" line="672"/>
         <source>Version: </source>
         <translation>バージョン: </translation>
     </message>
     <message>
-        <location filename="../qtractorVstPlugin.cpp" line="1576"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="1576"/>
         <source>%1 (*.%2)</source>
         <translation></translation>
     </message>
@@ -6050,11 +6050,6 @@ next time you start this %1.</source>
         <translation>DSSIプラグインサポートは無効です。</translation>
     </message>
     <message>
-        <location filename="../qtractorMainForm.cpp" line="5914"/>
-        <source>VST Plug-in support disabled.</source>
-        <translation>VSTプラグインサポートは無効です。</translation>
-    </message>
-    <message>
         <location filename="../qtractorMainForm.cpp" line="5920"/>
         <source>CLAP Plug-in support disabled.</source>
         <translation type="unfinished"></translation>
@@ -6182,6 +6177,11 @@ is highly recommended.</source>
         <location filename="../qtractorMainForm.cpp" line="512"/>
         <source>Current time (play-head)</source>
         <translation>現在の時間 (再生の先頭)</translation>
+    </message>
+    <message>
+        <location filename="../qtractorMainForm.cpp" line="5914"/>
+        <source>VST2 Plug-in support disabled.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qtractorMainForm.cpp" line="5917"/>
