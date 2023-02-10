@@ -98,6 +98,7 @@ public:
 	int     iZoomMode;
 
 	// Transport options...
+	bool    bCountIn;
 	bool    bMetronome;
 	bool    bFollowPlayhead;
 	bool    bAutoBackward;
@@ -135,6 +136,10 @@ public:
 	QString sMetroBeatFilename;
 	float   fMetroBeatGain;
 
+	// Audio metronome count-in options.
+	int     iAudioCountInMode;
+	int     iAudioCountInBeats;
+
 	// MIDI options...
 	int  iMidiCaptureFormat;
 	int  iMidiExportFormat;
@@ -170,6 +175,10 @@ public:
 	int iMetroBeatNote;
 	int iMetroBeatVelocity;
 	int iMetroBeatDuration;
+
+	// MIDI metronome count-in options.
+	int iMidiCountInMode;
+	int iMidiCountInBeats;
 
 	// Default options...
 	QString sSessionDir;
