@@ -1,7 +1,7 @@
 // qtractorVst3Plugin.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -1962,6 +1962,16 @@ public:
 	{
 		m_runLoop = owned(NEW RunLoop());
 		m_plugView->setFrame(this);
+
+		ViewRect rect;
+		if (m_plugView->getSize(&rect) == kResultOk) {
+			m_resizing = true;
+			const QSize size(
+				rect.right  - rect.left,
+				rect.bottom - rect.top);
+			m_widget->resize(size);
+			m_resizing = false;
+		}
 	}
 
 	// Destructor.
@@ -1984,7 +1994,9 @@ public:
 		if (!rect || !plugView || plugView != m_plugView)
 			return kInvalidArgument;
 
-		if (!m_widget || m_resizing)
+		if (!m_widget)
+			return kInternalError;
+		if (m_resizing)
 			return kResultFalse;
 
 		m_resizing = true;
@@ -1995,10 +2007,10 @@ public:
 		qDebug("qtractorVst3Plugin::EditorFrame[%p]::resizeView(%p, %p) size=(%d, %d)",
 			this, plugView, rect, size.width(), size.height());
 	#endif
-		if (m_plugView->canResize() != kResultOk)
-			m_widget->setFixedSize(size);
-		else
+		if (m_plugView->canResize() == kResultOk)
 			m_widget->resize(size);
+		else
+			m_widget->setFixedSize(size);
 		m_resizing = false;
 
 		ViewRect rect0;
@@ -2009,7 +2021,7 @@ public:
 			rect0.right  - rect0.left,
 			rect0.bottom - rect0.top);
 		if (size != size0)
-			m_plugView->onSize(rect);
+			m_plugView->onSize(&rect0);
 
 		return kResultOk;
 	}
@@ -2884,17 +2896,17 @@ void qtractorVst3Plugin::EditorWidget::resizeEvent ( QResizeEvent *pResizeEvent 
 		rect.top    = 0;
 		rect.right  = size.width();
 		rect.bottom = size.height();
-		if (plugView->checkSizeConstraint(&rect) == kResultOk) {
-			const QSize size2(
-				rect.right - rect.left,
-				rect.bottom - rect.top);
-			if (size2 != size) {
-				m_resizing = true;
-				QWidget::resize(size2);
-				m_resizing = false;
-			}
+		if (plugView->checkSizeConstraint(&rect) != kResultOk)
+			plugView->getSize(&rect);
+		const QSize size2(
+			rect.right - rect.left,
+			rect.bottom - rect.top);
+		if (size2 != size) {
+			m_resizing = true;
+			QWidget::resize(size2);
+			m_resizing = false;
+			plugView->onSize(&rect);
 		}
-		plugView->onSize(&rect);
 	}
 }
 
@@ -3316,10 +3328,6 @@ void qtractorVst3Plugin::openEditor ( QWidget *pParent )
 	m_pEditorWidget->setPlugin(this);
 
 	m_pEditorFrame = new EditorFrame(plugView, m_pEditorWidget);
-
-	ViewRect rect;
-	if (plugView->getSize(&rect) == kResultOk)
-		m_pEditorFrame->resizeView(plugView, &rect);
 
 	void *wid = (void *) m_pEditorWidget->parentWinId();
 	if (plugView->attached(wid, kPlatformTypeX11EmbedWindowID) != kResultOk) {

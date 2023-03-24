@@ -1,7 +1,7 @@
 // qtractorSession.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -325,7 +325,7 @@ void qtractorSession::clear (void)
 
 	updateTimeScale();
 
-	qtractorSessionCursor *pAudioCursor = m_pAudioEngine->sessionCursor(); 
+	qtractorSessionCursor *pAudioCursor = m_pAudioEngine->sessionCursor();
 	if (pAudioCursor) {
 		pAudioCursor->resetClips();
 		pAudioCursor->reset();
@@ -333,7 +333,7 @@ void qtractorSession::clear (void)
 		m_cursors.append(pAudioCursor);
 	}
 
-	qtractorSessionCursor *pMidiCursor = m_pMidiEngine->sessionCursor(); 
+	qtractorSessionCursor *pMidiCursor = m_pMidiEngine->sessionCursor();
 	if (pMidiCursor) {
 		pMidiCursor->resetClips();
 		pMidiCursor->reset();
@@ -865,7 +865,7 @@ void qtractorSession::updateTimeScaleEx (void)
 
 
 // Update time resolution divisor factors.
-void qtractorSession::updateTimeResolution (void) 
+void qtractorSession::updateTimeResolution (void)
 {
 	// Recompute scale divisor factors...
 	timeScale()->updateScale();
@@ -1227,7 +1227,7 @@ void qtractorSession::resetAllPlugins (void)
 			pTrack; pTrack = pTrack->next()) {
 		(pTrack->pluginList())->resetBuffers();
 	}
-	
+
 	// All audio buses...
 	for (qtractorBus *pBus = m_pAudioEngine->buses().first();
 			pBus; pBus = pBus->next()) {
@@ -1344,7 +1344,7 @@ bool qtractorSession::isPlaying() const
 // Shutdown procedure.
 void qtractorSession::shutdown (void)
 {
-	m_pAudioEngine->setPlaying(false);	
+	m_pAudioEngine->setPlaying(false);
 	m_pMidiEngine->setPlaying(false);
 
 	close();
@@ -1845,7 +1845,13 @@ void qtractorSession::trackRecord (
 		qtractorAudioBus *pAudioBus
 			= static_cast<qtractorAudioBus *> (pTrack->inputBus());
 		if (pAudioBus)
-			pAudioClip->setClipOffset(pAudioBus->latency_in());
+			// This is currently just a workaround, because
+			// we consider here only the output latency of
+			// the current audio bus.
+			// TODO: calculate the overall out latency somehow
+			pAudioClip->setClipOffset(
+				pAudioBus->latency_in()	+
+				pAudioBus->latency_out());
 		// One-up audio tracks in record mode.
 		++m_iAudioRecord;
 		break;
@@ -2307,7 +2313,7 @@ bool qtractorSession::loadElement (
 						return false;
 					}
 				}
-				else 
+				else
 				if (eDevice.tagName() == "midi-engine") {
 					if (!qtractorSession::midiEngine()
 							->loadElement(pDocument, &eDevice)) {
