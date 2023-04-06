@@ -4,6 +4,12 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+0.9.33  2023-03-27  An Early-Spring'23 Hotfix Release.
+
+- Fixed MIDI recording delay and recorded clip lengths when metronome
+  Count-in is in effect for recording.
+
+
 0.9.32  2023-03-25  An Early-Spring'23 Release.
 
 - Downgraded JACK timebase BBT information to nominal PPQN resolution
@@ -218,24 +224,6 @@ ChangeLog
 
 - Added special support for LV2 UI GTK2 plugins based on Gtkmm 2.4
   framework.
-
-- All builds default to Qt6 (Qt >= 6.1) where available.
-
-- CMake is now the official build system.
-
-
-0.9.22  2021-05-14  A Spring'21 Release.
-
-- Have some tolerance for JACK buffer-size changes, only prompting
-  to a complete session reload, if increasing in double the initial
-  period size. (EXPERIMENTAL)
-
-- Introducing plug-in blacklisting, on user discretion (in View
-  /Options.../Plugins/Blacklist) and on inventory scan (crashed
-  plug-ins are now automatically blacklisted). (EXPERIMENTAL)
-
-- Added special support for LV2 UI GTK2 plugins based on Gtkmm 2.4
-  framework. (EXPERIMENTAL)
 
 - All builds default to Qt6 (Qt >= 6.1) where available.
 
