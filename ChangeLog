@@ -4,6 +4,17 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+GIT HEAD
+
+- Send all pending MIDI Note-Off events when playback stops/shuts-off.
+  (EXPERIMENTAL)
+
+- Fixed the internal MIDI file player queue to the highest resolution
+  possible (PPQN aka ticks-per-beat). (EXPERIMENTAL)
+
+- Prepping into the next development cycle (with Qt >= 6.5).
+
+
 0.9.33  2023-03-27  An Early-Spring'23 Hotfix Release.
 
 - Fixed MIDI recording delay and recorded clip lengths when metronome

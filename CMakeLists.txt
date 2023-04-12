@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 3.15)
 
 project (qtractor
-  VERSION 0.9.33
-  # DESCRIPTION "An Audio/MIDI multi-track sequencer"
+  VERSION 0.9.34
+  DESCRIPTION "An Audio/MIDI multi-track sequencer"
   LANGUAGES C CXX)
 
 set (CONFIG_VERSION ${PROJECT_VERSION})
