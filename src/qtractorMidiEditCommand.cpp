@@ -1,7 +1,7 @@
 // qtractorMidiEditCommand.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -62,27 +62,37 @@ void qtractorMidiEditCommand::insertEvent ( qtractorMidiEvent *pEvent )
 }
 
 
-void qtractorMidiEditCommand::moveEvent ( qtractorMidiEvent *pEvent,
-	int iNote, unsigned long iTime )
+void qtractorMidiEditCommand::moveEvent (
+	qtractorMidiEvent *pEvent, int iNote, unsigned long iTime )
 {
 	m_items.append(new Item(MoveEvent, pEvent, iNote, iTime));
 }
 
 
-void qtractorMidiEditCommand::resizeEventTime ( qtractorMidiEvent *pEvent,
-	unsigned long iTime, unsigned long iDuration )
+void qtractorMidiEditCommand::resizeEventTime (
+	qtractorMidiEvent *pEvent, unsigned long iTime, unsigned long iDuration )
 {
 	m_items.append(new Item(ResizeEventTime, pEvent, 0, iTime, iDuration));
 }
 
 
-void qtractorMidiEditCommand::resizeEventValue ( qtractorMidiEvent *pEvent,
-	int iValue )
+void qtractorMidiEditCommand::resizeEventValue (
+	qtractorMidiEvent *pEvent, int iValue )
 {
 	if (pEvent->type() == qtractorMidiEvent::NOTEON && iValue < 1)
 		iValue = 1;	// Avoid zero velocity (aka. NOTEOFF)
 
 	m_items.append(new Item(ResizeEventValue, pEvent, 0, 0, 0, iValue));
+}
+
+
+void qtractorMidiEditCommand::updateEvent ( qtractorMidiEvent *pEvent,
+	int iNote, unsigned long iTime, unsigned long iDuration, int iValue )
+{
+	if (pEvent->type() == qtractorMidiEvent::NOTEON && iValue < 1)
+		iValue = 1;	// Avoid zero velocity (aka. NOTEOFF)
+
+	m_items.append(new Item(UpdateEvent, pEvent, iNote, iTime, iDuration, iValue));
 }
 
 
@@ -172,20 +182,65 @@ bool qtractorMidiEditCommand::execute ( bool bRedo )
 			break;
 		}
 		case ResizeEventValue: {
-			int iOldValue;
 			if (pEvent->type() == qtractorMidiEvent::PITCHBEND) {
-				iOldValue = pEvent->pitchBend();
+				const int iOldValue = pEvent->pitchBend();
 				pEvent->setPitchBend(pItem->value);
+				pItem->value = iOldValue;
 			}
 			else
 			if (pEvent->type() == qtractorMidiEvent::PGMCHANGE) {
-				iOldValue = pEvent->param();
+				const int iOldValue = pEvent->param();
 				pEvent->setParam(pItem->value);
+				pItem->value = iOldValue;
 			} else {
-				iOldValue = pEvent->value();
+				const int iOldValue = pEvent->value();
 				pEvent->setValue(pItem->value);
+				pItem->value = iOldValue;
 			}
-			pItem->value = iOldValue;
+			break;
+		}
+		case UpdateEvent: {
+			const unsigned long iOldTime = pEvent->time();
+			if (iOldTime != pItem->time) {
+				pSeq->unlinkEvent(pEvent);
+				pEvent->setTime(pItem->time);
+				pSeq->insertEvent(pEvent);
+				pItem->time = iOldTime;
+			}
+			if (pEvent->type() == qtractorMidiEvent::NOTEON) {
+				const int iOldNote = int(pEvent->note());
+				if (iOldNote != pItem->note) {
+					pEvent->setNote(pItem->note);
+					pItem->note = iOldNote;
+				}
+				const unsigned long iOldDuration = pEvent->duration();
+				if (iOldDuration != pItem->duration &&
+					pEvent->type() == qtractorMidiEvent::NOTEON) {
+					pEvent->setDuration(pItem->duration);
+					pItem->duration = iOldDuration;
+				}
+			}
+			if (pEvent->type() == qtractorMidiEvent::PITCHBEND) {
+				const int iOldValue = pEvent->pitchBend();
+				if (iOldValue != pItem->value) {
+					pEvent->setPitchBend(pItem->value);
+					pItem->value = iOldValue;
+				}
+			}
+			else
+			if (pEvent->type() == qtractorMidiEvent::PGMCHANGE) {
+				const int iOldValue = pEvent->param();
+				if (iOldValue != pItem->value) {
+					pEvent->setParam(pItem->value);
+					pItem->value = iOldValue;
+				}
+			} else {
+				const int iOldValue = pEvent->value();
+				if (iOldValue != pItem->value) {
+					pEvent->setValue(pItem->value);
+					pItem->value = iOldValue;
+				}
+			}
 			break;
 		}
 		case RemoveEvent: {
