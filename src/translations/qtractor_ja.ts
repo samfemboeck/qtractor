@@ -36,16 +36,16 @@ Audio:	%1 channels, %2 Hz</source>
     <message>
         <location filename="../qtractorAudioEngine.cpp" line="2943"/>
         <location filename="../qtractorAudioEngine.cpp" line="3235"/>
-        <location filename="../qtractorMidiEngine.cpp" line="4233"/>
-        <location filename="../qtractorMidiEngine.cpp" line="4800"/>
+        <location filename="../qtractorMidiEngine.cpp" line="4235"/>
+        <location filename="../qtractorMidiEngine.cpp" line="4802"/>
         <source>%1 In</source>
         <translation>%1 入力</translation>
     </message>
     <message>
         <location filename="../qtractorAudioEngine.cpp" line="2952"/>
         <location filename="../qtractorAudioEngine.cpp" line="3235"/>
-        <location filename="../qtractorMidiEngine.cpp" line="4242"/>
-        <location filename="../qtractorMidiEngine.cpp" line="4800"/>
+        <location filename="../qtractorMidiEngine.cpp" line="4244"/>
+        <location filename="../qtractorMidiEngine.cpp" line="4802"/>
         <source>%1 Out</source>
         <translation>%1 出力</translation>
     </message>
@@ -645,8 +645,8 @@ MIDI:	</translation>
         <translation>%1 ソロ</translation>
     </message>
     <message>
-        <location filename="../qtractorMidiEngine.cpp" line="4235"/>
-        <location filename="../qtractorMidiEngine.cpp" line="4244"/>
+        <location filename="../qtractorMidiEngine.cpp" line="4237"/>
+        <location filename="../qtractorMidiEngine.cpp" line="4246"/>
         <location filename="../qtractorTrack.cpp" line="693"/>
         <source>%1 Volume</source>
         <translation>%1 ボリューム</translation>
@@ -661,8 +661,8 @@ MIDI:	</translation>
     <message>
         <location filename="../qtractorAudioEngine.cpp" line="2947"/>
         <location filename="../qtractorAudioEngine.cpp" line="2956"/>
-        <location filename="../qtractorMidiEngine.cpp" line="4237"/>
-        <location filename="../qtractorMidiEngine.cpp" line="4246"/>
+        <location filename="../qtractorMidiEngine.cpp" line="4239"/>
+        <location filename="../qtractorMidiEngine.cpp" line="4248"/>
         <location filename="../qtractorTrack.cpp" line="699"/>
         <source>%1 Pan</source>
         <translation>%1 パニング</translation>
@@ -7139,42 +7139,42 @@ Do you want to apply the changes?</source>
 <context>
     <name>qtractorMidiEditTime</name>
     <message>
-        <location filename="../qtractorMidiEditTime.cpp" line="904"/>
+        <location filename="../qtractorMidiEditTime.cpp" line="913"/>
         <source>Play-head</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtractorMidiEditTime.cpp" line="907"/>
+        <location filename="../qtractorMidiEditTime.cpp" line="916"/>
         <source>Edit-head</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtractorMidiEditTime.cpp" line="910"/>
+        <location filename="../qtractorMidiEditTime.cpp" line="919"/>
         <source>Edit-tail</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtractorMidiEditTime.cpp" line="913"/>
+        <location filename="../qtractorMidiEditTime.cpp" line="922"/>
         <source>Loop-start</source>
         <translation>ループの先頭</translation>
     </message>
     <message>
-        <location filename="../qtractorMidiEditTime.cpp" line="916"/>
+        <location filename="../qtractorMidiEditTime.cpp" line="925"/>
         <source>Loop-end</source>
         <translation>ループの末尾</translation>
     </message>
     <message>
-        <location filename="../qtractorMidiEditTime.cpp" line="919"/>
+        <location filename="../qtractorMidiEditTime.cpp" line="928"/>
         <source>Punch-in</source>
         <translation>パンチイン</translation>
     </message>
     <message>
-        <location filename="../qtractorMidiEditTime.cpp" line="922"/>
+        <location filename="../qtractorMidiEditTime.cpp" line="931"/>
         <source>Punch-out</source>
         <translation>パンチアウト</translation>
     </message>
     <message>
-        <location filename="../qtractorMidiEditTime.cpp" line="952"/>
+        <location filename="../qtractorMidiEditTime.cpp" line="961"/>
         <source>Start:	%1
 End:	%2
 Length:	%3</source>
@@ -14988,42 +14988,42 @@ Do you want to apply the changes?</source>
 <context>
     <name>qtractorTrackTime</name>
     <message>
-        <location filename="../qtractorTrackTime.cpp" line="889"/>
+        <location filename="../qtractorTrackTime.cpp" line="891"/>
         <source>Play-head</source>
         <translation>再生先頭</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackTime.cpp" line="892"/>
+        <location filename="../qtractorTrackTime.cpp" line="894"/>
         <source>Edit-head</source>
         <translation>編集先頭</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackTime.cpp" line="895"/>
+        <location filename="../qtractorTrackTime.cpp" line="897"/>
         <source>Edit-tail</source>
         <translation>編集末尾</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackTime.cpp" line="898"/>
+        <location filename="../qtractorTrackTime.cpp" line="900"/>
         <source>Loop-start</source>
         <translation>ループスタート</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackTime.cpp" line="901"/>
+        <location filename="../qtractorTrackTime.cpp" line="903"/>
         <source>Loop-end</source>
         <translation>ループエンド</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackTime.cpp" line="904"/>
+        <location filename="../qtractorTrackTime.cpp" line="906"/>
         <source>Punch-in</source>
         <translation>パンチイン</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackTime.cpp" line="907"/>
+        <location filename="../qtractorTrackTime.cpp" line="909"/>
         <source>Punch-out</source>
         <translation>パンチアウト</translation>
     </message>
     <message>
-        <location filename="../qtractorTrackTime.cpp" line="942"/>
+        <location filename="../qtractorTrackTime.cpp" line="944"/>
         <source>Start:	%1
 End:	%2
 Length:	%3</source>

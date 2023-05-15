@@ -477,7 +477,7 @@ bool qtractorMidiEditTime::dragHeadStart ( const QPoint& pos )
 	// Reset cursor if any persist around.
 	if (m_dragCursor != DragNone) {
 		qtractorScrollView::unsetCursor();
-		m_dragCursor  = DragNone;
+		m_dragCursor = DragNone;
 	}
 
 	// Nothing.
@@ -578,12 +578,13 @@ void qtractorMidiEditTime::mouseMoveEvent ( QMouseEvent *pMouseEvent )
 		break;
 	case DragSelect:
 		// Rubber-band selection...
-		m_rectDrag.setRight(pos.x());
+		m_rectDrag.setRight(
+			m_pEditor->pixelSnap(pos.x() > 0 ? pos.x() : 0));
 		m_pEditor->editView()->ensureVisible(pos.x(), y, 16, 0);
 		m_pEditor->selectRect(m_pEditor->editView(), m_rectDrag,
 			pMouseEvent->modifiers() & Qt::ControlModifier, false);
-		// Edit-tail positioning...
-		m_pEditor->setEditTail(iFrame);
+		// Edit-head/tail positioning...
+		selectEdit(iFrame);
 		showToolTip(m_rectDrag.normalized());
 		break;
 	case DragPlayHead:
@@ -622,10 +623,14 @@ void qtractorMidiEditTime::mouseMoveEvent ( QMouseEvent *pMouseEvent )
 			// We'll start dragging alright...
 			const int h = m_pEditor->editView()->contentsHeight();
 			m_rectDrag.setTop(0);
-			m_rectDrag.setLeft(m_posDrag.x());
-			m_rectDrag.setRight(pos.x());
+			m_rectDrag.setLeft(
+				m_pEditor->pixelSnap(m_posDrag.x() > 0 ? m_posDrag.x() : 0));
+			m_rectDrag.setRight(
+				m_pEditor->pixelSnap(pos.x() > 0 ? pos.x() : 0));
 			m_rectDrag.setBottom(h);
-			m_dragState = (dragHeadStart(m_posDrag) ? m_dragCursor : DragSelect);
+			if (!dragHeadStart(m_posDrag))
+				m_dragCursor = DragSelect;
+			m_dragState = m_dragCursor;
 			qtractorScrollView::setCursor(QCursor(Qt::SizeHorCursor));
 		}
 		// Fall thru...
@@ -656,16 +661,17 @@ void qtractorMidiEditTime::mouseReleaseEvent ( QMouseEvent *pMouseEvent )
 	const unsigned long iFrame = m_pEditor->frameSnap(m_pEditor->offset()
 		+ pTimeScale->frameFromPixel(pos.x() > 0 ? pos.x() : 0));
 	switch (m_dragState) {
-	case DragSelect:
+	case DragSelect: {
 		// Do the final range selection...
 		m_pEditor->selectRect(m_pEditor->editView(), m_rectDrag,
 			pMouseEvent->modifiers() & Qt::ControlModifier, true);
-		// Edit-tail positioning...
-		m_pEditor->setEditTail(iFrame);
+		// Edit-head/tail positioning...
+		selectEdit(iFrame);
 		// Not quite a selection change,
 		// but for visual feedback...
 		m_pEditor->selectionChangeNotify();
 		break;
+	}
 	case DragPlayHead:
 		// Play-head positioning commit...
 		m_pEditor->setPlayHead(iFrame);
@@ -729,10 +735,13 @@ void qtractorMidiEditTime::mouseReleaseEvent ( QMouseEvent *pMouseEvent )
 			m_pEditor->setPlayHead(iFrame);
 			// Immediately commited...
 			pSession->setPlayHead(iFrame);
-			// Not quite a selection, rather just
-			// for immediate visual feedback...
-			m_pEditor->selectionChangeNotify();
+		} else {
+			// Deferred left-button edit-head positioning...
+			m_pEditor->setEditHead(iFrame);
 		}
+		// Not quite a selection, rather just
+		// for immediate visual feedback...
+		m_pEditor->selectionChangeNotify();
 		// Fall thru...
 	case DragNone:
 	default:
@@ -943,10 +952,10 @@ void qtractorMidiEditTime::showToolTip ( const QRect& rect ) const
 	if (pTimeScale == nullptr)
 		return;
 
-	const unsigned long iFrameStart = m_pEditor->frameSnap(
-		pTimeScale->frameFromPixel(rect.left()));
-	const unsigned long iFrameEnd = m_pEditor->frameSnap(
-		iFrameStart + pTimeScale->frameFromPixel(rect.width()));
+	const unsigned long iFrameStart
+		= m_pEditor->frameSnap(pTimeScale->frameFromPixel(rect.left()));
+	const unsigned long iFrameEnd
+		= m_pEditor->frameSnap(pTimeScale->frameFromPixel(rect.right()));
 
 	QToolTip::showText(QCursor::pos(),
 		tr("Start:\t%1\nEnd:\t%2\nLength:\t%3")
@@ -954,6 +963,27 @@ void qtractorMidiEditTime::showToolTip ( const QRect& rect ) const
 			.arg(pTimeScale->textFromFrame(iFrameEnd))
 			.arg(pTimeScale->textFromFrame(iFrameStart, true, iFrameEnd - iFrameStart)),
 		qtractorScrollView::viewport());
+}
+
+
+// Edit-head/tail positioning...
+void qtractorMidiEditTime::selectEdit ( unsigned long iFrame )
+{
+	qtractorTimeScale *pTimeScale = m_pEditor->timeScale();
+	if (pTimeScale == nullptr)
+		return;
+
+	const unsigned long iFrame2
+		= m_pEditor->frameSnap(m_pEditor->offset()
+			+ pTimeScale->frameFromPixel(m_rectDrag.left()));
+
+	if (iFrame < iFrame2) {
+		m_pEditor->setEditHead(iFrame);
+		m_pEditor->setEditTail(iFrame2);
+	} else {
+		m_pEditor->setEditHead(iFrame2);
+		m_pEditor->setEditTail(iFrame);
+	}
 }
 
 
