@@ -3491,6 +3491,11 @@ unsigned short qtractorMidiEngine::countIn ( unsigned int nframes )
 	return m_iCountIn;
 }
 
+unsigned short qtractorMidiEngine::countIn (void) const
+{
+	return m_iCountIn;
+}
+
 
 // Process metronome count-ins.
 void qtractorMidiEngine::processCountIn (

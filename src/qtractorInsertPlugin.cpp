@@ -25,7 +25,6 @@
 #include "qtractorInsertPlugin.h"
 
 #include "qtractorSession.h"
-#include "qtractorSessionCursor.h"
 #include "qtractorAudioEngine.h"
 #include "qtractorMidiEngine.h"
 #include "qtractorMidiManager.h"
@@ -744,6 +743,22 @@ qtractorAudioBus *qtractorAudioInsertPlugin::audioBus (void) const
 }
 
 
+// Override title/name caption.
+QString qtractorAudioInsertPlugin::title (void) const
+{
+	QString sTitle;
+
+	if (m_pAudioBus) {
+		sTitle = QObject::tr("%1 (Audio)").arg(m_pAudioBus->busName());
+		sTitle.replace('_', ' ');
+	} else {
+		sTitle = qtractorPlugin::title();
+	}
+
+	return sTitle;
+}
+
+
 //----------------------------------------------------------------------------
 // qtractorMidiInsertPlugin -- MIDI-insert pseudo-plugin instance.
 //
@@ -1048,6 +1063,22 @@ void qtractorMidiInsertPlugin::freezeConfigs ( int iBusMode )
 qtractorMidiBus *qtractorMidiInsertPlugin::midiBus (void) const
 {
 	return m_pMidiBus;
+}
+
+
+// Override title/name caption.
+QString qtractorMidiInsertPlugin::title (void) const
+{
+	QString sTitle;
+
+	if (m_pMidiBus) {
+		sTitle = QObject::tr("%1 (MIDI)").arg(m_pMidiBus->busName());
+		sTitle.replace('_', ' ');
+	} else {
+		sTitle = qtractorPlugin::title();
+	}
+
+	return sTitle;
 }
 
 
@@ -1363,11 +1394,19 @@ const QString& qtractorAudioAuxSendPlugin::audioBusName (void) const
 // Audio bus to appear on plugin lists.
 void qtractorAudioAuxSendPlugin::updateAudioBusName (void) const
 {
-	const QString sText(m_pAudioBus
-		? QObject::tr("%1 (Audio)").arg(m_sAudioBusName) : type()->name());
+	const QString& sTitle = title();
 	QListIterator<qtractorPluginListItem *> iter(items());
 	while (iter.hasNext())
-		iter.next()->setText(sText);
+		iter.next()->setText(sTitle);
+}
+
+
+// Override title/name caption.
+QString qtractorAudioAuxSendPlugin::title (void) const
+{
+	const QString sAudioBusName
+		= (m_pAudioBus ? m_sAudioBusName : QObject::tr("(none)"));
+	return QObject::tr("%1 (Audio)").arg(sAudioBusName);
 }
 
 
@@ -1616,11 +1655,19 @@ const QString& qtractorMidiAuxSendPlugin::midiBusName (void) const
 // Audio bus to appear on plugin lists.
 void qtractorMidiAuxSendPlugin::updateMidiBusName (void) const
 {
-	const QString sText(m_pMidiBus
-		? QObject::tr("%1 (MIDI)").arg(m_sMidiBusName) : type()->name());
+	const QString& sTitle = title();
 	QListIterator<qtractorPluginListItem *> iter(items());
 	while (iter.hasNext())
-		iter.next()->setText(sText);
+		iter.next()->setText(sTitle);
+}
+
+
+// Override title/name caption.
+QString qtractorMidiAuxSendPlugin::title (void) const
+{
+	const QString sMidiBusName
+		= (m_pMidiBus ? m_sMidiBusName : QObject::tr("(none)"));
+	return QObject::tr("%1 (MIDI)").arg(sMidiBusName);
 }
 
 

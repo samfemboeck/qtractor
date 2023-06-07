@@ -1,7 +1,7 @@
 // qtractorAudioMeter.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2021, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -89,7 +89,7 @@ static inline float cbrtf2 ( float x )
 	union { float f; int i; } u;
 	u.f  = x;
 	u.i  = (u.i >> 4) + (u.i >> 2);
-	u.i += (u.i >> 4) + 0x2a6497f8;
+	u.i += (u.i >> 4) + 0x2a6a8000; // 0x2a6497f8;
 //	return 0.33333333f * (2.0f * u.f + x / (u.f * u.f));
 	return u.f;
 #else
@@ -380,6 +380,8 @@ qtractorAudioMeter::qtractorAudioMeter (
 	m_pPixmap = new QPixmap();
 #endif
 
+	m_fScale0dB = 0.85f;
+
 	setPeakFalloff(QTRACTOR_AUDIO_METER_PEAK_FALLOFF);
 
 	for (int i = 0; i < LevelCount; ++i)
@@ -466,13 +468,13 @@ void qtractorAudioMeter::updatePixmap (void)
 {
 	const int w = QWidget::width();
 	const int h = QWidget::height();
-
+	const float f0dB = 1.0f - m_fScale0dB;
 	QLinearGradient grad(0, 0, 0, h);
-	grad.setColorAt(0.1f, color(ColorOver));
-	grad.setColorAt(0.2f, color(Color0dB));
-	grad.setColorAt(0.3f, color(Color3dB));
-	grad.setColorAt(0.4f, color(Color6dB));
-	grad.setColorAt(0.8f, color(Color10dB));
+	grad.setColorAt(f0dB * 0.5f, color(ColorOver));
+	grad.setColorAt(f0dB,        color(Color0dB));
+	grad.setColorAt(f0dB + 0.1f, color(Color3dB));
+	grad.setColorAt(f0dB + 0.2f, color(Color6dB));
+	grad.setColorAt(f0dB + 0.6f, color(Color10dB));
 
 	*m_pPixmap = QPixmap(w, h);
 
@@ -484,7 +486,7 @@ void qtractorAudioMeter::updatePixmap (void)
 // Resize event handler.
 void qtractorAudioMeter::resizeEvent ( QResizeEvent *pResizeEvent )
 {
-	qtractorMeter::setScale(0.85f * float(QWidget::height()));
+	qtractorMeter::setScale(m_fScale0dB * float(QWidget::height()));
 
 	m_levels[Color0dB]  = iec_scale(  0.0f);
 	m_levels[Color3dB]  = iec_scale( -3.0f);
