@@ -449,6 +449,12 @@ static int qtractorAudioEngine_sync (
 	if (pAudioEngine->isFreewheel())
 		return 0;
 
+	if (pAudioEngine->countIn() > 0)
+		return 0;
+
+	if (pAudioEngine->session()->midiEngine()->countIn() > 0)
+		return 0;
+
 	const bool bPlaying	= pAudioEngine->isPlaying();
 	if ((state == JackTransportStopped  &&  bPlaying) ||
 		(state == JackTransportStarting && !bPlaying) ||

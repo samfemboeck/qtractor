@@ -159,6 +159,9 @@ public:
 	// Audio specific accessor.
 	qtractorAudioBus *audioBus() const;
 
+	// Override title/name captioon.
+	QString title() const;
+
 protected:
 
 	// Plugin configuration (connections).
@@ -216,6 +219,9 @@ public:
 	// MIDI specific accessor.
 	qtractorMidiBus *midiBus() const;
 
+	// Override title/name captioon.
+	QString title() const;
+
 protected:
 
 	// Plugin configuration (connections).
@@ -226,8 +232,8 @@ private:
 	// Instance variables.
 	qtractorMidiBus *m_pMidiBus;
 
-	qtractorMidiInputBuffer   *m_pMidiInputBuffer;
-	qtractorMidiOutputBuffer  *m_pMidiOutputBuffer;
+	qtractorMidiInputBuffer  *m_pMidiInputBuffer;
+	qtractorMidiOutputBuffer *m_pMidiOutputBuffer;
 
 	Param *m_pSendGainParam;
 	Param *m_pDryGainParam;
@@ -362,6 +368,9 @@ public:
 	// Audio bus to appear on plugin lists.
 	void updateAudioBusName() const;
 
+	// Override title/name captioon.
+	QString title() const;
+
 protected:
 
 	// Do the actual (de)activation.
@@ -416,6 +425,9 @@ public:
 
 	// Audio bus to appear on plugin lists.
 	void updateMidiBusName() const;
+
+	// Override title/name captioon.
+	QString title() const;
 
 protected:
 

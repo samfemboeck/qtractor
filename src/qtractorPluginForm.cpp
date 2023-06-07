@@ -1,7 +1,7 @@
 // qtractorPluginForm.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@
 #include <QMessageBox>
 #include <QTabWidget>
 #include <QGridLayout>
+#include <QSpacerItem>
 #include <QValidator>
 #include <QTextEdit>
 #include <QLabel>
@@ -164,6 +165,10 @@ void qtractorPluginForm::setPlugin ( qtractorPlugin *pPlugin )
 	if (m_pPlugin == nullptr)
 		return;
 
+	qtractorPluginType *pType = m_pPlugin->type();
+	if (pType == nullptr)
+		return;
+
 	// Dispatch any pending updates.
 	qtractorSubject::flushQueue(true);
 
@@ -172,7 +177,6 @@ void qtractorPluginForm::setPlugin ( qtractorPlugin *pPlugin )
 		m_ui.ActivateToolButton,
 		m_pPlugin->activateObserver());
 
-	qtractorPluginType *pType = m_pPlugin->type();
 	const qtractorPluginType::Hint typeHint = pType->typeHint();
 	const bool bTwoColumnPage
 		= (typeHint == qtractorPluginType::Vst2
@@ -267,6 +271,9 @@ void qtractorPluginForm::setPlugin ( qtractorPlugin *pPlugin )
 	while (iter.hasNext()) {
 		pGridLayout->addWidget(iter.next(), iRow, iColumn);
 		if (++iRow >= iRowsPerPage) {
+			pGridLayout->addItem(new QSpacerItem(0, 0,
+				QSizePolicy::Minimum,
+				QSizePolicy::Expanding), iRow, 0, 1, iColumnsPerPage);
 			iRow = 0;
 			if (++iColumn >= iColumnsPerPage) {
 				iColumn = 0;
@@ -295,7 +302,7 @@ void qtractorPluginForm::setPlugin ( qtractorPlugin *pPlugin )
 	// Show insert tool options...
 	const bool bInsertPlugin = (typeHint == qtractorPluginType::Insert);
 	if (bInsertPlugin) {
-		if (pType->index() > 0) {
+		if (pType->index() > 0) { // index == channels > 0 => Audio insert.
 			m_ui.SendsToolButton->setIcon(QIcon(":/images/itemAudioPortOut.png"));
 			m_ui.ReturnsToolButton->setIcon(QIcon(":/images/itemAudioPortIn.png"));
 		} else {
@@ -315,9 +322,12 @@ void qtractorPluginForm::setPlugin ( qtractorPlugin *pPlugin )
 	// Set initial plugin preset name...
 	setPreset(m_pPlugin->preset());
 
-	// Set plugin name as title,
+	// Set plugin name/caption as title,
 	// maybe redundant but necessary...
-	m_pPlugin->updateEditorTitle();
+	if (bAuxSendPlugin)
+		updateAuxSendTitle();
+	else
+		m_pPlugin->updateEditorTitle();
 
 	// About page...
 	m_ui.NameTextLabel->setText(pType->name());
@@ -420,22 +430,25 @@ void qtractorPluginForm::updateDirtyCount (void)
 // Update specific aux-send bus name settings.
 void qtractorPluginForm::updateAuxSendBusName (void)
 {
-	qtractorSession *pSession = qtractorSession::getInstance();
-	if (pSession == nullptr)
+	if (m_pPlugin == nullptr)
 		return;
 
-	if (m_pPlugin == nullptr)
+	qtractorPluginType *pType = m_pPlugin->type();
+	if (pType == nullptr)
 		return;
 
 	m_ui.AuxSendBusNameComboBox->clear();
 
-	qtractorPluginType *pType = m_pPlugin->type();
 	if (pType->typeHint() != qtractorPluginType::AuxSend)
+		return;
+
+	qtractorSession *pSession = qtractorSession::getInstance();
+	if (pSession == nullptr)
 		return;
 
 	QString sAuxSendBusName;
 
-	if (pType->index() > 0) {
+	if (pType->index() > 0) { // index == channels > 0 => Audio aux-send.
 		qtractorAudioAuxSendPlugin *pAudioAuxSendPlugin
 			= static_cast<qtractorAudioAuxSendPlugin *> (m_pPlugin);
 		if (pAudioAuxSendPlugin == nullptr)
@@ -483,6 +496,8 @@ void qtractorPluginForm::updateAuxSendBusName (void)
 	if (iIndex < 0)
 		iIndex = 0;
 	m_ui.AuxSendBusNameComboBox->setCurrentIndex(iIndex);
+
+	updateAuxSendTitle();
 }
 
 
@@ -539,6 +554,9 @@ void qtractorPluginForm::openPresetSlot (void)
 		return;
 
 	qtractorPluginType *pType = m_pPlugin->type();
+	if (pType == nullptr)
+		return;
+
 	const bool bVst2Plugin = (pType->typeHint() == qtractorPluginType::Vst2);
 	if (!pType->isConfigure() && !bVst2Plugin)
 		return;
@@ -625,13 +643,12 @@ void qtractorPluginForm::savePresetSlot (void)
 	if (m_pPlugin == nullptr)
 		return;
 
-	const QString& sPreset = m_ui.PresetComboBox->currentText();
-	if (sPreset.isEmpty() || sPreset == qtractorPlugin::defPreset())
+	qtractorPluginType *pType = m_pPlugin->type();
+	if (pType == nullptr)
 		return;
 
-	// We'll need this, sure.
-	qtractorOptions *pOptions = qtractorOptions::getInstance();
-	if (pOptions == nullptr)
+	const QString& sPreset = m_ui.PresetComboBox->currentText();
+	if (sPreset.isEmpty() || sPreset == qtractorPlugin::defPreset())
 		return;
 
 	// The current state preset is about to be saved...
@@ -641,10 +658,14 @@ void qtractorPluginForm::savePresetSlot (void)
 		return;
 	}
 
+	// We'll need this, sure.
+	qtractorOptions *pOptions = qtractorOptions::getInstance();
+	if (pOptions == nullptr)
+		return;
+
 	QSettings& settings = pOptions->settings();
 	settings.beginGroup(m_pPlugin->presetGroup());
 	// Which mode of preset?
-	qtractorPluginType *pType = m_pPlugin->type();
 	const bool bVst2Plugin = (pType->typeHint() == qtractorPluginType::Vst2);
 	if (pType->isConfigure() || bVst2Plugin) {
 		// Sure, we'll have something complex enough
@@ -745,7 +766,7 @@ void qtractorPluginForm::deletePresetSlot (void)
 			"\"%1\" (%2)\n\n"
 			"Are you sure?")
 			.arg(sPreset)
-			.arg((m_pPlugin->type())->name()),
+			.arg(m_pPlugin->title()),
 			QMessageBox::Ok | QMessageBox::Cancel)
 			== QMessageBox::Cancel)
 			return;
@@ -847,6 +868,9 @@ void qtractorPluginForm::changeAuxSendBusNameSlot ( int iAuxSendBusName )
 		return;
 
 	qtractorPluginType *pType = m_pPlugin->type();
+	if (pType == nullptr)
+		return;
+
 	if (pType->typeHint() != qtractorPluginType::AuxSend)
 		return;
 
@@ -871,11 +895,14 @@ void qtractorPluginForm::clickAuxSendBusNameSlot (void)
 		return;
 
 	qtractorPluginType *pType = m_pPlugin->type();
+	if (pType == nullptr)
+		return;
+
 	if (pType->typeHint() != qtractorPluginType::AuxSend)
 		return;
 
 	qtractorEngine *pEngine = nullptr;
-	if (pType->index() > 0)
+	if (pType->index() > 0) // index == channels > 0 => Audio aux-send.
 		pEngine = pSession->audioEngine();
 	else
 		pEngine = pSession->midiEngine();
@@ -1011,7 +1038,13 @@ void qtractorPluginForm::refresh (void)
 // Preset control.
 void qtractorPluginForm::stabilize (void)
 {
+	if (m_pPlugin == nullptr)
+		return;
+
 	qtractorPluginType *pType = m_pPlugin->type();
+	if (pType == nullptr)
+		return;
+
 	const bool bVst2Plugin = (pType->typeHint() == qtractorPluginType::Vst2);
 
 	bool bExists  = false;
@@ -1143,6 +1176,17 @@ void qtractorPluginForm::updateLatencyTextLabel (void)
 	} else {
 		m_ui.LatencyTextLabel->setText(tr("(no latency)"));
 	}
+}
+
+
+// Update special aux-send window title...
+void qtractorPluginForm::updateAuxSendTitle (void)
+{
+	if (m_pPlugin == nullptr)
+		return;
+
+	QWidget::setWindowTitle(
+		QObject::tr("Aux Send: %1").arg(m_pPlugin->title()));
 }
 
 

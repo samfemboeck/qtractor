@@ -446,7 +446,7 @@ bool qtractorClapPluginType::open (void)
 		for (uint32_t i = 0; i < nins; ++i) {
 			::memset(&info, 0, sizeof(info));
 			if (audio_ports->get(plugin, i, true, &info)) {
-				if (info.flags & CLAP_AUDIO_PORT_IS_MAIN)
+			//	if (info.flags & CLAP_AUDIO_PORT_IS_MAIN)
 					m_iAudioIns += info.channel_count;
 			}
 		}
@@ -454,7 +454,7 @@ bool qtractorClapPluginType::open (void)
 		for (uint32_t i = 0; i < nouts; ++i) {
 			::memset(&info, 0, sizeof(info));
 			if (audio_ports->get(plugin, i, false, &info)) {
-				if (info.flags & CLAP_AUDIO_PORT_IS_MAIN)
+			//	if (info.flags & CLAP_AUDIO_PORT_IS_MAIN)
 					m_iAudioOuts += info.channel_count;
 			}
 		}
@@ -3152,8 +3152,8 @@ void qtractorClapPlugin::openEditor ( QWidget *pParent )
 
 	// Final stabilization...
 	updateEditorTitle();
-    if (m_pEditorWidget)
-	  moveWidgetPos(m_pEditorWidget, editorPos());
+	if (m_pEditorWidget)
+		moveWidgetPos(m_pEditorWidget, editorPos());
 	setEditorVisible(true);
 }
 
@@ -3296,7 +3296,7 @@ void qtractorClapPlugin::setEditorTitle ( const QString& sTitle )
 {
 	qtractorPlugin::setEditorTitle(sTitle);
 
-    if (!m_bEditorCreated)
+	if (!m_bEditorCreated)
 		return;
 
 	const clap_plugin *plugin = m_pImpl->plugin();
