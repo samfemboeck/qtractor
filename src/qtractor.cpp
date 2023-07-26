@@ -1,7 +1,7 @@
 // qtractor.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -89,6 +89,9 @@
 #endif	// CONFIG_X11
 #else
 #include <QSharedMemory>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+#include <QNativeIpcKey>
+#endif
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QHostInfo>
@@ -293,12 +296,18 @@ bool qtractorApplication::setup (void)
 	}
 	m_sUnique += '@';
 	m_sUnique += QHostInfo::localHostName();
-#ifdef Q_OS_UNIX
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+	const QNativeIpcKey nativeKey
+		= QSharedMemory::legacyNativeKey(m_sUnique);
+	m_pMemory = new QSharedMemory(nativeKey);
+#else
+#if defined(Q_OS_UNIX)
 	m_pMemory = new QSharedMemory(m_sUnique);
 	m_pMemory->attach();
 	delete m_pMemory;
 #endif
 	m_pMemory = new QSharedMemory(m_sUnique);
+#endif
 	bool bServer = false;
 	const qint64 pid = QCoreApplication::applicationPid();
 	struct Data { qint64 pid; };
@@ -376,7 +385,7 @@ void qtractorApplication::x11PropertyNotify ( Window w )
 			// Avoid repeating it-self...
 			XDeleteProperty(m_pDisplay, m_wOwner, m_aUnique);
 			// Just make it always shows up fine...
-			m_pWidget->show();
+			m_pWidget->showNormal();
 			m_pWidget->raise();
 			m_pWidget->activateWindow();
 		}
@@ -425,10 +434,11 @@ void qtractorApplication::readyReadSlot (void)
 		if (nread > 0) {
 			const QByteArray data = pSocket->read(nread);
 			// Just make it always shows up fine...
-			m_pWidget->hide();
-			m_pWidget->show();
-			m_pWidget->raise();
-			m_pWidget->activateWindow();
+			if (m_pWidget) {
+				m_pWidget->showNormal();
+				m_pWidget->raise();
+				m_pWidget->activateWindow();
+			}
 		}
 	}
 }
