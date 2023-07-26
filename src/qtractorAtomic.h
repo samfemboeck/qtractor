@@ -1,7 +1,7 @@
 // qtractorAtomic.h
 //
 /****************************************************************************
-   Copyright (C) 2005-2021, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -35,6 +35,10 @@ extern "C" {
 
 
 #if defined(HAVE_QATOMIC_H)
+
+#ifndef QT_VERSION_CHECK
+#include <QtVersionChecks>
+#endif
 
 typedef QAtomicInt qtractorAtomic;
 
