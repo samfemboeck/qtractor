@@ -248,9 +248,9 @@ QString qtractorPlugin::g_sDefPreset = QObject::tr("(default)");
 qtractorPlugin::qtractorPlugin (
 	qtractorPluginList *pList, qtractorPluginType *pType )
 	: m_pList(pList), m_pType(pType), m_iUniqueID(0), m_iInstances(0),
-		m_bActivated(false), m_bAutoDeactivated(false),
-		m_activateObserver(this),
-		m_iActivateSubjectIndex(0), m_pForm(nullptr), m_iEditorType(-1),
+		m_iActivated(0), m_bActivated(false), m_bAutoDeactivated(false),
+		m_activateObserver(this), m_iActivateSubjectIndex(0),
+		m_pForm(nullptr), m_iEditorType(-1),
 		m_iDirectAccessParamIndex(-1)
 {
 	// Acquire a local unique id in chain...
@@ -307,23 +307,35 @@ void qtractorPlugin::setActivated ( bool bActivated )
 	setActivatedEx(bActivated);
 }
 
+bool qtractorPlugin::isActivated (void) const
+{
+	return m_bActivated;
+}
+
+
 // queued (GUI invocation)
 void qtractorPlugin::setActivatedEx ( bool bActivated )
 {
 	m_activateSubject.setValue(bActivated ? 1.0f : 0.0f);
 }
 
-bool qtractorPlugin::isActivated (void) const
+bool qtractorPlugin::isActivatedEx (void) const
+{
+	return (m_activateSubject.value() > 0.5f);
+}
+
+
+// auto-(de)activation
+bool qtractorPlugin::isAutoActivated (void) const
 {
 	return m_bActivated && !m_bAutoDeactivated;
 }
 
-
-// Avoid save/copy auto-deactivated as deactivated...
-bool qtractorPlugin::isActivatedEx (void) const
+bool qtractorPlugin::isAutoDeactivated (void) const
 {
-	return m_bActivated;
+	return m_bActivated && m_bAutoDeactivated;
 }
+
 
 
 void qtractorPlugin::autoDeactivatePlugin ( bool bDeactivated )
@@ -333,6 +345,7 @@ void qtractorPlugin::autoDeactivatePlugin ( bool bDeactivated )
 		if (bDeactivated) {
 			// was activated?
 			if (m_bActivated) {
+				m_iActivated = 0;
 				deactivate();
 				if (m_pList)
 					m_pList->updateActivated(false);
@@ -340,6 +353,7 @@ void qtractorPlugin::autoDeactivatePlugin ( bool bDeactivated )
 		}
 		// reactivate?
 		else if (m_bActivated) {
+			m_iActivated = 0;
 			activate();
 			if (m_pList)
 				m_pList->updateActivated(true);
@@ -361,16 +375,15 @@ void qtractorPlugin::updateActivated ( bool bActivated )
 {
 	if (( bActivated && !m_bActivated) ||
 		(!bActivated &&  m_bActivated)) {
-		m_bActivated = bActivated;
-		const bool bIsConnectedToOtherTracks = canBeConnectedToOtherTracks();
+		if (bActivated)
+			activated();
+		else
+			deactivated();
 		// Auto-plugin-deactivation overrides standard-activation for plugins
 		// without connections to other tracks (Inserts/AuxSends)
 		// otherwise user could (de)activate plugin without getting feedback
+		const bool bIsConnectedToOtherTracks = canBeConnectedToOtherTracks();
 		if (!m_bAutoDeactivated || bIsConnectedToOtherTracks) {
-			if (bActivated)
-				activate();
-			else
-				deactivate();
 			if (m_pList)
 				m_pList->updateActivated(bActivated);
 		}
@@ -407,8 +420,7 @@ void qtractorPlugin::updateActivatedEx ( bool bActivated )
 	while (iter.hasNext())
 		iter.next()->updateActivated();
 
-	if (m_pForm)
-		m_pForm->updateActivated();
+	updateFormActivated();
 }
 
 
@@ -416,10 +428,34 @@ void qtractorPlugin::updateActivatedEx ( bool bActivated )
 void qtractorPlugin::setChannelsActivated (
 	unsigned short iChannels, bool bActivated )
 {
-	if (iChannels > 0)
+	if (iChannels > 0) {
+		if (!bActivated) ++m_iActivated;
 		setActivated(bActivated);
-	else
+		if (!bActivated) m_iActivated = 0;
+	} else {
+		m_iActivated = 0;
 		updateActivated(bActivated);
+	}
+}
+
+
+void qtractorPlugin::activated (void)
+{
+	if (m_iActivated == 0) {
+		activate();
+		++m_iActivated;
+	}
+
+	m_bActivated = true;
+}
+
+
+void qtractorPlugin::deactivated (void)
+{
+	m_bActivated = false;
+
+	if (m_iActivated == 0)
+		deactivate();
 }
 
 
@@ -444,7 +480,7 @@ void qtractorPlugin::ActivateObserver::update ( bool bUpdate )
 {
 	qtractorMidiControlObserver::update(bUpdate);
 
-	m_pPlugin->updateActivatedEx(qtractorMidiControlObserver::value() > 0.5f);
+	m_pPlugin->updateActivatedEx(m_pPlugin->isActivatedEx());
 }
 
 
@@ -660,6 +696,13 @@ void qtractorPlugin::updateFormAuxSendBusName (void)
 {
 	if (m_pForm && m_pForm->isVisible())
 		m_pForm->updateAuxSendBusName();
+}
+
+
+void qtractorPlugin::updateFormActivated (void)
+{
+	if (m_pForm && m_pForm->isVisible())
+		m_pForm->updateActivated();
 }
 
 
@@ -1539,7 +1582,7 @@ bool qtractorPlugin::savePlugin (
 //	pDocument->saveTextElement("values",
 //		valueList().join(","), pElement);
 	pDocument->saveTextElement("activated",
-		qtractorDocument::textFromBool(isActivatedEx()), pElement);
+		qtractorDocument::textFromBool(isActivated()), pElement);
 
 	// Plugin configuration stuff (CLOB)...
 	QDomElement eConfigs = pDocument->document()->createElement("configs");
@@ -1927,34 +1970,11 @@ void qtractorPluginList::resetBuffers (void)
 
 	const unsigned int iBufferSizeEx = pAudioEngine->bufferSizeEx();
 
-#if 0
-	// Save and reset activation count...
-	int iActivated = m_iActivated;
-	m_iActivated = 0;
-
-	// Temporarily deactivate all activated plugins...
-	for (qtractorPlugin *pPlugin = first();
-			pPlugin; pPlugin = pPlugin->next()) {
-		if (pPlugin->isActivated())
-			pPlugin->deactivate();
-	}
-#endif
 	// Reset interim buffer, if any...
 	if (m_pppBuffers[1]) {
 		for (unsigned short i = 0; i < m_iChannels; ++i)
 			::memset(m_pppBuffers[1][i], 0, iBufferSizeEx * sizeof(float));
 	}
-#if 0
-	// Restore activation of all previously deactivated plugins...
-	for (qtractorPlugin *pPlugin = first();
-			pPlugin; pPlugin = pPlugin->next()) {
-		if (pPlugin->isActivated())
-			pPlugin->activate();
-	}
-
-	// Restore activation count.
-	m_iActivated = iActivated;
-#endif
 }
 
 
@@ -2124,7 +2144,7 @@ qtractorPlugin *qtractorPluginList::copyPlugin ( qtractorPlugin *pPlugin )
 		pNewPlugin->realizeValues();
 		pNewPlugin->releaseConfigs();
 		pNewPlugin->releaseValues();
-		pNewPlugin->setActivated(pPlugin->isActivatedEx());
+		pNewPlugin->setActivated(pPlugin->isActivated());
 		pNewPlugin->setDirectAccessParamIndex(
 			pPlugin->directAccessParamIndex());
 	}
@@ -2492,7 +2512,7 @@ void qtractorPluginList::autoDeactivatePlugins ( bool bDeactivated, bool bForce 
 			qtractorPlugin *pPlugin = last();
 			for ( ;	pPlugin && !bStopDeactivation; pPlugin = pPlugin->prev()) {
 				if (pPlugin->canBeConnectedToOtherTracks())
-					bStopDeactivation = pPlugin->isActivated();
+					bStopDeactivation = pPlugin->isAutoActivated();
 				else
 					pPlugin->autoDeactivatePlugin(bDeactivated);
 				iAudioOuts += pPlugin->audioOuts();

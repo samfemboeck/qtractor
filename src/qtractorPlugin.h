@@ -250,9 +250,13 @@ public:
 
 	// Activation methods.
 	void setActivated(bool bActivated);
-	void setActivatedEx(bool bActivated);
 	bool isActivated() const;
+
+	void setActivatedEx(bool bActivated);
 	bool isActivatedEx() const;
+
+	bool isAutoActivated() const;
+	bool isAutoDeactivated() const;
 
 	// Activate subject accessors.
 	qtractorSubject *activateSubject()
@@ -437,6 +441,7 @@ public:
 	void toggleFormEditor(bool bOn);
 	void updateFormDirtyCount();
 	void updateFormAuxSendBusName();
+	void updateFormActivated();
 	void refreshForm();
 
 	void freezeFormPos();
@@ -582,6 +587,9 @@ protected:
 	// Internal activation methods.
 	void setChannelsActivated(unsigned short iChannels, bool bActivated);
 
+	void activated();
+	void deactivated();
+
 	// Activation stabilizers.
 	void updateActivated(bool bActivated);
 	void updateActivatedEx(bool bActivated);
@@ -605,8 +613,11 @@ private:
 	// Number of instances in chain node.
 	unsigned short m_iInstances;
 
+	// Activation flag (hard)
+	int m_iActivated;
+
 	// Activation flag.
-	bool m_bActivated;
+	volatile bool m_bActivated;
 
 	// Auto-plugin-deactivation flag
 	bool m_bAutoDeactivated;
