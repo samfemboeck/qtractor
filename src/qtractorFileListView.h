@@ -1,7 +1,7 @@
 // qtractorFileListView.h
 //
 /****************************************************************************
-   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -68,6 +68,10 @@ public:
 		qtractorFileGroupItem *pParentItem = nullptr);
 	qtractorFileListItem *addFileItem(const QString& sPath,
 		qtractorFileGroupItem *pParentItem = nullptr);
+
+	// Remove existing group/file item.
+	void removeGroupItem(const QString& sName);
+	void removeFileItem(const QString& sPath);
 
 	// Current group/file item accessors...
 	qtractorFileGroupItem *currentGroupItem() const;
