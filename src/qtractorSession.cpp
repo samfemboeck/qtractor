@@ -271,6 +271,8 @@ void qtractorSession::clear (void)
 
 	m_pCurrentTrack = nullptr;
 
+	m_pCommands->clear();
+
 	m_tracks.clear();
 	m_cursors.clear();
 
@@ -281,8 +283,6 @@ void qtractorSession::clear (void)
 
 	m_pMidiEngine->clear();
 	m_pAudioEngine->clear();
-
-	m_pCommands->clear();
 
 	m_pFiles->clear();
 
@@ -1428,6 +1428,8 @@ void qtractorSession::setPlayHead ( unsigned long iPlayHead )
 	if (!bPlaying) {
 		// Update time(base)/BBT info...
 		m_pAudioEngine->updateTimeInfo(iPlayHead);
+		// Reset step-input tracking...
+		m_pMidiEngine->proxy()->notifyInpEvent(qtractorMidiEngine::InpReset);
 		// Sync all track automation...
 		process_curve(iPlayHead);
 	}
@@ -1468,6 +1470,8 @@ void qtractorSession::setPlayHeadEx ( unsigned long iPlayHead )
 	} else {
 		// Update time(base)/BBT info...
 		m_pAudioEngine->updateTimeInfo(iPlayHead);
+		// Reset step-input tracking...
+		m_pMidiEngine->proxy()->notifyInpEvent(qtractorMidiEngine::InpReset);
 		// Sync all track automation...
 		process_curve(iPlayHead);
 	}
@@ -1727,6 +1731,19 @@ QString qtractorSession::createFilePath (
 #endif
 
 	return fi.absoluteFilePath();
+}
+
+
+// Session directory relative/absolute file path helpers.
+QString qtractorSession::relativeFilePath ( const QString& sFilename ) const
+{
+	return QDir(sessionDir()).relativeFilePath(sFilename);
+}
+
+
+QString qtractorSession::absoluteFilePath ( const QString& sFilename ) const
+{
+	return QDir::cleanPath(QDir(sessionDir()).absoluteFilePath(sFilename));
 }
 
 
@@ -2737,7 +2754,7 @@ void qtractorSession::renameSession (
 				qtractorMidiClip *pMidiClip
 					= static_cast<qtractorMidiClip *> (pClip);
 				if (pMidiClip)
-					pMidiClip->setFilenameEx(sNewFilePath, false);
+					pMidiClip->setFilenameEx(sNewFilePath, true);
 			} else {
 				pClip->close();
 				pClip->setFilename(sNewFilePath);
@@ -2750,7 +2767,7 @@ void qtractorSession::renameSession (
 					= pFileListView->findFileItem(sOldFilePath);
 				if (pFileItem) {
 					pGroupItem = pFileItem->groupItem();
-					m_pFiles->removeFileItem(iFileType, pFileItem);
+					m_pFiles->removeFileItem(iFileType, pFileItem->path());
 					delete pFileItem;
 				}
 				pFileListView->addFileItem(sNewFilePath, pGroupItem);

@@ -34,6 +34,8 @@
 #include "qtractorMidiEditor.h"
 #include "qtractorMidiEditorForm.h"
 
+#include "qtractorMidiEditCommand.h"
+
 #include "qtractorMainForm.h"
 
 #include "qtractorOptions.h"
@@ -185,6 +187,12 @@ qtractorMidiClip::qtractorMidiClip ( qtractorTrack *pTrack )
 
 	m_iBeatsPerBar2 = 0;
 	m_iBeatDivisor2 = 0;
+
+	m_iStepInputHead = 0;
+	m_iStepInputTail = 0;
+	m_iStepInputHeadTime = 0;
+	m_iStepInputTailTime = 0;
+	m_iStepInputLast = 0;
 }
 
 
@@ -531,6 +539,14 @@ bool qtractorMidiClip::openMidiFile (
 // Private cleanup.
 void qtractorMidiClip::closeMidiFile (void)
 {
+	qtractorTrack *pTrack = track();
+	if (pTrack == nullptr)
+		return;
+
+	qtractorSession *pSession = pTrack->session();
+	if (pSession == nullptr)
+		return;
+
 	if (m_pData) {
 		m_pData->detach(this);
 		if (m_pData->count() < 1) {
@@ -539,9 +555,7 @@ void qtractorMidiClip::closeMidiFile (void)
 		}
 		m_pData = nullptr;
 		// Unregister file path...
-		qtractorSession *pSession = qtractorSession::getInstance();
-		if (pSession)
-			pSession->files()->removeClipItem(qtractorFileList::Midi, this);
+		pSession->files()->removeClipItem(qtractorFileList::Midi, this);
 	}
 
 	if (m_pKey) {
@@ -561,6 +575,14 @@ QString qtractorMidiClip::createFilePathRevision ( bool bForce )
 {
 	QString sFilename = filename();
 
+	qtractorTrack *pTrack = track();
+	if (pTrack == nullptr)
+		return sFilename;
+
+	qtractorSession *pSession = pTrack->session();
+	if (pSession == nullptr)
+		return sFilename;
+
 	// Check file-hash reference...
 	if (m_iRevision > 0 && m_pKey) {
 		FileKey fkey(m_pKey);
@@ -570,10 +592,7 @@ QString qtractorMidiClip::createFilePathRevision ( bool bForce )
 	}
 
 	if (m_iRevision == 0 || bForce) {
-		qtractorTrack *pTrack = track();
-		qtractorSession *pSession = qtractorSession::getInstance();
-		if (pTrack && pSession)
-			sFilename = pSession->createFilePath(pTrack->trackName(), "mid");
+		sFilename = pSession->createFilePath(pTrack->trackName(), "mid");
 		sFilename = qtractorMidiFile::createFilePathRevision(sFilename);
 	#ifdef CONFIG_DEBUG
 		qDebug("qtractorMidiClip::createFilePathRevision(%d): \"%s\" (%d)",
@@ -589,8 +608,7 @@ QString qtractorMidiClip::createFilePathRevision ( bool bForce )
 
 
 // Sync all ref-counted filenames.
-void qtractorMidiClip::setFilenameEx (
-	const QString& sFilename, bool bUpdate )
+void qtractorMidiClip::setFilenameEx ( const QString& sFilename, bool bUpdate )
 {
 	qtractorTrack *pTrack = track();
 	if (pTrack == nullptr)
@@ -1261,7 +1279,11 @@ QString qtractorMidiClip::toolTip (void) const
 // Auto-save to (possible) new file revision.
 bool qtractorMidiClip::saveCopyFile ( bool bUpdate )
 {
-	qtractorSession *pSession = qtractorSession::getInstance();
+	qtractorTrack *pTrack = track();
+	if (pTrack == nullptr)
+		return false;
+
+	qtractorSession *pSession = pTrack->session();
 	if (pSession == nullptr)
 		return false;
 
@@ -1555,6 +1577,170 @@ void qtractorMidiClip::enqueue_export ( qtractorTrack *pTrack,
 		if (pMidiManager)
 			pMidiManager->queued(&ev, t1, t2);
 	}
+}
+
+
+
+// Step-input methods...
+void qtractorMidiClip::setStepInputHead ( unsigned long iStepInputHead )
+{
+	qtractorTrack *pTrack = track();
+	if (pTrack == nullptr)
+		return;
+
+	qtractorSession *pSession = pTrack->session();
+	if (pSession == nullptr)
+		return;
+
+	qtractorTimeScale *pTimeScale = nullptr;
+	if (m_pMidiEditorForm && m_pMidiEditorForm->editor())
+		pTimeScale = m_pMidiEditorForm->editor()->timeScale();
+	if (pTimeScale == nullptr)
+		pTimeScale = pSession->timeScale();
+	if (pTimeScale == nullptr)
+		return;
+
+	qtractorTimeScale::Cursor cursor(pTimeScale);
+	qtractorTimeScale::Node *pNode = cursor.seekFrame(iStepInputHead);
+
+	m_iStepInputHead = pNode->frameSnap(iStepInputHead);
+	m_iStepInputHeadTime = pNode->tickFromFrame(m_iStepInputHead);
+
+	const unsigned short iSnapPerBeat = pTimeScale->snapPerBeat();
+	unsigned long iStepInputDuration = pNode->ticksPerBeat;
+	if (iSnapPerBeat > 0)
+		iStepInputDuration /= iSnapPerBeat;
+
+	m_iStepInputTailTime = m_iStepInputHeadTime + iStepInputDuration;
+	m_iStepInputTail = pNode->frameFromTick(m_iStepInputTailTime);
+	m_iStepInputLast = 0;
+}
+
+
+// Step-input last effective frame methods.
+void qtractorMidiClip::setStepInputLast ( unsigned long iStepInputLast )
+{
+	if (m_iStepInputLast > 0) {
+		const unsigned long iStepInputFrame
+			= m_iStepInputHead
+			+ iStepInputLast
+			- m_iStepInputLast;
+		if (iStepInputFrame > m_iStepInputTail)
+			advanceStepInput();
+	}
+
+	m_iStepInputLast = iStepInputLast;
+}
+
+
+// Step-input-head/tail advance...
+void qtractorMidiClip::advanceStepInput (void)
+{
+	qtractorTrack *pTrack = track();
+	if (pTrack == nullptr)
+		return;
+
+	qtractorSession *pSession = pTrack->session();
+	if (pSession == nullptr)
+		return;
+
+	qtractorTimeScale *pTimeScale = nullptr;
+	if (m_pMidiEditorForm && m_pMidiEditorForm->editor())
+		pTimeScale = m_pMidiEditorForm->editor()->timeScale();
+	if (pTimeScale == nullptr)
+		pTimeScale = pSession->timeScale();
+	if (pTimeScale == nullptr)
+		return;
+
+	qtractorTimeScale::Cursor cursor(pTimeScale);
+	qtractorTimeScale::Node *pNode = cursor.seekFrame(m_iStepInputTail);
+
+	if (pSession->isLooping() && m_iStepInputTail >= pSession->loopEnd()) {
+		m_iStepInputTail = pSession->loopStart();
+		m_iStepInputTailTime = pSession->loopStartTime();
+	}
+
+	m_iStepInputHead = m_iStepInputTail;
+	m_iStepInputHeadTime = m_iStepInputTailTime; // pNode->tickFromFrame(m_iStepInputHead);
+
+	const unsigned short iSnapPerBeat = pTimeScale->snapPerBeat();
+	unsigned long iStepInputDuration = pNode->ticksPerBeat;
+	if (iSnapPerBeat > 0)
+		iStepInputDuration /= iSnapPerBeat;
+
+	m_iStepInputTailTime = m_iStepInputHeadTime + iStepInputDuration;
+	m_iStepInputTail = pNode->frameFromTick(m_iStepInputTailTime);
+//	m_iStepInputLast = 0;
+}
+
+
+// Step-input editor update...
+void qtractorMidiClip::updateStepInput (void)
+{
+	if (m_pMidiEditorForm && m_pMidiEditorForm->editor()) {
+		m_pMidiEditorForm->editor()->setStepInputHead(
+			m_iStepInputLast > 0 ? m_iStepInputTail : m_iStepInputHead);
+	}
+}
+
+
+// Check if an event with same exact time, type, key and duration
+// is already in the sequence (avoid duplicates in step-input...)
+qtractorMidiEvent *qtractorMidiClip::findStepInputEvent (
+	qtractorMidiEvent *pStepInputEvent ) const
+{
+	qtractorMidiSequence *pSeq = sequence();
+	if (pSeq == nullptr)
+		return nullptr;
+
+	qtractorMidiEvent *pEvent = pSeq->events().first();
+	for ( ; pEvent; pEvent = pEvent->next()) {
+		if (pEvent->time() > pStepInputEvent->time())
+			break;
+		if (pEvent->time() == pStepInputEvent->time() &&
+			pEvent->type() == pStepInputEvent->type()) {
+			switch (pEvent->type()) {
+			case qtractorMidiEvent::NOTEON:
+				if (pEvent->duration() != pStepInputEvent->duration())
+					continue;
+				// Fall thru...
+			case qtractorMidiEvent::NOTEOFF:
+			case qtractorMidiEvent::KEYPRESS:
+				if (pEvent->note() != pStepInputEvent->note())
+					continue;
+				break;
+			case qtractorMidiEvent::CONTROLLER:
+			case qtractorMidiEvent::REGPARAM:
+			case qtractorMidiEvent::NONREGPARAM:
+			case qtractorMidiEvent::CONTROL14:
+				if (pEvent->controller() != pStepInputEvent->controller())
+					continue;
+				break;
+			case qtractorMidiEvent::CHANPRESS:
+			case qtractorMidiEvent::PITCHBEND:
+				break;
+			default:
+				break;
+			}
+			return pEvent;
+		}
+	}
+
+	return nullptr;
+}
+
+
+// Submit a command to the clip editor, if available.
+bool qtractorMidiClip::execute ( qtractorMidiEditCommand *pMidiEditCommand )
+{
+	if (m_pMidiEditorForm == nullptr)
+		return false;
+
+	qtractorMidiEditor *pMidiEditor = m_pMidiEditorForm->editor();
+	if (pMidiEditor == nullptr)
+		return false;
+
+	return pMidiEditor->execute(pMidiEditCommand);
 }
 
 

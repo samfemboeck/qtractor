@@ -86,31 +86,35 @@ BuildRequires:	pkgconfig(Qt5X11Extras)
 %endif
 %if %{defined fedora}
 BuildRequires:	jack-audio-connection-kit-devel
-BuildRequires:	alsa-lib-devel
-BuildRequires:	rubberband-devel
-BuildRequires:	aubio-devel >= 0.4.1
 %else
-BuildRequires:	libjack-devel
-BuildRequires:	alsa-devel
+BuildRequires:	pkgconfig(jack)
+%endif
+BuildRequires:	pkgconfig(alsa)
+
+%if %{defined fedora}
+BuildRequires:	rubberband-devel
+%else
 BuildRequires:	librubberband-devel
-BuildRequires:  libaubio-devel >= 0.4.1
 %endif
-BuildRequires:	libsndfile-devel
-BuildRequires:	libvorbis-devel
-BuildRequires:	libmad-devel
-BuildRequires:	libsamplerate-devel
-BuildRequires:	liblo-devel
 BuildRequires:	ladspa-devel
-BuildRequires:	dssi-devel
-BuildRequires:	lv2-devel
-BuildRequires:	libserd-devel
-BuildRequires:	libsord-devel
-BuildRequires:	libsratom-devel
-BuildRequires:	liblilv-devel
+BuildRequires:	libmad-devel
+
+BuildRequires:	pkgconfig(sndfile)
+BuildRequires:	pkgconfig(liblo)
+BuildRequires:	pkgconfig(lv2)
+BuildRequires:	pkgconfig(serd-0)
+BuildRequires:	pkgconfig(sord-0)
+BuildRequires:	pkgconfig(sratom-0)
+BuildRequires:	pkgconfig(lilv-0)
 %if 0%{qt_major_version} < 6
-BuildRequires:	libsuil-devel
+BuildRequires:	pkgconfig(suil-0)
 %endif
-BuildRequires:	zlib-devel
+BuildRequires:	pkgconfig(vorbis)
+BuildRequires:	pkgconfig(samplerate)
+BuildRequires:	pkgconfig(dssi)
+BuildRequires:	pkgconfig(zlib)
+BuildRequires:	pkgconfig(aubio)
+
 BuildRequires:	gtk2-devel
 %if %{defined fedora}
 BuildRequires:	gtkmm24-devel

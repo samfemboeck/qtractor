@@ -316,6 +316,10 @@ public:
 	QString createFilePath(
 		const QString& sBaseName, const QString& sExt, bool bAcquire = false);
 
+	// Session directory relative/absolute file path helpers.
+	QString relativeFilePath(const QString& sFilename) const;
+	QString absoluteFilePath(const QString& sFilename) const;
+
 	// Consolidated session record state.
 	void setRecording(bool bRecording);
 	bool isRecording() const;
