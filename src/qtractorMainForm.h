@@ -128,6 +128,9 @@ public:
 
 	int rolling() const;
 
+	void addAudioFile(const QString& sFilename);
+	void addMidiFile(const QString& sFilename);
+
 public slots:
 
 	void fileNew();
@@ -291,9 +294,6 @@ public slots:
 
 	void stabilizeForm();
 
-	void addAudioFile(const QString& sFilename);
-	void addMidiFile(const QString& sFilename);
-
 	void selectionNotifySlot(qtractorMidiEditor *pMidiEditor);
 	void changeNotifySlot(qtractorMidiEditor *pMidiEditor);
 	void updateNotifySlot(unsigned int flags);
@@ -321,6 +321,7 @@ protected slots:
 	void midiCtlNotify(const qtractorCtlEvent& ctle);
 	void midiSppNotify(int iSppCmd, unsigned short iSongPos);
 	void midiClkNotify(float fTempo);
+	void midiInpNotify(unsigned short flags);
 
 	void updateRecentFilesMenu();
 	void updateTrackMenu();
