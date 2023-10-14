@@ -1,7 +1,7 @@
 // qtractorTracks.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -60,6 +60,7 @@
 #include "qtractorEditRangeForm.h"
 
 #include "qtractorMidiEditorForm.h"
+#include "qtractorMidiEditor.h"
 
 #include "qtractorMidiToolsForm.h"
 #include "qtractorMidiEditSelect.h"
@@ -867,13 +868,14 @@ bool qtractorTracks::executeClipTool ( int iTool, qtractorClip *pClip )
 	// Make it as an undoable named command...
 	QString sTool;
 	switch (iTool) {
-	case 0:	sTool = tr("quantize");  break;
-	case 1:	sTool = tr("transpose"); break;
-	case 2:	sTool = tr("normalize"); break;
-	case 3:	sTool = tr("randomize"); break;
-	case 4:	sTool = tr("resize");    break;
-	case 5:	sTool = tr("rescale");   break;
-	case 6:	sTool = tr("timeshift"); break;
+	case qtractorMidiEditor::Quantize:  sTool = tr("quantize");   break;
+	case qtractorMidiEditor::Transpose: sTool = tr("transpose");  break;
+	case qtractorMidiEditor::Normalize: sTool = tr("normalize");  break;
+	case qtractorMidiEditor::Randomize: sTool = tr("randomize");  break;
+	case qtractorMidiEditor::Resize:    sTool = tr("resize");     break;
+	case qtractorMidiEditor::Rescale:   sTool = tr("rescale");    break;
+	case qtractorMidiEditor::Timeshift: sTool = tr("timeshift");  break;
+	case qtractorMidiEditor::Temporamp: sTool = tr("tempo ramp"); break;
 	}
 
 	qtractorClipToolCommand *pClipToolCommand
@@ -891,10 +893,10 @@ bool qtractorTracks::executeClipTool ( int iTool, qtractorClip *pClip )
 			// Make sure it's legal selection...
 			qtractorClip *pClip = iter.key();
 			if (pClip->track() && pClip->isClipSelected())
-				executeClipToolCommand(pClipToolCommand, pClip, &toolsForm);
+				addClipToolCommand(pClipToolCommand, pClip, &toolsForm);
 		}
 	}	// Single, current clip instead?
-	else executeClipToolCommand(pClipToolCommand, pClip, &toolsForm);
+	else addClipToolCommand(pClipToolCommand, pClip, &toolsForm);
 
 	QApplication::restoreOverrideCursor();
 
@@ -905,11 +907,12 @@ bool qtractorTracks::executeClipTool ( int iTool, qtractorClip *pClip )
 	}
 
 	// That's it...
+	toolsForm.executeTimeScaleAddNodeCommand();
 	return pSession->execute(pClipToolCommand);
 }
 
 
-bool qtractorTracks::executeClipToolCommand (
+bool qtractorTracks::addClipToolCommand (
 	qtractorClipToolCommand *pClipToolCommand, qtractorClip *pClip,
 	qtractorMidiToolsForm *pMidiToolsForm )
 {

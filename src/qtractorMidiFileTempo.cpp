@@ -1,7 +1,7 @@
 // qtractorMidiFileTempo.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2019, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -225,7 +225,7 @@ void qtractorMidiFileTempo::fromTimeScale (
 		return;
 
 	const unsigned short p = m_pMidiFile->ticksPerBeat();
-	const unsigned short q = pTimeScale->ticksPerBeat();
+	const unsigned short q = qtractorTimeScale::TICKS_PER_BEAT_HRQ;
 
 	if (q < 1) return;
 
@@ -263,7 +263,7 @@ void qtractorMidiFileTempo::intoTimeScale (
 	if (pTimeScale == nullptr)
 		return;
 
-	const unsigned short p = pTimeScale->ticksPerBeat();
+	const unsigned short p = qtractorTimeScale::TICKS_PER_BEAT_HRQ;
 	const unsigned short q = m_pMidiFile->ticksPerBeat();
 
 	if (q < 1) return;
@@ -301,7 +301,7 @@ void qtractorMidiFileTempo::intoTimeScale (
 				pTimeScale->frameFromTick(iTime + iTimeOffset),
 				pMarker->text);
 		}
-		if (pMarker->accidentals || pMarker->mode) {
+		if (qtractorTimeScale::isKeySignature(pMarker->accidentals, pMarker->mode)) {
 			pTimeScale->addKeySignature(
 				pTimeScale->frameFromTick(iTime + iTimeOffset),
 				pMarker->accidentals, pMarker->mode);

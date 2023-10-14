@@ -964,7 +964,8 @@ void qtractorMidiClip::process (
 	const bool bMute = (pTrack->isMute()
 		|| (pSession->soloTracks() && !pTrack->isSolo()));
 
-	const unsigned long t0 = pSession->tickFromFrame(clipStart());
+	const unsigned long iClipStart = clipStart();
+	const unsigned long t0 = pSession->tickFromFrame(iClipStart);
 
 	const unsigned long iTimeStart = pSession->tickFromFrame(iFrameStart);
 	const unsigned long iTimeEnd   = pSession->tickFromFrame(iFrameEnd);
@@ -980,7 +981,7 @@ void qtractorMidiClip::process (
 		if (t1 >= iTimeStart
 			&& (!bMute || pEvent->type() != qtractorMidiEvent::NOTEON))
 			pMidiEngine->enqueue(pTrack, pEvent, t1, fGain
-				* fadeInOutGain(pSession->frameFromTick(t1) - clipStart()));
+				* fadeInOutGain(pSession->frameFromTick(t1) - iClipStart));
 		pEvent = pEvent->next();
 	}
 }
@@ -1604,7 +1605,11 @@ void qtractorMidiClip::setStepInputHead ( unsigned long iStepInputHead )
 	qtractorTimeScale::Node *pNode = cursor.seekFrame(iStepInputHead);
 
 	m_iStepInputHead = pNode->frameSnap(iStepInputHead);
-	m_iStepInputHeadTime = pNode->tickFromFrame(m_iStepInputHead);
+	const unsigned long iClipOffset = clipOffset();
+	unsigned long iStepInputHead2 = m_iStepInputHead;
+	if (iStepInputHead2 >= iClipOffset)
+		iStepInputHead2 -= iClipOffset;
+	m_iStepInputHeadTime = pNode->tickFromFrame(iStepInputHead2);
 
 	const unsigned short iSnapPerBeat = pTimeScale->snapPerBeat();
 	unsigned long iStepInputDuration = pNode->ticksPerBeat;
@@ -1612,7 +1617,7 @@ void qtractorMidiClip::setStepInputHead ( unsigned long iStepInputHead )
 		iStepInputDuration /= iSnapPerBeat;
 
 	m_iStepInputTailTime = m_iStepInputHeadTime + iStepInputDuration;
-	m_iStepInputTail = pNode->frameFromTick(m_iStepInputTailTime);
+	m_iStepInputTail = pNode->frameFromTick(m_iStepInputTailTime) + iClipOffset;
 	m_iStepInputLast = 0;
 }
 
@@ -1657,11 +1662,15 @@ void qtractorMidiClip::advanceStepInput (void)
 
 	if (pSession->isLooping() && m_iStepInputTail >= pSession->loopEnd()) {
 		m_iStepInputTail = pSession->loopStart();
-		m_iStepInputTailTime = pSession->loopStartTime();
+	//	m_iStepInputTailTime = pSession->loopStartTime();
 	}
 
 	m_iStepInputHead = m_iStepInputTail;
-	m_iStepInputHeadTime = m_iStepInputTailTime; // pNode->tickFromFrame(m_iStepInputHead);
+	const unsigned long iClipOffset = clipOffset();
+	unsigned long iStepInputHead2 = m_iStepInputHead;
+	if (iStepInputHead2 >= iClipOffset)
+		iStepInputHead2 -= iClipOffset;
+	m_iStepInputHeadTime = pNode->tickFromFrame(iStepInputHead2);
 
 	const unsigned short iSnapPerBeat = pTimeScale->snapPerBeat();
 	unsigned long iStepInputDuration = pNode->ticksPerBeat;
@@ -1669,7 +1678,7 @@ void qtractorMidiClip::advanceStepInput (void)
 		iStepInputDuration /= iSnapPerBeat;
 
 	m_iStepInputTailTime = m_iStepInputHeadTime + iStepInputDuration;
-	m_iStepInputTail = pNode->frameFromTick(m_iStepInputTailTime);
+	m_iStepInputTail = pNode->frameFromTick(m_iStepInputTailTime) + iClipOffset;
 //	m_iStepInputLast = 0;
 }
 
