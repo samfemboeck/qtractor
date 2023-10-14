@@ -1,7 +1,7 @@
 // qtractorMidiFile.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -995,8 +995,8 @@ bool qtractorMidiFile::writeTracks (
 					iStatus = (etype | iChannel) & 0xff;
 				}
 
-				// - Running status?
-				if (iStatus != iLastStatus) {
+				// - Running status? nb. not for sysex, ok?
+				if (iStatus != iLastStatus || etype == qtractorMidiEvent::SYSEX) {
 					writeInt(iStatus, 1);
 					iLastStatus = iStatus;
 				}
@@ -1326,7 +1326,7 @@ void qtractorMidiFile::writeMarker (
 
 	writeInt(iDeltaTime);
 
-	if (pMarker->accidentals || pMarker->mode) {
+	if (qtractorTimeScale::isKeySignature(pMarker->accidentals, pMarker->mode)) {
 		writeInt(qtractorMidiEvent::META, 1);
 		writeInt(qtractorMidiEvent::KEYSIG, 1);
 		writeInt(2);
