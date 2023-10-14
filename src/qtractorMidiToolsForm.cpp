@@ -27,6 +27,8 @@
 
 #include "qtractorMidiEditCommand.h"
 
+#include "qtractorTimeScaleCommand.h"
+
 #include "qtractorOptions.h"
 #include "qtractorSession.h"
 
@@ -192,6 +194,18 @@ qtractorMidiToolsForm::qtractorMidiToolsForm ( QWidget *pParent )
 		m_ui.QuantizeDurationComboBox->setCurrentIndex(iSnapIndex);
 		m_ui.QuantizeSwingComboBox->setCurrentIndex(0);
 		m_ui.QuantizeSwingTypeComboBox->setCurrentIndex(0);
+		// Initial tempo-ramp range...
+		if (pSession->editHead() < pSession->editTail()) {
+			qtractorTimeScale::Cursor cursor(m_pTimeScale);
+			qtractorTimeScale::Node *pNode = cursor.seekFrame(pSession->editHead());
+			const float T1 = pNode->tempo;
+			const float T0 = pNode->prev() ? pNode->prev()->tempo : T1;
+			m_ui.TemporampFromSpinBox->setValue(T0);
+			m_ui.TemporampToSpinBox->setValue(T1);
+		} else {
+			m_ui.Timeshift->setEnabled(false);
+			m_ui.Temporamp->setEnabled(false);
+		}
 	}
 
 	// Scale-quantize stuff...
@@ -404,6 +418,19 @@ qtractorMidiToolsForm::qtractorMidiToolsForm ( QWidget *pParent )
 		SIGNAL(toggled(bool)),
 		SLOT(changed()));
 
+	QObject::connect(m_ui.TemporampCheckBox,
+		SIGNAL(toggled(bool)),
+		SLOT(stabilizeForm()));
+	QObject::connect(m_ui.TemporampFromSpinBox,
+		SIGNAL(valueChanged(double)),
+		SLOT(changed()));
+	QObject::connect(m_ui.TemporampToSpinBox,
+		SIGNAL(valueChanged(double)),
+		SLOT(changed()));
+	QObject::connect(m_ui.TemporampDurationCheckBox,
+		SIGNAL(toggled(bool)),
+		SLOT(changed()));
+
 	QObject::connect(m_ui.DialogButtonBox,
 		SIGNAL(accepted()),
 		SLOT(accept()));
@@ -448,6 +475,9 @@ void qtractorMidiToolsForm::setToolIndex ( int iToolIndex )
 		break;
 	case qtractorMidiEditor::Timeshift:
 		m_ui.TimeshiftCheckBox->setChecked(true);
+		break;
+	case qtractorMidiEditor::Temporamp:
+		m_ui.TemporampCheckBox->setChecked(true);
 		break;
 	default:
 		break;
@@ -570,6 +600,14 @@ void qtractorMidiToolsForm::loadPreset ( const QString& sPreset )
 			m_ui.TimeshiftSpinBox->setValue(vlist[1].toDouble());
 			m_ui.TimeshiftDurationCheckBox->setChecked(vlist[2].toBool());
 		}
+		// Temporamp tool...
+		vlist = settings.value("/Temporamp").toList();
+		if (vlist.count() > 3) {
+		//	m_ui.TemporampCheckBox->setChecked(vlist[0].toBool());
+		//	m_ui.TemporampStartSpinBox->setValue(vlist[1].toDouble());
+		//	m_ui.TemporampEndSpinBox->setValue(vlist[2].toDouble());
+			m_ui.TemporampDurationCheckBox->setChecked(vlist[3].toBool());
+		}
 		// All loaded.
 		if (!sPreset.isEmpty() && sPreset != g_sDefPreset)
 			settings.endGroup();
@@ -661,6 +699,13 @@ void qtractorMidiToolsForm::savePreset ( const QString& sPreset )
 		vlist.append(m_ui.TimeshiftSpinBox->value());
 		vlist.append(m_ui.TimeshiftDurationCheckBox->isChecked());
 		settings.setValue("/Timeshift", vlist);
+		// Temporamp tool...
+		vlist.clear();
+		vlist.append(m_ui.TemporampCheckBox->isChecked());
+		vlist.append(m_ui.TemporampFromSpinBox->value());
+		vlist.append(m_ui.TemporampToSpinBox->value());
+		vlist.append(m_ui.TemporampDurationCheckBox->isChecked());
+		settings.setValue("/Temporamp", vlist);
 		// All saved.
 		if (!sPreset.isEmpty() && sPreset != g_sDefPreset)
 			settings.endGroup();
@@ -767,8 +812,12 @@ void qtractorMidiToolsForm::presetDelete (void)
 // Create edit command based on given selection.
 qtractorMidiEditCommand *qtractorMidiToolsForm::editCommand (
 	qtractorMidiClip *pMidiClip, qtractorMidiEditSelect *pSelect,
-	unsigned long iTimeOffset, unsigned long iTimeStart, unsigned long iTimeEnd )
+	unsigned long iTimeOffset, unsigned long iTimeStart, unsigned long iTimeEnd ) const
 {
+	qtractorSession *pSession = qtractorSession::getInstance();
+	if (pSession == nullptr)
+		return nullptr;
+
 	// Create command, it will be handed over...
 	qtractorMidiEditCommand *pEditCommand
 		= new qtractorMidiEditCommand(pMidiClip, tr("none"));
@@ -789,6 +838,8 @@ qtractorMidiEditCommand *qtractorMidiToolsForm::editCommand (
 		tools.append(tr("rescale"));
 	if (m_ui.TimeshiftCheckBox->isChecked())
 		tools.append(tr("timeshift"));
+	if (m_ui.TemporampCheckBox->isChecked())
+		tools.append(tr("temporamp"));
 	pEditCommand->setName(tools.join(", "));
 
 	const qtractorMidiEditSelect::ItemList& items = pSelect->items();
@@ -833,8 +884,10 @@ qtractorMidiEditCommand *qtractorMidiToolsForm::editCommand (
 				iMinTime2 = iTime;
 			if (iMaxTime2 < iTime2)
 				iMaxTime2 = iTime2;
-			const bool bPitchBend = (pEvent->type() == qtractorMidiEvent::PITCHBEND);
-			const int iValue = (bPitchBend ? pEvent->pitchBend() : pEvent->value());
+			const bool bPitchBend
+				= (pEvent->type() == qtractorMidiEvent::PITCHBEND);
+			const int iValue
+				= (bPitchBend ? pEvent->pitchBend() : pEvent->value());
 			if (iMinValue > iValue || i == 0)
 				iMinValue = iValue;
 			if (iMaxValue < iValue)
@@ -1076,7 +1129,6 @@ qtractorMidiEditCommand *qtractorMidiToolsForm::editCommand (
 		}
 		// Timeshift tool...
 		if (m_ui.TimeshiftCheckBox->isChecked()) {
-			qtractorSession *pSession = qtractorSession::getInstance();
 			const unsigned long iEditHeadTime
 				= pSession->tickFromFrame(pSession->editHead());
 			const unsigned long iEditTailTime
@@ -1096,6 +1148,28 @@ qtractorMidiEditCommand *qtractorMidiToolsForm::editCommand (
 					iDuration = t2 * d + float(iEditHeadTime) - iTime;
 				}
 			}
+		}
+		// Temporamp tool...
+		if (m_ui.TemporampCheckBox->isChecked()) {
+			const unsigned long iEditHeadTime
+				= pSession->tickFromFrame(pSession->editHead());
+			const unsigned long iEditTailTime
+				= pSession->tickFromFrame(pSession->editTail());
+			const float d = float(iEditTailTime - iEditHeadTime);
+			const float T0 = m_ui.TemporampFromSpinBox->value();
+			const float T1 = m_ui.TemporampToSpinBox->value();
+			float t2 = float(iTime - iEditHeadTime) / d;
+			const float s2
+				= (T1 - T0) / (T0 > T1 ? T0 : T1)
+				* (1.0f - ::sinf(t2 * M_PI_2));
+			if (m_ui.TemporampDurationCheckBox->isChecked()) {
+				const float d2
+					= s2 * (1.0f - t2 * t2)
+					* float(iDuration) / d;
+				iDuration += qtractorTimeScale::uroundf(d2 * d);
+			}
+			t2 += s2 * (t2 - t2 * t2);
+			iTime = iEditHeadTime + qtractorTimeScale::uroundf(t2 * d);
 		}
 		// Make it to the event...
 		pEditCommand->updateEvent(pEvent,
@@ -1326,6 +1400,24 @@ void qtractorMidiToolsForm::stabilizeForm (void)
 	m_ui.TimeshiftDurationCheckBox->setEnabled(bEnabled);
 	m_pTimeshiftCurve->setVisible(bEnabled);
 
+	// Temporamp tool...
+
+	bEnabled = m_ui.TemporampCheckBox->isChecked();
+	if (bEnabled)
+		++iEnabled;
+	m_ui.TemporampFromLabel->setEnabled(bEnabled);
+	m_ui.TemporampFromSpinBox->setEnabled(bEnabled);
+	m_ui.TemporampToLabel->setEnabled(bEnabled);
+	m_ui.TemporampToSpinBox->setEnabled(bEnabled);
+	m_ui.TemporampBpmLabel->setEnabled(bEnabled);
+	m_ui.TemporampText->setEnabled(bEnabled);
+	m_ui.TemporampDurationCheckBox->setEnabled(bEnabled);
+	if (bEnabled
+		&& qAbs(
+			m_ui.TemporampFromSpinBox->value() -
+			m_ui.TemporampToSpinBox->value()) < 0.01f)
+		iEnabled = 0;
+
 	m_ui.DialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(iEnabled > 0);
 }
 
@@ -1381,6 +1473,42 @@ void qtractorMidiToolsForm::timeshiftSliderChanged ( int i )
 	--m_iUpdate;
 
 	changed();
+}
+
+
+// Special tempo ramp tool helper...
+bool qtractorMidiToolsForm::executeTimeScaleAddNodeCommand (void)
+{
+	// HACK: Add time-scale node for tempo ramp target,
+	// iif not the same to current edit-head's tempo.
+	// FIXME: conditional check-box at the UI level?
+	if (!m_ui.TemporampCheckBox->isChecked())
+		return false;
+
+	qtractorSession *pSession = qtractorSession::getInstance();
+	if (pSession == nullptr)
+		return false;
+
+	qtractorTimeScale *pTimeScale = pSession->timeScale();
+	if (pTimeScale == nullptr)
+		return false;
+
+	qtractorTimeScale::Cursor cursor(pTimeScale);
+	const unsigned long iEditHead = pSession->editHead();
+	qtractorTimeScale::Node *pNode = cursor.seekFrame(iEditHead);
+	const float T1 = m_ui.TemporampToSpinBox->value();
+	if (qAbs(T1 - pNode->tempo) < 0.1f)
+		return false;
+
+#ifdef CONFIG_DEBUG
+	qDebug("qtractorMidiToolsForm::executeTimeScaleAddNodeCommand()"
+		" frame=%lu tempo=%g -> frame=%lu tempo=%g",
+		pNode->frame, pNode->tempo, iEditHead, T1);
+#endif
+
+	return pSession->execute(
+		new qtractorTimeScaleAddNodeCommand(pTimeScale, iEditHead, T1,
+			pNode->beatType, pNode->beatsPerBar, pNode->beatDivisor));
 }
 
 

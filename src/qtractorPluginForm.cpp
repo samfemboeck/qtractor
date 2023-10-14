@@ -475,6 +475,11 @@ void qtractorPluginForm::updateAuxSendBusName (void)
 		qtractorAudioEngine *pAudioEngine = pSession->audioEngine();
 		if (pAudioEngine == nullptr)
 			return;
+		qtractorPluginList *pPluginList = pAudioAuxSendPlugin->list();
+		if (pPluginList == nullptr)
+			return;
+		bool bAudioOutBus
+			= (pPluginList->flags() == qtractorPluginList::AudioOutBus);
 		const QIcon iconAudio(":/images/trackAudio.png");
 		m_ui.AuxSendBusNameComboBox->addItem(iconAudio, tr("(none)"));
 		for (qtractorBus *pBus = pAudioEngine->buses().first();
@@ -483,6 +488,11 @@ void qtractorPluginForm::updateAuxSendBusName (void)
 				qtractorAudioBus *pAudioBus
 					= static_cast<qtractorAudioBus *> (pBus);
 				if (pAudioBus && pAudioBus->channels() == m_pPlugin->channels())
+					if (bAudioOutBus) { // Skip current and previous buses...
+						if (pAudioBus->pluginList_out() == pPluginList)
+							bAudioOutBus = false;
+						continue;
+					}
 					m_ui.AuxSendBusNameComboBox->addItem(iconAudio,
 						pAudioBus->busName());
 			}
@@ -496,6 +506,11 @@ void qtractorPluginForm::updateAuxSendBusName (void)
 		qtractorMidiEngine *pMidiEngine = pSession->midiEngine();
 		if (pMidiEngine == nullptr)
 			return;
+		qtractorPluginList *pPluginList = pMidiAuxSendPlugin->list();
+		if (pPluginList == nullptr)
+			return;
+		const bool bMidiOutBus
+			= (pPluginList->flags() == qtractorPluginList::MidiOutBus);
 		const QIcon iconMidi(":/images/trackMidi.png");
 		m_ui.AuxSendBusNameComboBox->addItem(iconMidi, tr("(none)"));
 		for (qtractorBus *pBus = pMidiEngine->buses().first();
@@ -503,9 +518,12 @@ void qtractorPluginForm::updateAuxSendBusName (void)
 			if (pBus->busMode() & qtractorBus::Output) {
 				qtractorMidiBus *pMidiBus
 					= static_cast<qtractorMidiBus *> (pBus);
-				if (pMidiBus)
+				if (pMidiBus) {
+					if (bMidiOutBus && pMidiBus->pluginList_out() == pPluginList)
+						continue;
 					m_ui.AuxSendBusNameComboBox->addItem(iconMidi,
 						pMidiBus->busName());
+				}
 			}
 		}
 		sAuxSendBusName = pMidiAuxSendPlugin->midiBusName();

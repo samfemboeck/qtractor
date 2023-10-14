@@ -228,6 +228,7 @@ public slots:
 	void clipToolsResize();
 	void clipToolsRescale();
 	void clipToolsTimeshift();
+	void clipToolsTemporamp();
 	void clipTakeSelect(QAction *pAction);
 	void clipTakeFirst();
 	void clipTakePrev();
