@@ -188,7 +188,7 @@ Fim:	%3	Tamanho:	%4</translation>
         <translation>%1 Saída</translation>
     </message>
     <message>
-        <location filename="../qtractorVst2Plugin.cpp" line="1576"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="1579"/>
         <source>%1 (*.%2)</source>
         <translation>%1 (*.%2)</translation>
     </message>
@@ -340,7 +340,7 @@ MIDI:	</source>
 MIDI:	</translation>
     </message>
     <message>
-        <location filename="../qtractorVst2Plugin.cpp" line="656"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="657"/>
         <source>Product: </source>
         <translation>Produto: </translation>
     </message>
@@ -362,67 +362,67 @@ MIDI:	</translation>
         <translation>gravador de sequência</translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="2125"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="2128"/>
         <source>Project: </source>
         <translation>Projeto: </translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3336"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3339"/>
         <source>Select plug-in&apos;s editor (GUI):</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3348"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3351"/>
         <source>External</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3351"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3354"/>
         <source>X11</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3354"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3357"/>
         <source>X11 (native)</source>
         <translation>X11 (nativo)</translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3357"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3360"/>
         <source>Gtk2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3360"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3363"/>
         <source>Gtk2 (native)</source>
         <translation>Gtk2 (nativo)</translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3364"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3367"/>
         <source>Qt4</source>
         <translation>Qt4</translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3369"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3372"/>
         <source>Qt5</source>
         <translation>Qt5</translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3375"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3378"/>
         <source>Other</source>
         <translation>Outro</translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3383"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3386"/>
         <source>Don&apos;t ask this again</source>
         <translation>Não pergunte novamente</translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="3746"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="3749"/>
         <source>plugin parameters</source>
         <translation>parametros do plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorLv2Plugin.cpp" line="4169"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="4174"/>
         <source>Open File</source>
         <comment>lv2_ui_request_parameter</comment>
         <translatorcomment>parametro_para_requisição_da_interface_lv2</translatorcomment>
@@ -624,19 +624,19 @@ MIDI:	</translation>
         <translation>Nomear sessão (uuid)</translation>
     </message>
     <message>
-        <location filename="../qtractorClapPlugin.cpp" line="545"/>
-        <location filename="../qtractorVst2Plugin.cpp" line="672"/>
-        <location filename="../qtractorVst3Plugin.cpp" line="1303"/>
+        <location filename="../qtractorClapPlugin.cpp" line="546"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="673"/>
+        <location filename="../qtractorVst3Plugin.cpp" line="1304"/>
         <source>Version: </source>
         <translation>Versão: </translation>
     </message>
     <message>
-        <location filename="../qtractorClapPlugin.cpp" line="574"/>
+        <location filename="../qtractorClapPlugin.cpp" line="575"/>
         <source>Manual: </source>
         <translation>Manual: </translation>
     </message>
     <message>
-        <location filename="../qtractorClapPlugin.cpp" line="580"/>
+        <location filename="../qtractorClapPlugin.cpp" line="581"/>
         <source>Support: </source>
         <translation>Ajuda: </translation>
     </message>
@@ -724,7 +724,7 @@ MIDI:	</translation>
     </message>
     <message>
         <location filename="../qtractorAudioFile.cpp" line="137"/>
-        <location filename="../qtractorVst2Plugin.cpp" line="1579"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="1582"/>
         <source>All files (*.*)</source>
         <translation>Tudo (*.*)</translation>
     </message>
@@ -757,9 +757,9 @@ Audio:	%1 channels, %2 Hz</source>
         <translation>Arquivos de áudio (%1)</translation>
     </message>
     <message>
-        <location filename="../qtractorClapPlugin.cpp" line="561"/>
-        <location filename="../qtractorVst2Plugin.cpp" line="664"/>
-        <location filename="../qtractorVst3Plugin.cpp" line="1330"/>
+        <location filename="../qtractorClapPlugin.cpp" line="562"/>
+        <location filename="../qtractorVst2Plugin.cpp" line="665"/>
+        <location filename="../qtractorVst3Plugin.cpp" line="1331"/>
         <source>Vendor: </source>
         <translation>Fornecedor: </translation>
     </message>
@@ -794,7 +794,7 @@ Pista: &quot;%1&quot; Entrada: &quot;%2&quot; Saída: &quot;%3&quot;</translatio
     </message>
     <message>
         <location filename="../qtractorLadspaPlugin.cpp" line="143"/>
-        <location filename="../qtractorLv2Plugin.cpp" line="2133"/>
+        <location filename="../qtractorLv2Plugin.cpp" line="2136"/>
         <source>Author: </source>
         <translation>Autor: </translation>
     </message>
@@ -901,18 +901,18 @@ Pista: &quot;%1&quot; Entrada: &quot;%2&quot; Saída: &quot;%3&quot;</translatio
         <translation>%1(%2): %3 plugin não encontrado.</translation>
     </message>
     <message>
-        <location filename="../qtractorClapPlugin.cpp" line="539"/>
-        <location filename="../qtractorVst3Plugin.cpp" line="1297"/>
+        <location filename="../qtractorClapPlugin.cpp" line="540"/>
+        <location filename="../qtractorVst3Plugin.cpp" line="1298"/>
         <source>Name: </source>
         <translation>Nome: </translation>
     </message>
     <message>
-        <location filename="../qtractorVst3Plugin.cpp" line="1317"/>
+        <location filename="../qtractorVst3Plugin.cpp" line="1318"/>
         <source>Category: </source>
         <translation>Categoria: </translation>
     </message>
     <message>
-        <location filename="../qtractorVst3Plugin.cpp" line="1324"/>
+        <location filename="../qtractorVst3Plugin.cpp" line="1325"/>
         <source>Categories: </source>
         <translation>Categorias: </translation>
     </message>
@@ -13706,7 +13706,7 @@ Posso continuar?</translation>
 <context>
     <name>qtractorPluginSelectForm</name>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="74"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="77"/>
         <source>X</source>
         <translation>X</translation>
     </message>
@@ -13726,62 +13726,62 @@ Posso continuar?</translation>
         <translation>GUI</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="156"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="159"/>
         <source>MIDI</source>
         <translation>MIDI</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="146"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="149"/>
         <source>Name</source>
         <translation>Nome</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="171"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="174"/>
         <source>Path</source>
         <translation>Local</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="186"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="189"/>
         <source>Type</source>
         <translation>Tipo</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="87"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="90"/>
         <source>Plugin search string (regular expression)</source>
         <translation>Plugin de busca de palavra (expressão regular)</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="151"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="154"/>
         <source>Audio</source>
         <translation>Áudio</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="176"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="179"/>
         <source>Index</source>
         <translation>Índice</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="103"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="106"/>
         <source>Plugin type</source>
         <translation>Tipo de plugin</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="166"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="169"/>
         <source>Modes</source>
         <translation>Modos</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="71"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="74"/>
         <source>Reset filter</source>
         <translation>Resetar filtros</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="121"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="124"/>
         <source>Available plugins</source>
         <translation>Plugins disponíveis</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="161"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="164"/>
         <source>Control</source>
         <translation>Controle</translation>
     </message>
@@ -13791,22 +13791,22 @@ Posso continuar?</translation>
         <translation>Plugins</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="181"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="184"/>
         <source>Instances</source>
         <translation>Instâncias</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="237"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="240"/>
         <source>Plugin scanning in progress...</source>
         <translation>Procura por plugins em processo...</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="202"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="205"/>
         <source>Rescan for available plugins (refresh)</source>
         <translation>Procurar novamente por plugins (atualizar)</translation>
     </message>
     <message>
-        <location filename="../qtractorPluginSelectForm.ui" line="205"/>
+        <location filename="../qtractorPluginSelectForm.ui" line="208"/>
         <source>&amp;Rescan</source>
         <translation>&amp;Atualizar</translation>
     </message>
