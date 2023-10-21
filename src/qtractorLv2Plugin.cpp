@@ -36,6 +36,9 @@
 
 #include "qtractorMainForm.h"
 
+#include <QWidget>
+#include <QIcon>
+
 #ifdef CONFIG_LV2_STATE
 // LV2 State/Presets: standard directory access.
 // For local file vs. URI manipulations.
@@ -3936,8 +3939,10 @@ void qtractorLv2Plugin::updateEditorTitleEx (void)
 	}
 #endif
 
-	if (m_pQtWidget)
+	if (m_pQtWidget) {
 		m_pQtWidget->setWindowTitle(m_aEditorTitle);
+		m_pQtWidget->setWindowIcon(QIcon(":/images/qtractorPlugin.svg"));
+	}
 #ifdef CONFIG_LV2_EXTERNAL_UI
 	else
 	if (m_lv2_ui_widget && m_lv2_ui_type == LV2_UI_TYPE_EXTERNAL)

@@ -3,6 +3,11 @@
         <file>images/qtractor.png</file>
         <file>images/qtractor.svg</file>
         <file>images/qtractorMidiEditor.png</file>
+        <file>images/qtractorMidiEditor.svg</file>
+        <file>images/qtractorMixer.png</file>
+        <file>images/qtractorMixer.svg</file>
+        <file>images/qtractorPlugin.png</file>
+        <file>images/qtractorPlugin.svg</file>
         <file>images/qtractorTracks.png</file>
         <file>images/clipEdit.png</file>
         <file>images/clipNew.png</file>
@@ -36,8 +41,6 @@
         <file>images/formMoveDown.png</file>
         <file>images/formMoveUp.png</file>
         <file>images/formOpen.png</file>
-        <file>images/formParamsOn.png</file>
-        <file>images/formParamsOff.png</file>
         <file>images/formRefresh.png</file>
         <file>images/formReject.png</file>
         <file>images/formRemove.png</file>
@@ -76,6 +79,8 @@
         <file>images/itemReset.png</file>
         <file>images/itemRpns.png</file>
         <file>images/itemSessionFile.png</file>
+        <file>images/pluginEdit.png</file>
+        <file>images/pluginProperties.png</file>
         <file>images/trackAdd.png</file>
         <file>images/trackAudio.png</file>
         <file>images/trackCurveCapture.png</file>
