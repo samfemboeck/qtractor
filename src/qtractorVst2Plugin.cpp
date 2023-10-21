@@ -42,6 +42,7 @@
 #include <QRegularExpression>
 
 #include <QVBoxLayout>
+#include <QIcon>
 
 #if QT_VERSION < QT_VERSION_CHECK(4, 5, 0)
 namespace Qt {
@@ -1290,8 +1291,10 @@ void qtractorVst2Plugin::setEditorTitle ( const QString& sTitle )
 {
 	qtractorPlugin::setEditorTitle(sTitle);
 
-	if (m_pEditorWidget)
+	if (m_pEditorWidget) {
 		m_pEditorWidget->setWindowTitle(sTitle);
+		m_pEditorWidget->setWindowIcon(QIcon(":/images/qtractorPlugin.svg"));
+	}
 }
 
 
