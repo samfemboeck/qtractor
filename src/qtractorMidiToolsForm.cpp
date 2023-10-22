@@ -1160,15 +1160,15 @@ qtractorMidiEditCommand *qtractorMidiToolsForm::editCommand (
 			const float T1 = m_ui.TemporampToSpinBox->value();
 			float t2 = float(iTime - iEditHeadTime) / d;
 			const float s2
-				= (T1 - T0) / (T0 > T1 ? T0 : T1)
-				* (1.0f - ::sinf(t2 * M_PI_2));
+				= (T1 - T0) / (T0 > T1 ? T0 : T1);
+			//	* (1.0f - ::sinf(t2 * M_PI_2));
 			if (m_ui.TemporampDurationCheckBox->isChecked()) {
 				const float d2
 					= s2 * (1.0f - t2 * t2)
 					* float(iDuration) / d;
 				iDuration += qtractorTimeScale::uroundf(d2 * d);
 			}
-			t2 += s2 * (t2 - t2 * t2);
+			t2 += s2 * (t2 - t2 * t2) * (1.0f - ::sinf(t2 * M_PI_2));
 			iTime = iEditHeadTime + qtractorTimeScale::uroundf(t2 * d);
 		}
 		// Make it to the event...
@@ -1477,38 +1477,38 @@ void qtractorMidiToolsForm::timeshiftSliderChanged ( int i )
 
 
 // Special tempo ramp tool helper...
-bool qtractorMidiToolsForm::executeTimeScaleAddNodeCommand (void)
+qtractorTimeScaleAddNodeCommand *qtractorMidiToolsForm::timeScaleAddNodeCommand (void) const
 {
 	// HACK: Add time-scale node for tempo ramp target,
 	// iif not the same to current edit-head's tempo.
 	// FIXME: conditional check-box at the UI level?
 	if (!m_ui.TemporampCheckBox->isChecked())
-		return false;
+		return nullptr;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
 	if (pSession == nullptr)
-		return false;
+		return nullptr;
 
 	qtractorTimeScale *pTimeScale = pSession->timeScale();
 	if (pTimeScale == nullptr)
-		return false;
+		return nullptr;
 
 	qtractorTimeScale::Cursor cursor(pTimeScale);
 	const unsigned long iEditHead = pSession->editHead();
 	qtractorTimeScale::Node *pNode = cursor.seekFrame(iEditHead);
 	const float T1 = m_ui.TemporampToSpinBox->value();
 	if (qAbs(T1 - pNode->tempo) < 0.1f)
-		return false;
+		return nullptr;
 
 #ifdef CONFIG_DEBUG
-	qDebug("qtractorMidiToolsForm::executeTimeScaleAddNodeCommand()"
+	qDebug("qtractorMidiToolsForm::timeScaleAddNodeCommand()"
 		" frame=%lu tempo=%g -> frame=%lu tempo=%g",
 		pNode->frame, pNode->tempo, iEditHead, T1);
 #endif
 
-	return pSession->execute(
-		new qtractorTimeScaleAddNodeCommand(pTimeScale, iEditHead, T1,
-			pNode->beatType, pNode->beatsPerBar, pNode->beatDivisor));
+	return new qtractorTimeScaleAddNodeCommand(
+		pTimeScale, iEditHead, T1, pNode->beatType,
+		pNode->beatsPerBar, pNode->beatDivisor);
 }
 
 

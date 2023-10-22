@@ -1,7 +1,7 @@
 // qtractorClipCommand.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -1090,6 +1090,9 @@ qtractorClipToolCommand::~qtractorClipToolCommand (void)
 {
 	qDeleteAll(m_midiEditCommands);
 	m_midiEditCommands.clear();
+
+	qDeleteAll(m_timeScaleNodeCommands);
+	m_timeScaleNodeCommands.clear();
 }
 
 
@@ -1114,6 +1117,14 @@ void qtractorClipToolCommand::addMidiEditCommand (
 }
 
 
+// When additional tempo-map/time-sig nodes are needed.
+void qtractorClipToolCommand::addTimeScaleNodeCommand (
+	qtractorTimeScaleNodeCommand *pTimeScaleNodeCommand )
+{
+	m_timeScaleNodeCommands.append(pTimeScaleNodeCommand);
+}
+
+
 // Composite predicate.
 bool qtractorClipToolCommand::isEmpty (void) const
 {
@@ -1125,6 +1136,8 @@ bool qtractorClipToolCommand::isEmpty (void) const
 bool qtractorClipToolCommand::redo (void)
 {
 	++m_iRedoCount;
+
+	executeTimeScaleNodeCommands(true);
 
 	QListIterator<qtractorMidiEditCommand *> iter(m_midiEditCommands);
 	while (iter.hasNext()) {
@@ -1162,6 +1175,8 @@ bool qtractorClipToolCommand::undo (void)
 		}
 	}
 
+	executeTimeScaleNodeCommands(false);
+
 	return (m_iRedoCount > 0);
 }
 
@@ -1197,6 +1212,26 @@ void qtractorClipToolCommand::swapMidiClipCtx ( qtractorMidiClip *pMidiClip )
 		mctx.pre.filename = sPostFilename;
 		mctx.pre.length = iPostLength;
 	}
+}
+
+
+// Execute tempo-map/time-sig commands.
+void qtractorClipToolCommand::executeTimeScaleNodeCommands ( bool bRedo )
+{
+	int iTimeScaleUpdate = 0;
+	QListIterator<qtractorTimeScaleNodeCommand *> iter(m_timeScaleNodeCommands);
+	while (iter.hasNext()) {
+		qtractorTimeScaleNodeCommand *pTimeScaleNodeCommand = iter.next();
+		if (bRedo)
+			pTimeScaleNodeCommand->redo();
+		else
+			pTimeScaleNodeCommand->undo();
+		++iTimeScaleUpdate;
+	}
+
+	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
+	if (pMainForm && iTimeScaleUpdate > 0)
+		pMainForm->updateNotifySlot(qtractorCommand::ClearSelect);
 }
 
 
