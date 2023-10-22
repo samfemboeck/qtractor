@@ -909,7 +909,11 @@ bool qtractorTracks::executeClipTool ( int iTool, qtractorClip *pClip )
 	}
 
 	// That's it...
-	toolsForm.executeTimeScaleAddNodeCommand();
+	qtractorTimeScaleAddNodeCommand *pTimeScaleAddNodeCommand
+		= toolsForm.timeScaleAddNodeCommand();
+	if (pTimeScaleAddNodeCommand)
+		pClipToolCommand->addTimeScaleNodeCommand(pTimeScaleAddNodeCommand);
+
 	return pSession->execute(pClipToolCommand);
 }
 
