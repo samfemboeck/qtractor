@@ -226,8 +226,6 @@ qtractorMidiToolsForm::qtractorMidiToolsForm ( QWidget *pParent )
 	timeshiftSpinBoxChanged(m_ui.TimeshiftSpinBox->value());
 	refreshPresets();
 
-	// Draw timeshift curve always.
-
 	// Try to restore old window positioning.
 	// adjustSize();
 
@@ -1160,15 +1158,13 @@ qtractorMidiEditCommand *qtractorMidiToolsForm::editCommand (
 			const float T1 = m_ui.TemporampToSpinBox->value();
 			float t2 = float(iTime - iEditHeadTime) / d;
 			const float s2
-				= (T1 - T0) / (T0 > T1 ? T0 : T1);
-			//	* (1.0f - ::sinf(t2 * M_PI_2));
+				= (T1 - T0) / (T0 > T1 ? T0 : T1)
+				* (1.0f - t2 * t2);
 			if (m_ui.TemporampDurationCheckBox->isChecked()) {
-				const float d2
-					= s2 * (1.0f - t2 * t2)
-					* float(iDuration) / d;
+				const float d2 = s2 * float(iDuration) / d;
 				iDuration += qtractorTimeScale::uroundf(d2 * d);
 			}
-			t2 += s2 * (t2 - t2 * t2) * (1.0f - ::sinf(t2 * M_PI_2));
+			t2 += s2 * t2 * (t2 - 1.0f) * (t2 - 1.0f);
 			iTime = iEditHeadTime + qtractorTimeScale::uroundf(t2 * d);
 		}
 		// Make it to the event...
@@ -1406,7 +1402,7 @@ void qtractorMidiToolsForm::stabilizeForm (void)
 	if (bEnabled)
 		++iEnabled;
 	m_ui.TemporampFromLabel->setEnabled(bEnabled);
-	m_ui.TemporampFromSpinBox->setEnabled(bEnabled);
+	m_ui.TemporampFromSpinBox->setEnabled(false);
 	m_ui.TemporampToLabel->setEnabled(bEnabled);
 	m_ui.TemporampToSpinBox->setEnabled(bEnabled);
 	m_ui.TemporampBpmLabel->setEnabled(bEnabled);
