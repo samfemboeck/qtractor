@@ -1,7 +1,7 @@
 // qtractorMidiImportExtender.h
 //
 /****************************************************************************
-   Copyright (C) 2005-2020, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -60,7 +60,7 @@ public:
 
 	// Methods used during import.
 	void prepareTrackForExtension(qtractorTrack *pTrack);
-	bool finishTracksForExtension(QList<qtractorTrack *> *pImportedTracks);
+	bool finishTracksForExtension();
 
 	// Track name set types.
 	typedef enum { Midifile, Track, PatchName } TrackNameType;
@@ -103,6 +103,7 @@ private:
 	// Track number for 'Track n' naming type.
 	int m_iTrackNumber;
 
+	QList<qtractorTrack *> m_importedTracks;
 };
 
 #endif // __qtractorMidiImportExtender_h

@@ -1,7 +1,7 @@
 // qtractorMidiImportExtender.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2020, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -279,11 +279,10 @@ void qtractorMidiImportExtender::prepareTrackForExtension(qtractorTrack *pTrack)
 
 
 // Set instrument and track-name. Tracks must be 'complete' (have an output bus).
-bool qtractorMidiImportExtender::finishTracksForExtension(
-		QList<qtractorTrack *> *pImportedTracks)
+bool qtractorMidiImportExtender::finishTracksForExtension()
 {
 	// Bail out if something is wrong.
-	if (!pImportedTracks || pImportedTracks->count() == 0)
+	if (m_importedTracks.count() == 0)
 		return false;
 	qtractorSession *pSession = qtractorSession::getInstance();
 	if (!pSession)
@@ -294,7 +293,9 @@ bool qtractorMidiImportExtender::finishTracksForExtension(
 	// Were plugins added?
 	if (m_extendedSettings.pPluginDomDocument) {
 		// Loop all tracks to wake plugins.
-		for (pTrack = pImportedTracks->first(); pTrack; pTrack = pTrack->next()) {
+		QListIterator<qtractorTrack *> iter(m_importedTracks);
+		while (iter.hasNext()) {
+			pTrack = iter.next();
 			qtractorPluginList *pPluginList = pTrack->pluginList();
 			if (!pPluginList)
 				continue;
@@ -310,7 +311,9 @@ bool qtractorMidiImportExtender::finishTracksForExtension(
 	bool bOneOrMoreTracksChanged = false;
 
 	// Loop all tracks to set patches.
-	for (pTrack = pImportedTracks->first(); pTrack; pTrack = pTrack->next()) {
+	QListIterator<qtractorTrack *> iter(m_importedTracks);
+	while (iter.hasNext()) {
+		pTrack = iter.next();
 
 		qtractorPluginList *pPluginList = pTrack->pluginList();
 		if (!pPluginList)

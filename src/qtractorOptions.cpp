@@ -27,7 +27,7 @@
 #include <QSplitter>
 #include <QAction>
 #include <QList>
-
+#include <QFileInfo>
 #include <QTextStream>
 
 #include <QApplication>
@@ -773,8 +773,6 @@ void qtractorOptions::print_usage ( const QString& arg0 )
 // Parse command line arguments into m_settings.
 bool qtractorOptions::parse_args ( const QStringList& args )
 {
-	int iCmdArgs = 0;
-
 #if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
 
 	QCommandLineParser parser;
@@ -803,11 +801,8 @@ bool qtractorOptions::parse_args ( const QStringList& args )
 	}
 #endif
 
-	foreach(const QString& sArg, parser.positionalArguments()) {
-		if (iCmdArgs > 0)
-			sSessionFile += ' ';
-		sSessionFile += sArg;
-		++iCmdArgs;
+	foreach (const QString& sArg, parser.positionalArguments()) {
+		sessionFiles.append(QFileInfo(sArg).absoluteFilePath());
 	}
 
 #else
@@ -816,16 +811,17 @@ bool qtractorOptions::parse_args ( const QStringList& args )
 	const QString sEol = "\n\n";
 	const int argc = args.count();
 
+	int iCmdArgs = 0;
+
 	for (int i = 1; i < argc; ++i) {
 
+		QString sArg = args.at(i);
+
 		if (iCmdArgs > 0) {
-			sSessionFile += ' ';
-			sSessionFile += args.at(i);
+			sessionFiles.append(QFileInfo(sArg).absoluteFilePath());
 			++iCmdArgs;
 			continue;
 		}
-
-		QString sArg = args.at(i);
 
 	#ifdef CONFIG_JACK_SESSION
 		QString sVal;
@@ -864,11 +860,10 @@ bool qtractorOptions::parse_args ( const QStringList& args )
 				.arg(QTRACTOR_TITLE)
 				.arg(CONFIG_BUILD_VERSION);
 			return false;
-		}
-		else {
+		} else {
 			// If we don't have one by now,
 			// this will be the startup session file...
-			sSessionFile += sArg;
+			sessionFiles.append(QFileInfo(sArg).absoluteFilePath());
 			++iCmdArgs;
 		}
 	}
