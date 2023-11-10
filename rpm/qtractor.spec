@@ -16,8 +16,8 @@
 #
 
 %define name    qtractor
-%define version 0.9.35
-%define release 78.1
+%define version 0.9.36
+%define release 79.1
 
 %define _prefix	/usr
 
@@ -64,14 +64,13 @@ BuildRequires:	qtbase6.6-static >= 6.6
 BuildRequires:	qttools6.6-static
 BuildRequires:	qttranslations6.6-static
 BuildRequires:	qtsvg6.6-static
-#BuildRequires:	qtwayland6-static
 %else
 BuildRequires:	cmake(Qt6LinguistTools)
 BuildRequires:	pkgconfig(Qt6Core)
 BuildRequires:	pkgconfig(Qt6Gui)
 BuildRequires:	pkgconfig(Qt6Widgets)
-BuildRequires:	pkgconfig(Qt6Xml)
 BuildRequires:	pkgconfig(Qt6Svg)
+BuildRequires:	pkgconfig(Qt6Xml)
 BuildRequires:	pkgconfig(Qt6Network)
 %endif
 %else
@@ -79,8 +78,8 @@ BuildRequires:	cmake(Qt5LinguistTools)
 BuildRequires:	pkgconfig(Qt5Core)
 BuildRequires:	pkgconfig(Qt5Gui)
 BuildRequires:	pkgconfig(Qt5Widgets)
-BuildRequires:	pkgconfig(Qt5Xml)
 BuildRequires:	pkgconfig(Qt5Svg)
+BuildRequires:	pkgconfig(Qt5Xml)
 BuildRequires:	pkgconfig(Qt5Network)
 BuildRequires:	pkgconfig(Qt5X11Extras)
 %endif
@@ -200,8 +199,10 @@ cmake --install build
 %{_datadir}/man/fr/man1/%{name}.1.gz
 
 %changelog
+* Fri Nov 10 2023 Rui Nuno Capela <rncbc@rncbc.org> 0.9.36
+- An Autumn'23 Release.
 * Thu Sep 14 2023 Rui Nuno Capela <rncbc@rncbc.org> 0.9.35
-- An End-of-Summer'23'23 Release.
+- An End-of-Summer'23 Release.
 * Thu Jun  8 2023 Rui Nuno Capela <rncbc@rncbc.org> 0.9.34
 - A Spring'23 Release.
 * Mon Mar 27 2023 Rui Nuno Capela <rncbc@rncbc.org> 0.9.33
