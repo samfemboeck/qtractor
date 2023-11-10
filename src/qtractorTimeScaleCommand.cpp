@@ -108,6 +108,8 @@ bool qtractorTimeScaleNodeCommand::addNode (void)
 
 	m_iFrame = pNode->frame;
 
+	m_iFrame = pNode->frame;
+
 	const bool bRedoCurveEditCommands = m_curveEditCommands.isEmpty();
 	if (bRedoCurveEditCommands) {
 		addCurveEditCommands(pNode, fNewTempo, fOldTempo);
