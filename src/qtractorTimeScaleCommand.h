@@ -83,7 +83,7 @@ protected:
 
 	// Automation curve time-stretching command (static).
 	void addCurveEditCommands(
-		qtractorTimeScale::Node *pNode, float fOldTempo, float fNewTempo);
+		unsigned long iFrame, float fOldTempo, float fNewTempo);
 
 private:
 
