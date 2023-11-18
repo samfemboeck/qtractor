@@ -89,12 +89,19 @@ bool qtractorTimeScaleNodeCommand::addNode (void)
 	if (bPlaying)
 		pSession->seek(0, false);
 
+	qtractorTimeScale::Node *pNext = pNode->next();
+	const unsigned long iFrameStart = m_iFrame;
+	const unsigned long iFrameEnd
+		= (pNext ? pNext->frame : pSession->sessionEnd());
+
 	const float fOldTempo = pNode->tempo;
 	const float fNewTempo = m_fTempo;
 
 	const bool bRedoClipCommand = (m_pClipCommand == nullptr);
-	if (bRedoClipCommand)
-		m_pClipCommand = createClipCommand(pNode, fNewTempo, fOldTempo);
+	if (bRedoClipCommand) {
+		m_pClipCommand = createClipCommand(
+			iFrameStart, iFrameEnd, fNewTempo, fOldTempo);
+	}
 	else
 	if (m_pClipCommand) {
 		m_pClipCommand->undo();
@@ -112,7 +119,7 @@ bool qtractorTimeScaleNodeCommand::addNode (void)
 
 	const bool bRedoCurveEditCommands = m_curveEditCommands.isEmpty();
 	if (bRedoCurveEditCommands) {
-		addCurveEditCommands(pNode->frame, fNewTempo, fOldTempo);
+		addCurveEditCommands(iFrameStart, iFrameEnd, fNewTempo, fOldTempo);
 	} else {
 		QListIterator<qtractorCurveEditCommand *> undos(m_curveEditCommands);
 		while (undos.hasNext())
@@ -182,12 +189,19 @@ bool qtractorTimeScaleNodeCommand::updateNode (void)
 	const unsigned short iBars        = pNode->bars;
 	const bool           bAttached    = pNode->attached;
 
+	qtractorTimeScale::Node *pNext = pNode->next();
+	const unsigned long iFrameStart = pNode->frame;
+	const unsigned long iFrameEnd
+		= (pNext ? pNext->frame : pSession->sessionEnd());
+
 	const float fOldTempo = pNode->tempo;
 	const float fNewTempo = m_fTempo;
 
 	const bool bRedoClipCommand = (m_pClipCommand == nullptr);
-	if (bRedoClipCommand)
-		m_pClipCommand = createClipCommand(pNode, fNewTempo, fOldTempo);
+	if (bRedoClipCommand) {
+		m_pClipCommand = createClipCommand(
+			iFrameStart, iFrameEnd, fNewTempo, fOldTempo);
+	}
 	else
 	if (m_pClipCommand) {
 		m_pClipCommand->undo();
@@ -197,7 +211,7 @@ bool qtractorTimeScaleNodeCommand::updateNode (void)
 
 	const bool bRedoCurveEditCommands = m_curveEditCommands.isEmpty();
 	if (bRedoCurveEditCommands) {
-		addCurveEditCommands(pNode->frame, fNewTempo, fOldTempo);
+		addCurveEditCommands(iFrameStart, iFrameEnd, fNewTempo, fOldTempo);
 	} else {
 		QListIterator<qtractorCurveEditCommand *> undos(m_curveEditCommands);
 		while (undos.hasNext())
@@ -276,13 +290,20 @@ bool qtractorTimeScaleNodeCommand::removeNode (void)
 	if (bPlaying)
 		pSession->seek(0, false);
 
+	qtractorTimeScale::Node *pNext = pNode->next();
+	const unsigned long iFrameStart = pNode->frame;
+	const unsigned long iFrameEnd
+		= (pNext ? pNext->frame : pSession->sessionEnd());
+
 	qtractorTimeScale::Node *pPrev = pNode->prev();
 	const float fOldTempo = pNode->tempo;
 	const float fNewTempo = (pPrev ? pPrev->tempo : m_pTimeScale->tempo());
 
 	const bool bRedoClipCommand = (m_pClipCommand == nullptr);
-	if (bRedoClipCommand)
-		m_pClipCommand = createClipCommand(pNode, fNewTempo, fOldTempo);
+	if (bRedoClipCommand) {
+		m_pClipCommand = createClipCommand(
+			iFrameStart, iFrameEnd, fNewTempo, fOldTempo);
+	}
 	else
 	if (m_pClipCommand) {
 		m_pClipCommand->undo();
@@ -292,7 +313,7 @@ bool qtractorTimeScaleNodeCommand::removeNode (void)
 
 	const bool bRedoCurveEditCommands = m_curveEditCommands.isEmpty();
 	if (bRedoCurveEditCommands) {
-		addCurveEditCommands(pNode->frame, fNewTempo, fOldTempo);
+		addCurveEditCommands(iFrameStart, iFrameEnd, fNewTempo, fOldTempo);
 	} else {
 		QListIterator<qtractorCurveEditCommand *> undos(m_curveEditCommands);
 		while (undos.hasNext())
@@ -343,20 +364,17 @@ bool qtractorTimeScaleNodeCommand::removeNode (void)
 
 // Make it automatic clip time-stretching command (static).
 qtractorClipCommand *qtractorTimeScaleNodeCommand::createClipCommand (
-	qtractorTimeScale::Node *pNode, float fNewTempo, float fOldTempo )
+	unsigned long iFrameStart, unsigned long iFrameEnd,
+	float fNewTempo, float fOldTempo )
 {
-	if (pNode == nullptr)
+	if (iFrameStart >= iFrameEnd)
 		return nullptr;
-	if (fNewTempo == fOldTempo)
+	if (qAbs(fNewTempo - fOldTempo) < 0.1f)
 		return nullptr;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
 	if (pSession == nullptr)
 		return nullptr;
-
-	qtractorTimeScale::Node *pNext = pNode->next();
-	const unsigned long iFrameStart = pNode->frame;
-	const unsigned long iFrameEnd = (pNext ? pNext->frame : pSession->sessionEnd());
 
 	qtractorClipCommand *pClipCommand = nullptr;
 
@@ -398,18 +416,24 @@ qtractorClipCommand *qtractorTimeScaleNodeCommand::createClipCommand (
 
 // Automation curve time-stretching command (static).
 void qtractorTimeScaleNodeCommand::addCurveEditCommands (
-	unsigned long iFrame, float fNewTempo, float fOldTempo )
+	unsigned long iFrameStart, unsigned long iFrameEnd,
+	float fNewTempo, float fOldTempo )
 {
-	if (qAbs(fNewTempo - fOldTempo) < 0.01f)
+	if (iFrameStart >= iFrameEnd)
+		return;
+	if (qAbs(fNewTempo - fOldTempo) < 0.1f)
 		return;
 
 	qtractorSession *pSession = qtractorSession::getInstance();
 	if (pSession == nullptr)
 		return;
 
-	const unsigned long iFrameStart = iFrame;
 	const float fFactor = (fOldTempo / fNewTempo);
 	const bool bReverse = (fOldTempo > fNewTempo);
+
+	const long iFrameDelta
+		= long(iFrameStart) - long(iFrameEnd)
+		+ long(float(iFrameEnd - iFrameStart) * fFactor);
 
 	for (qtractorTrack *pTrack = pSession->tracks().first();
 			pTrack; pTrack = pTrack->next()) {
@@ -424,13 +448,22 @@ void qtractorTimeScaleNodeCommand::addCurveEditCommands (
 			qtractorCurve::Node *pCurveNode = (bReverse
 				? pCurve->nodes().last() : pCurve->seek(iFrameStart));
 			while (pCurveNode) {
+				if (pCurveNode->frame >= iFrameEnd) {
+					const unsigned long iFrame = pCurveNode->frame + iFrameDelta;
+					const float fValue = pCurveNode->value;
+					pCurveEditCommand->moveNode(pCurveNode, iFrame, fValue);
+					++iCurveEditUpdate;
+				}
+				else
 				if (pCurveNode->frame >= iFrameStart) {
 					const unsigned long iFrame = iFrameStart + (unsigned long)
 						(float(pCurveNode->frame - iFrameStart) * fFactor);
 					const float fValue = pCurveNode->value;
 					pCurveEditCommand->moveNode(pCurveNode, iFrame, fValue);
 					++iCurveEditUpdate;
-				} else if (bReverse)
+				}
+				else
+				if (bReverse)
 					break;
 				if (bReverse)
 					pCurveNode = pCurveNode->prev();
