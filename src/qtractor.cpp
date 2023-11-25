@@ -567,6 +567,11 @@ int main ( int argc, char **argv )
 	}
 
 	// Custom style theme...
+	QString sPluginsPath = QApplication::applicationDirPath();
+	sPluginsPath.remove(CONFIG_BINDIR);
+	sPluginsPath.append(CONFIG_PLUGINSDIR);
+	if (QDir(sPluginsPath).exists())
+		app.addLibraryPath(sPluginsPath);
 	if (!options.sCustomStyleTheme.isEmpty())
 		app.setStyle(QStyleFactory::create(options.sCustomStyleTheme));
 

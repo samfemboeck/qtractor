@@ -194,6 +194,11 @@ bool qtractorTimeScaleNodeCommand::updateNode (void)
 	const unsigned long iFrameEnd
 		= (pNext ? pNext->frame : pSession->sessionEnd());
 
+	qtractorTimeScale::Node *pNext = pNode->next();
+	const unsigned long iFrameStart = pNode->frame;
+	const unsigned long iFrameEnd
+		= (pNext ? pNext->frame : pSession->sessionEnd());
+
 	const float fOldTempo = pNode->tempo;
 	const float fNewTempo = m_fTempo;
 
