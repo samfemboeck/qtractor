@@ -55,6 +55,14 @@
 #endif
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define CONFIG_PLUGINSDIR CONFIG_LIBDIR "/qt4/plugins"
+#elif QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#define CONFIG_PLUGINSDIR CONFIG_LIBDIR "/qt5/plugins"
+#else
+#define CONFIG_PLUGINSDIR CONFIG_LIBDIR "/qt6/plugins"
+#endif
+
 #ifdef CONFIG_X11
 #ifdef CONFIG_VST2
 #include "qtractorVst2Plugin.h"
