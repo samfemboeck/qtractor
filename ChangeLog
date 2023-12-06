@@ -11,8 +11,6 @@ ChangeLog
 
 - Add default audio metronome sample files.
 
-- Add default audio metronome sample files. (EXPERIMENTAL)
-
 - Fixed automation curve rescaling across multiple, more than just
   one or two, tempo-map node changes.
 
