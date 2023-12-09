@@ -308,6 +308,13 @@ void qtractorMixerStrip::initMixerStrip (void)
 //	m_pLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 	m_pLayout->addWidget(m_pLabel);
 
+	m_pRibbon = new QFrame(/*this*/);
+	m_pRibbon->setFixedHeight(4);
+	m_pRibbon->setBackgroundRole(QPalette::Button);
+	m_pRibbon->setForegroundRole(QPalette::ButtonText);
+	m_pRibbon->setAutoFillBackground(true);
+	m_pLayout->addWidget(m_pRibbon);
+
 	m_pPluginListView = new qtractorPluginListView(/*this*/);
 	m_pPluginListView->setFont(font3);
 	m_pPluginListView->setMinimumHeight(iFixedHeight << 1);
@@ -380,9 +387,13 @@ void qtractorMixerStrip::initMixerStrip (void)
 	m_pMixerMeter = nullptr;
 	m_pMidiLabel = nullptr;
 	int iFixedWidth = 54;
+	QPalette pal(m_pRibbon->palette());
 	switch (meterType) {
 	case qtractorTrack::Tempo:
 	case qtractorTrack::Audio: {
+		// Set header ribbon color (Audio)...
+		pal.setColor(QPalette::Button,
+			qtractorAudioMeter::color(qtractorAudioMeter::Color10dB));
 		// Type cast for proper audio monitor...
 		qtractorAudioMonitor *pAudioMonitor = nullptr;
 		if (m_pTrack) {
@@ -414,6 +425,9 @@ void qtractorMixerStrip::initMixerStrip (void)
 		break;
 	}
 	case qtractorTrack::Midi: {
+		// Set header ribbon color (MIDI)...
+		pal.setColor(QPalette::Button,
+			qtractorMidiMeter::color(qtractorMidiMeter::ColorOver));
 		// Type cast for proper MIDI monitor...
 		qtractorMidiMonitor *pMidiMonitor = nullptr;
 		qtractorMidiBus *pMidiBus = nullptr;
@@ -481,6 +495,7 @@ void qtractorMixerStrip::initMixerStrip (void)
 	default:
 		break;
 	}
+	m_pRibbon->setPalette(pal);
 
 	// Eventually the right one...
 	if (m_pMixerMeter) {
@@ -629,7 +644,14 @@ void qtractorMixerStrip::updateName (void)
 	m_pLabel->setText(sName);
 	m_pLabel->update(); // Make sure icon and text gets visibly updated!
 
-	QFrame::setToolTip(sName + ' ' + sType);
+	if (m_pTrack)
+		QFrame::setToolTip(sName + ' ' + sType);
+	else
+	if (m_pBus) {
+		const QString sMode
+			= (m_busMode & qtractorBus::Input ? tr("In") : tr("Out"));
+		QFrame::setToolTip(sName + ' ' + sMode + ' ' + sType);
+	}
 }
 
 

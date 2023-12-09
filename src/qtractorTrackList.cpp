@@ -1,7 +1,7 @@
 // qtractorTrackList.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2022, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2023, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -50,9 +50,6 @@
 #include "qtractorMidiMeter.h"
 
 #include "qtractorOptions.h"
-
-#include "qtractorAudioFile.h"
-#include "qtractorMidiFile.h"
 
 #include <QHeaderView>
 #include <QAbstractListModel>
@@ -376,7 +373,7 @@ qtractorTracks *qtractorTrackList::tracks (void) const
 }
 
 
-// Loacl header view accessor.
+// Local header view accessor.
 QHeaderView *qtractorTrackList::header (void) const
 {
 	return m_pHeader;
@@ -463,7 +460,7 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 			if (track->trackType() == qtractorTrack::Tempo)
 				text << sBusText + '\n' + QObject::tr("Tempo");
 			else
-				text << sBusText + '\n' + QObject::tr("Audio");
+				text << sBusText; // + '\n' + QObject::tr("Audio");
 			// Audio channels...
 			qtractorAudioBus *pAudioBus
 				= static_cast<qtractorAudioBus *> (track->outputBus());
@@ -471,12 +468,13 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 				QString::number(pAudioBus->channels()) : s.right(1));
 			// Fillers...
 			text << s << s;
+			ribbon = qtractorAudioMeter::color(qtractorAudioMeter::Color10dB);
 			break;
 		}
 
 		case qtractorTrack::Midi: {
 			// MIDI Bus name...
-			text << sBusText + '\n' + QObject::tr("MIDI");
+			text << sBusText; // + '\n' + QObject::tr("MIDI");
 			qtractorMidiBus *pMidiBus
 				= static_cast<qtractorMidiBus *> (track->outputBus());
 			// MIDI channels...
@@ -537,6 +535,7 @@ void qtractorTrackList::Item::updateItem ( qtractorTrackList *pTrackList )
 				sInstrumentName = s;
 			// This is it, MIDI Patch/Bank...
 			text << sProgName + '\n' + sBankName << sInstrumentName;
+			ribbon = qtractorMidiMeter::color(qtractorMidiMeter::ColorOver);
 			break;
 		}
 
@@ -1240,6 +1239,10 @@ void qtractorTrackList::drawCell (
 		}
 	} else {
 		if (iCol == Bus) {
+			pPainter->fillRect( // ribbon filler...
+				rect.x() + 2, rect.y() + 2, 4, rect.height() - 4,
+				pItem->ribbon);
+			rectText.setX(rectText.x() + 6); // ribbon spacing...
 			const QPixmap *pPixmap = nullptr;
 			switch ((pItem->track)->trackType()) {
 			case qtractorTrack::Tempo:
@@ -1354,6 +1357,7 @@ void qtractorTrackList::updatePixmap ( int cx, int cy )
 					}
 					else
 					if (iCol == Bus && pItem->updated) {
+						rect.setX(rect.x() + 6); // ribbon spacing...
 						const int h2
 							= (qtractorTrack::HeightMin << 2)
 							-  qtractorTrack::HeightMin  - 2;
