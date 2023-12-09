@@ -3,6 +3,21 @@ Qtractor - An Audio/MIDI multi-track sequencer
 
 ChangeLog
 
+GIT HEAD
+
+- MIDI clip editors (aka. piano-roll) are now raised and centered
+  to current mouse pointer position in main timeline (tracks-view).
+  (EXPERIMENTAL)
+
+- Remember last Marker color setting in Tempo Map/Markers dialog.
+
+- A colored ribbon is now featured on tracks-list Bus column and
+  mixer-strip headers; ribbon colors are designated for Audio and
+  MIDI tracks or buses, given by the respective '10dB' and 'Over'
+  meter colors. (EXPERIMENTAL)
+
+- Buses'In'/'Out' suffixes are back on mixer-strip header tooltips.
+
 
 0.9.37  2023-12-05  An End-of-Autumn'23 Release.
 
@@ -518,7 +533,7 @@ ChangeLog
 
 - LV2 Plug-in MIDNAM support introduced.
 
-- Use Shift or Ctrl keyboard modifiers with the mouse- wheel to change
+- Use Shift or Ctrl keyboard modifiers with the mouse-wheel to change
   any Direct Access plug-in parameters.
 
 
