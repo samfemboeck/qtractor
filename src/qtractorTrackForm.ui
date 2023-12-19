@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <author>rncbc aka Rui Nuno Capela</author>
  <comment>qtractor - An Audio/MIDI multi-track sequencer.
@@ -243,11 +244,11 @@
           <string>MIDI / Instrument</string>
          </property>
          <layout class="QGridLayout">
-          <property name="margin">
-           <number>8</number>
-          </property>
           <property name="spacing">
            <number>4</number>
+          </property>
+          <property name="margin">
+           <number>8</number>
           </property>
           <item row="3" column="0">
            <widget class="QLabel" name="ProgTextLabel">
@@ -510,6 +511,16 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="AutoBackgroundColorCheckBox">
+            <property name="text">
+             <string>Auto</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -674,11 +685,11 @@
            <property name="toolTip">
             <string>Current total latency</string>
            </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
            <property name="text">
             <string/>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -727,6 +738,7 @@
   <tabstop>ForegroundColorToolButton</tabstop>
   <tabstop>BackgroundColorComboBox</tabstop>
   <tabstop>BackgroundColorToolButton</tabstop>
+  <tabstop>AutoBackgroundColorCheckBox</tabstop>
   <tabstop>PluginListView</tabstop>
   <tabstop>AddPluginToolButton</tabstop>
   <tabstop>RemovePluginToolButton</tabstop>

@@ -258,6 +258,9 @@ qtractorTrackForm::qtractorTrackForm ( QWidget *pParent )
 	QObject::connect(m_ui.ForegroundColorToolButton,
 		SIGNAL(clicked()),
 		SLOT(selectForegroundColor()));
+	QObject::connect(m_ui.AutoBackgroundColorCheckBox,
+		SIGNAL(clicked()),
+		SLOT(autoBackgroundColorChanged()));
 	QObject::connect(m_ui.BackgroundColorComboBox,
 		SIGNAL(editTextChanged(const QString&)),
 		SLOT(backgroundColorChanged(const QString&)));
@@ -462,6 +465,10 @@ void qtractorTrackForm::accept (void)
 	if (pSession == nullptr)
 		return;
 
+	qtractorOptions *pOptions = qtractorOptions::getInstance();
+	if (pOptions == nullptr)
+		return;
+
 	// Save options...
 	if (m_iDirtyCount > 0) {
 		// Make sure one has unique track names...
@@ -496,6 +503,8 @@ void qtractorTrackForm::accept (void)
 		// Reset dirty flag.
 		m_iDirtyCount = 0;
 	}
+
+	pOptions->bAutoBackgroundColor = m_ui.AutoBackgroundColorCheckBox->isChecked();
 
 	// Just go with dialog acceptance.
 	QDialog::accept();
@@ -562,6 +571,13 @@ void qtractorTrackForm::stabilizeForm (void)
 	const bool bValid = (m_iDirtyCount > 0) && bEnabled
 		&& !m_ui.TrackNameTextEdit->toPlainText().isEmpty();
 	m_ui.DialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(bValid);
+
+	// Stabilize current auto-background color option....
+	const bool bAutoBackgroundColor
+		= m_ui.AutoBackgroundColorCheckBox->isChecked();
+	m_ui.BackgroundColorTextLabel->setEnabled(!bAutoBackgroundColor);
+	m_ui.BackgroundColorComboBox->setEnabled(!bAutoBackgroundColor);
+	m_ui.BackgroundColorToolButton->setEnabled(!bAutoBackgroundColor);
 
 	// Stabilize current plugin list state.
 	m_ui.PluginListView->setEnabled(bEnabled);
@@ -708,6 +724,10 @@ void qtractorTrackForm::updateTrackType ( qtractorTrack::TrackType trackType )
 	if (pSession == nullptr)
 		return;
 
+	qtractorOptions *pOptions = qtractorOptions::getInstance();
+	if (pOptions == nullptr)
+		return;
+
 	// Avoid superfluos change notifications...
 	++m_iDirtySetup;
 
@@ -753,6 +773,7 @@ void qtractorTrackForm::updateTrackType ( qtractorTrack::TrackType trackType )
 		m_ui.MidiGroupBox->setEnabled(false);
 		m_ui.InputBusNameComboBox->setEnabled(false);
 		m_ui.OutputBusNameComboBox->setEnabled(false);
+		m_ui.AutoBackgroundColorCheckBox->setChecked(pOptions->bAutoBackgroundColor);
 		break;
 	}
 
@@ -1178,7 +1199,7 @@ void qtractorTrackForm::foregroundColorChanged ( const QString& sText )
 	m_props.foreground = QColor(sText);
 
 	updateColorText(m_ui.ForegroundColorComboBox, m_props.foreground);
-	trackIconChanged();
+	autoBackgroundColorChanged();
 }
 
 
@@ -1190,6 +1211,18 @@ void qtractorTrackForm::backgroundColorChanged ( const QString& sText )
 	m_props.background = QColor(sText);
 
 	updateColorText(m_ui.BackgroundColorComboBox, m_props.background);
+	trackIconChanged();
+}
+
+
+void qtractorTrackForm::autoBackgroundColorChanged (void)
+{
+	if (m_ui.AutoBackgroundColorCheckBox->isChecked()) {
+		const QColor& background = m_props.foreground.lighter(200);
+		updateColorText(m_ui.BackgroundColorComboBox, background);
+		m_ui.BackgroundColorComboBox->setCurrentText(background.name());
+	}
+
 	trackIconChanged();
 }
 
@@ -1586,7 +1619,7 @@ void qtractorTrackForm::selectForegroundColor (void)
 	if (color.isValid()) {
 		m_props.foreground = color;
 		updateColorItem(m_ui.ForegroundColorComboBox, color);
-		trackIconChanged();
+		autoBackgroundColorChanged();
 	}
 }
 

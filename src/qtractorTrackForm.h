@@ -86,6 +86,7 @@ protected slots:
 
 	void foregroundColorChanged(const QString& sText);
 	void backgroundColorChanged(const QString& sText);
+	void autoBackgroundColorChanged();
 	void selectForegroundColor();
 	void selectBackgroundColor();
 
