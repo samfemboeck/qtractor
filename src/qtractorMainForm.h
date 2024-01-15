@@ -440,6 +440,7 @@ protected:
 
 	void updateCustomColorTheme();
 	void updateCustomStyleTheme();
+	void updateCustomStyleSheet();
 
 	void updateEditorForms();
 
