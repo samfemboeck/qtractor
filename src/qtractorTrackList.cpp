@@ -48,7 +48,11 @@
 #include "qtractorMidiMonitor.h"
 #include "qtractorAudioMeter.h"
 #include "qtractorMidiMeter.h"
+
 #include "qtractorMidiImportExtender.h"
+
+#include "qtractorAudioFile.h"
+#include "qtractorMidiFile.h"
 
 #include "qtractorOptions.h"
 
