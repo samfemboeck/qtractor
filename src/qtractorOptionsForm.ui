@@ -1976,7 +1976,7 @@
           <bool>true</bool>
          </property>
          <layout class="QGridLayout">
-          <item row="0" column="0" colspan="9">
+          <item row="0" column="0" colspan="2">
            <widget class="QCheckBox" name="MidiMetronomeCheckBox">
             <property name="font">
              <font>
@@ -1991,6 +1991,77 @@
              <string>&amp;Enable MIDI metronome</string>
             </property>
            </widget>
+          </item>
+          <item row="0" column="2" colspan="3">
+           <layout class="QHBoxLayout">
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint">
+               <size>
+                <width>4</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="MetroChannelTextLabel">
+               <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignVCenter</set>
+              </property>
+              <property name="text">
+               <string>&amp;Channel:</string>
+              </property>
+              <property name="buddy">
+               <cstring>MetroChannelSpinBox</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="MetroChannelSpinBox">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="toolTip">
+               <string>Metronome MIDI channel</string>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>16</number>
+              </property>
+              <property name="value">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint">
+               <size>
+                <width>4</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
           <item row="0" column="5" colspan="2">
            <widget class="QLabel" name="MidiCountInModeLabel">
@@ -2071,57 +2142,6 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="MetroChannelTextLabel">
-            <property name="font">
-             <font>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>&amp;Channel:</string>
-            </property>
-            <property name="buddy">
-             <cstring>MetroChannelSpinBox</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="MetroChannelSpinBox">
-            <property name="font">
-             <font>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="toolTip">
-             <string>Metronome MIDI channel</string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>16</number>
-            </property>
-            <property name="value">
-             <number>10</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2" colspan="6">
-           <spacer>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint">
-             <size>
-              <width>120</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="2" column="0">
            <widget class="QLabel" name="MetroBarNoteTextLabel">
             <property name="font">
              <font>
@@ -2137,7 +2157,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1" colspan="2">
+          <item row="1" column="1" colspan="2">
            <widget class="QComboBox" name="MetroBarNoteComboBox">
             <property name="minimumSize">
              <size>
@@ -2156,7 +2176,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="3" rowspan="2">
+          <item row="1" column="3" rowspan="2">
            <spacer>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -2169,7 +2189,7 @@
             </property>
            </spacer>
           </item>
-          <item row="2" column="4">
+          <item row="1" column="4">
            <widget class="QLabel" name="MetroBarVelocityTextLabel">
             <property name="font">
              <font>
@@ -2185,7 +2205,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="5">
+          <item row="1" column="5">
            <widget class="QSpinBox" name="MetroBarVelocitySpinBox">
             <property name="font">
              <font>
@@ -2207,7 +2227,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="6" rowspan="2">
+          <item row="1" column="6" rowspan="2">
            <spacer>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -2220,7 +2240,7 @@
             </property>
            </spacer>
           </item>
-          <item row="2" column="7">
+          <item row="1" column="7">
            <widget class="QLabel" name="MetroBarDurationTextLabel">
             <property name="font">
              <font>
@@ -2236,7 +2256,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="8">
+          <item row="1" column="8">
            <widget class="QSpinBox" name="MetroBarDurationSpinBox">
             <property name="font">
              <font>
@@ -2261,7 +2281,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="2" column="0">
            <widget class="QLabel" name="MetroBeatNoteTextLabel">
             <property name="font">
              <font>
@@ -2277,7 +2297,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="2">
+          <item row="2" column="1" colspan="2">
            <widget class="QComboBox" name="MetroBeatNoteComboBox">
             <property name="minimumSize">
              <size>
@@ -2296,7 +2316,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="4">
+          <item row="2" column="4">
            <widget class="QLabel" name="MetroBeatVelocityTextLabel">
             <property name="font">
              <font>
@@ -2312,7 +2332,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="5">
+          <item row="2" column="5">
            <widget class="QSpinBox" name="MetroBeatVelocitySpinBox">
             <property name="font">
              <font>
@@ -2334,7 +2354,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="7">
+          <item row="2" column="7">
            <widget class="QLabel" name="MetroBeatDurationTextLabel">
             <property name="font">
              <font>
@@ -2350,7 +2370,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="8">
+          <item row="2" column="8">
            <widget class="QSpinBox" name="MetroBeatDurationSpinBox">
             <property name="font">
              <font>
@@ -2375,7 +2395,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="0" colspan="5">
+          <item row="3" column="0" colspan="5">
            <widget class="QCheckBox" name="MidiMetroBusCheckBox">
             <property name="font">
              <font>
@@ -2391,7 +2411,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="5" colspan="3">
+          <item row="3" column="5" colspan="3">
            <widget class="QLabel" name="MidiMetroOffsetTextLabel">
             <property name="font">
              <font>
@@ -2410,7 +2430,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="8">
+          <item row="3" column="8">
            <widget class="QSpinBox" name="MidiMetroOffsetSpinBox">
             <property name="font">
              <font>
