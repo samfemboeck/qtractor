@@ -5265,7 +5265,6 @@ void qtractorMainForm::viewOptions (void)
 	const int     iOldOscServerPort      = m_pOptions->iOscServerPort;
 #ifdef CONFIG_LV2
 	const QString sep(':'); 
-	const bool    bOldLv2DynManifest     = m_pOptions->bLv2DynManifest;
 	const QString sOldLv2Paths           = m_pOptions->lv2Paths.join(sep);
 #endif
 
@@ -5313,10 +5312,6 @@ void qtractorMainForm::viewOptions (void)
 			iNeedRestart |= RestartSession;
 		}
 	#ifdef CONFIG_LV2
-		if (( bOldLv2DynManifest && !m_pOptions->bLv2DynManifest) ||
-			(!bOldLv2DynManifest &&  m_pOptions->bLv2DynManifest)) {
-			iNeedRestart |= RestartSession;
-		}
 		if (sOldLv2Paths != m_pOptions->lv2Paths.join(sep))
 			iNeedRestart |= RestartProgram;
 	#endif
