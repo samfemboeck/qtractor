@@ -587,7 +587,7 @@ void qtractorMixerStrip::setMonitor ( qtractorMonitor *pMonitor )
 		if (pAudioMonitor) {
 			const int iOldWidth = QFrame::width();
 			const int iAudioChannels = pAudioMonitor->channels();
-			const int iFixedWidth = 54
+			const int iFixedWidth = 64
 				+ (iAudioChannels < 3 ? 24 : 8 * iAudioChannels);
 			if (iFixedWidth != iOldWidth) {
 				QFrame::setFixedWidth(iFixedWidth);
