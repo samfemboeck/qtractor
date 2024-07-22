@@ -598,13 +598,7 @@ bool qtractorTracks::unlinkClip ( qtractorClip *pClip )
 		= pMidiClip->createFilePathRevision(true);
 
 	// Save/replace the clip track...
-	qtractorMidiFile::saveCopyFile(sFilename,
-		pMidiClip->filename(),
-		pMidiClip->trackChannel(),
-		pMidiClip->format(),
-		pMidiClip->sequence(),
-		pSession->timeScale(),
-		pSession->tickFromFrame(pMidiClip->clipStart()));
+	pMidiClip->saveCopyFile(sFilename, false);
 
 	// Now, we avoid the linked/ref-counted instances...
 	pSession->files()->removeClipItem(qtractorFileList::Midi, pMidiClip);
@@ -616,12 +610,6 @@ bool qtractorTracks::unlinkClip ( qtractorClip *pClip )
 
 	// Better update track-view clip high-lighthing...
 	m_pTrackView->update();
-
-	// HACK: This operation is so important that
-	// it surely deserves being in the front page...
-	qtractorMainForm *pMainForm = qtractorMainForm::getInstance();
-	if (pMainForm)
-		pMainForm->addMidiFile(sFilename);
 
 	return true;
 }
@@ -2908,7 +2896,7 @@ bool qtractorTracks::addMidiTrackChannel ( const QString& sPath,
 	pMidiClip->setTrackChannel(iTrackChannel);
 	pMidiClip->setClipStart(iClipStart);
 	// Time to add the new track/clip into session...
-	pTrack->addClip(pMidiClip);
+	pTrack->addClipEx(pMidiClip);
 	pTrack->setTrackName(
 		pSession->uniqueTrackName(pMidiClip->clipName()));
 	pTrack->setMidiChannel(pMidiClip->channel());
@@ -3052,7 +3040,7 @@ bool qtractorTracks::importAudioTracks ( const QStringList& files,
 			pAudioClip->setClipLength(iClipLength);
 		// Time to add the new track/clip into session;
 		// actuallly, this is when the given audio file gets open...
-		pTrack->addClip(pAudioClip);
+		pTrack->addClipEx(pAudioClip);
 		if (iTrackClip == 0) {
 			pTrack->setTrackName(
 				pSession->uniqueTrackName(pAudioClip->clipName()));
@@ -3145,7 +3133,7 @@ bool qtractorTracks::importMidiTracks ( const QStringList& files,
 			// Time to add the new track/clip into session;
 			// actuallly, this is when the given MIDI file and
 			// track-channel gets open and read into the clip!
-			pTrack->addClip(pMidiClip);
+			pTrack->addClipEx(pMidiClip);
 			// As far the standards goes,from which we'll strictly follow,
 			// only the first track/channel has some tempo/time signature...
 			if (iTrackChannel == 0) {
@@ -3170,7 +3158,7 @@ bool qtractorTracks::importMidiTracks ( const QStringList& files,
 					pMainForm->addMidiFile(sPath);
 			} else {
 				// Get rid of these, now...
-				pTrack->unlinkClip(pMidiClip);
+				pTrack->removeClip(pMidiClip);
 				delete pMidiClip;
 				delete pTrack;
 			}
