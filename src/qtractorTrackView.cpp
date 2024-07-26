@@ -5522,6 +5522,7 @@ void qtractorTrackView::moveClipSelect ( qtractorTrack *pTrack )
 				pClipLeft->setClipOffset(iClipOffset);
 				pClipLeft->setClipLength(iSelectOffset);
 				pClipLeft->setFadeInLength(pClip->fadeInLength());
+				pClipLeft->open();
 				pClipCommand->addClip(pClipLeft, pClipLeft->track());
 				// Done, left clip.
 			}
@@ -5533,6 +5534,7 @@ void qtractorTrackView::moveClipSelect ( qtractorTrack *pTrack )
 					+ iSelectOffset + iSelectLength);
 				pClipRight->setClipLength(iClipEnd - iSelectEnd);
 				pClipRight->setFadeOutLength(pClip->fadeOutLength());
+				pClipRight->open();
 				pClipCommand->addClip(pClipRight, pClipRight->track());
 				// Done, right clip.
 			}

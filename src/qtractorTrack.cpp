@@ -1325,6 +1325,16 @@ void qtractorTrack::insertClip ( qtractorClip *pClip )
 }
 
 
+void qtractorTrack::removeClipEx ( qtractorClip *pClip )
+{
+	// Preliminary settings...
+	// pClip->setTrack(nullptr);
+	pClip->close();
+
+	removeClip(pClip);
+}
+
+
 void qtractorTrack::removeClip ( qtractorClip *pClip )
 {
 	pClip->setActive(false);
