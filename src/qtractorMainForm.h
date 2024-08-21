@@ -456,6 +456,7 @@ protected:
 	bool trackCurveSelectMenuReset(QMenu *pMenu) const;
 	bool trackCurveModeMenuReset(QMenu *pMenu) const;
 
+	void openNsmSessionEx(bool bOpenReply);
 	void saveNsmSessionEx(bool bSaveReply);
 
 	bool autoSaveOpen();
