@@ -2001,8 +2001,10 @@ bool qtractorMainForm::newSession (void)
 	m_iDirtyCount = 0;
 
 #ifdef CONFIG_NSM
-	if (m_pNsmClient == nullptr || !m_pNsmClient->is_active()) {
+	if (m_pNsmClient && m_pNsmClient->is_active())
+		return true;
 #endif
+
 	// Check whether we start the new session
 	// based on existing template...
 	if (m_pOptions && m_pOptions->bSessionTemplate) {
@@ -2010,9 +2012,6 @@ bool qtractorMainForm::newSession (void)
 		const int iFlags = qtractorDocument::Template;
 		return loadSessionFileEx(files, iFlags, false);
 	}
-#ifdef CONFIG_NSM
-	}
-#endif
 
 	// Prepare the session engines...
 	updateSessionPre();
@@ -2266,7 +2265,13 @@ bool qtractorMainForm::editSession (void)
 {
 	// Session Properties...
 	qtractorSessionForm sessionForm(this);
-	sessionForm.setSession(m_pSession);
+	const bool bSessionDir
+	#ifdef CONFIG_NSM
+		= (m_pNsmClient == nullptr || !m_pNsmClient->is_active());
+	#else
+		= true;
+	#endif
+	sessionForm.setSession(m_pSession, bSessionDir);
 	if (!sessionForm.exec())
 		return false;
 
@@ -2851,6 +2856,16 @@ void qtractorMainForm::openNsmSession (void)
 	qDebug("qtractorMainForm::openNsmSession()");
 #endif
 
+	openNsmSessionEx(true);
+
+#endif	// CONFIG_NSM
+}
+
+
+void qtractorMainForm::openNsmSessionEx ( bool bOpenReply )
+{
+#ifdef CONFIG_NSM
+
 	// We're supposedly clean...
 	m_iDirtyCount = 0;
 	m_bNsmDirty = false;
@@ -2882,7 +2897,8 @@ void qtractorMainForm::openNsmSession (void)
 		m_pSession->setClientName(client_id);
 		m_pSession->setSessionName(display_name);
 		m_pSession->setSessionDir(path_name);
-		m_pNsmClient->open_reply(qtractorNsmClient::ERR_OK);
+		if (bOpenReply)
+			m_pNsmClient->open_reply(qtractorNsmClient::ERR_OK);
 		QFileInfo fi(path_name, "session." + m_sNsmExt);
 		if (!fi.exists())
 			fi.setFile(path_name, display_name + '.' + m_sNsmExt);
@@ -3044,6 +3060,11 @@ void qtractorMainForm::autoSaveReset (void)
 // Execute auto-save routine...
 void qtractorMainForm::autoSaveSession (void)
 {
+#ifdef CONFIG_NSM
+	if (m_pNsmClient && m_pNsmClient->is_active())
+		return;
+#endif
+
 	QString sAutoSaveDir = m_pSession->sessionDir();
 	if (sAutoSaveDir.isEmpty())
 		sAutoSaveDir = m_pOptions->sSessionDir;
@@ -3082,6 +3103,11 @@ void qtractorMainForm::autoSaveSession (void)
 // Auto-save/crash-recovery setup...
 bool qtractorMainForm::autoSaveOpen (void)
 {
+#ifdef CONFIG_NSM
+	if (m_pNsmClient && m_pNsmClient->is_active())
+		return false;
+#endif
+
 	const QString& sAutoSavePathname = m_pOptions->sAutoSavePathname;
 
 #ifdef CONFIG_DEBUG_0
@@ -3118,6 +3144,11 @@ bool qtractorMainForm::autoSaveOpen (void)
 // Auto-save/crash-recovery cleanup.
 void qtractorMainForm::autoSaveClose (void)
 {
+#ifdef CONFIG_NSM
+	if (m_pNsmClient && m_pNsmClient->is_active())
+		return;
+#endif
+
 	const QString& sAutoSavePathname = m_pOptions->sAutoSavePathname;
 
 #ifdef CONFIG_DEBUG_0
@@ -3136,17 +3167,6 @@ void qtractorMainForm::autoSaveClose (void)
 }
 
 
-// Make it sane a session directory...
-QString qtractorMainForm::sessionDir ( const QString& sFilename ) const
-{
-	QFileInfo fi(sFilename);
-	const QDir& dir = fi.dir();
-	if (fi.completeBaseName() == dir.dirName())
-		fi.setFile(dir.absolutePath());
-	return fi.absolutePath();
-}
-
-
 // Execute auto-save as soon as possible (quasi-immediately please).
 void qtractorMainForm::autoSaveAsap (void)
 {
@@ -3159,12 +3179,29 @@ void qtractorMainForm::autoSaveAsap (void)
 }
 
 
+// Make it sane a session directory...
+QString qtractorMainForm::sessionDir ( const QString& sFilename ) const
+{
+	QFileInfo fi(sFilename);
+	const QDir& dir = fi.dir();
+	if (fi.completeBaseName() == dir.dirName())
+		fi.setFile(dir.absolutePath());
+	return fi.absolutePath();
+}
+
+
 //-------------------------------------------------------------------------
 // qtractorMainForm -- File Action slots.
 
 // Create a new sampler session.
 void qtractorMainForm::fileNew (void)
 {
+#ifdef CONFIG_NSM
+	if (m_pNsmClient && m_pNsmClient->is_active()) {
+	//	openNsmSessionEx(false);
+		return;
+	}
+#endif
 	// Of course we'll start clean new.
 	newSession();
 }
@@ -6583,7 +6620,9 @@ void qtractorMainForm::stabilizeForm (void)
 	// Update the main menu state...
 	m_ui.fileSaveAction->setEnabled(m_iDirtyCount > 0);
 #ifdef CONFIG_NSM
-	m_ui.fileSaveAsAction->setEnabled(m_pNsmClient == nullptr);
+	const bool bNsmActive = (m_pNsmClient && m_pNsmClient->is_active());
+	m_ui.fileNewAction->setEnabled(!bNsmActive);
+	m_ui.fileSaveAsAction->setEnabled(!bNsmActive);
 #endif
 
 	const unsigned long iPlayHead = m_pSession->playHead();
