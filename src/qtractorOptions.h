@@ -240,6 +240,9 @@ public:
 	// Marker color (LRU).
 	QString sMarkerColor;
 
+	// Curve color (LRU).
+	QString sCurveColor;
+
 	// Track auto-background color option.
 	bool bAutoBackgroundColor;
 
