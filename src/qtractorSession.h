@@ -439,9 +439,9 @@ public:
 
 	// MIDI time adjust to/from official high resolution queue (64bit).
 	unsigned long timep ( unsigned long time ) const
-		{ return m_props.timeScale.timep(time); }
+		{ return m_props.timeScale()->timep(time); }
 	unsigned long timeq ( unsigned long time ) const
-		{ return m_props.timeScale.timeq(time); }
+		{ return m_props.timeScale()->timeq(time); }
 
 	// Pseudo-singleton instance accessor.
 	static qtractorSession *getInstance();
