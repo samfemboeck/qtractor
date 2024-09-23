@@ -4157,6 +4157,13 @@ void qtractorMainForm::trackCurveSelect ( QAction *pAction, bool bOn )
 				mode = qtractorCurve::Mode(m_pOptions->iCurveMode);
 			pCurve = new qtractorCurve(pCurveList, pSubject, mode);
 			pCurve->setLogarithmic(pMidiObserver->isLogarithmic());
+			if (m_pOptions && !m_pOptions->sCurveColor.isEmpty()) {
+			#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+				pCurve->setColor(QColor::fromString(m_pOptions->sCurveColor));
+			#else
+				pCurve->setColor(QColor(m_pOptions->sCurveColor));
+			#endif
+			}
 		}
 	}
 
@@ -4323,6 +4330,10 @@ void qtractorMainForm::trackCurveColor (void)
 		sTitle, options);
 	if (!color.isValid())
 		return;
+
+	// Save as future default...
+	if (m_pOptions)
+		m_pOptions->sCurveColor = color.name();
 
 	m_pSession->execute(new qtractorCurveColorCommand(pCurrentCurve, color));
 }
