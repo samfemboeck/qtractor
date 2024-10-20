@@ -1567,7 +1567,8 @@ void qtractorTrack::process ( qtractorClip *pClip,
 		const unsigned long iFrameEnd2 = iFrameEnd + iLatency;
 		// Now, for every clip...
 		while (pClip && pClip->clipStart() < iFrameEnd2) {
-			if (iFrameStart2 < pClip->clipStart() + pClip->clipLength())
+			if (!pClip->isClipMute() &&
+				iFrameStart2 < pClip->clipStart() + pClip->clipLength())
 				pClip->process(iFrameStart2, iFrameEnd2);
 			pClip = pClip->next();
 		}

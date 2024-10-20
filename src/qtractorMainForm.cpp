@@ -936,6 +936,9 @@ qtractorMainForm::qtractorMainForm (
 	QObject::connect(m_ui.clipEditAction,
 		SIGNAL(triggered(bool)),
 		SLOT(clipEdit()));
+	QObject::connect(m_ui.clipMuteAction,
+		SIGNAL(triggered(bool)),
+		SLOT(clipMute()));
 	QObject::connect(m_ui.clipUnlinkAction,
 		SIGNAL(triggered(bool)),
 		SLOT(clipUnlink()));
@@ -4536,6 +4539,19 @@ void qtractorMainForm::clipEdit (void)
 }
 
 
+// Mute a clip.
+void qtractorMainForm::clipMute (void)
+{
+#ifdef CONFIG_DEBUG
+	qDebug("qtractorMainForm::clipMute()");
+#endif
+
+	// Mute the current clip, if any...
+	if (m_pTracks)
+		m_pTracks->muteClip();
+}
+
+
 // Unlink a (MIDI) linked clip.
 void qtractorMainForm::clipUnlink (void)
 {
@@ -7643,6 +7659,9 @@ void qtractorMainForm::updateClipMenu (void)
 
 	m_ui.clipNewAction->setEnabled(bEnabled);
 	m_ui.clipEditAction->setEnabled(pClip != nullptr);
+
+	m_ui.clipMuteAction->setEnabled(bClipSelected);
+	m_ui.clipMuteAction->setChecked(pClip && pClip->isClipMute());
 
 	// Special unlink (MIDI) clip...
 	qtractorMidiClip *pMidiClip = nullptr;
