@@ -37,7 +37,7 @@
    <string>Track</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="qtractor.qrc">:/images/trackProperties.png</iconset>
+   <iconset theme="trackProperties" />
   </property>
   <layout class="QVBoxLayout">
    <item>
@@ -440,7 +440,7 @@
              <string>...</string>
             </property>
             <property name="icon">
-             <iconset resource="qtractor.qrc">:/images/formColor.png</iconset>
+             <iconset theme="formColor" />
             </property>
            </widget>
           </item>
@@ -513,7 +513,7 @@
              <string>...</string>
             </property>
             <property name="icon">
-             <iconset resource="qtractor.qrc">:/images/formColor.png</iconset>
+             <iconset theme="formColor" />
             </property>
            </widget>
           </item>
@@ -564,7 +564,7 @@
             <string>&amp;Add...</string>
            </property>
            <property name="icon">
-            <iconset resource="qtractor.qrc">:/images/formCreate.png</iconset>
+            <iconset theme="formCreate" />
            </property>
            <property name="toolButtonStyle">
             <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -586,7 +586,7 @@
             <string>&amp;Remove</string>
            </property>
            <property name="icon">
-            <iconset resource="qtractor.qrc">:/images/formRemove.png</iconset>
+            <iconset theme="formRemove" />
            </property>
            <property name="toolButtonStyle">
             <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -621,7 +621,7 @@
             <string>&amp;Up</string>
            </property>
            <property name="icon">
-            <iconset resource="qtractor.qrc">:/images/formMoveUp.png</iconset>
+            <iconset theme="formMoveUp" />
            </property>
            <property name="toolButtonStyle">
             <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -643,7 +643,7 @@
             <string>&amp;Down</string>
            </property>
            <property name="icon">
-            <iconset resource="qtractor.qrc">:/images/formMoveDown.png</iconset>
+            <iconset theme="formMoveDown" />
            </property>
            <property name="toolButtonStyle">
             <enum>Qt::ToolButtonTextBesideIcon</enum>
