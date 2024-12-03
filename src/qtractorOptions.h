@@ -341,6 +341,7 @@ public:
 	QString sCustomColorTheme;
 	QString sCustomStyleTheme;
 	QString sCustomStyleSheet;
+	QString sCustomIconsTheme;
 
 	// OSC options.
 	int iOscServerPort;
