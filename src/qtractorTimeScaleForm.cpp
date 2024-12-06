@@ -199,6 +199,7 @@ qtractorTimeScaleForm::qtractorTimeScaleForm ( QWidget *pParent )
 	m_ui.TimeScaleListView->setContextMenuPolicy(Qt::CustomContextMenu);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+	// Some conveniency cleaner helper...
 	m_ui.MarkerTextLineEdit->setClearButtonEnabled(true);
 #endif
 
@@ -363,6 +364,8 @@ void qtractorTimeScaleForm::setFrame ( unsigned long iFrame )
 	// Locate nearest list item...
 	if (pNode)
 		setCurrentItem(pNode, iFrame);
+
+	ensureVisibleFrame(iFrame);
 
 	stabilizeForm();
 
