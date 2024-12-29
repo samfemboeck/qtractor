@@ -4,6 +4,13 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+1.5.1  2024-12-30  An(other) End-of-Year'24 Release.
+
+- Fixed/corrected and awefully bad MIDI metronome and clock timing,
+  a reminiscence from the higher resolution MIDI queueing (in place
+  since v0.9.30, meaning a two year long disgrace :().
+
+
 1.5.0  2024-12-16  An End-of-Year'24 Release.
 
 - Clip/Cross Fade may now apply to all (multiple) selected clips.
@@ -35,7 +42,7 @@ ChangeLog
 - Double-click on slider for default value, replicating the behavior
   of middle-click.
 
-- Fxed bug: Aux Send loses state when reordered in a strip.
+- Fixed bug: Aux Send loses state when reordered in a strip.
 
 - Create/Add new bus below that which is used as source in View/Buses
   dialog.
