@@ -1,7 +1,7 @@
 // qtractorPlugin.h
 //
 /****************************************************************************
-   Copyright (C) 2005-2024, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2025, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -301,6 +301,15 @@ public:
 	Param *findParam(unsigned long iIndex) const
 		{ return m_params.value(iIndex, nullptr); }
 
+	// Last updated parameter accessors.
+	void setLastUpdatedParam(Param *pLastUpdatedParam)
+		{ m_pLastUpdatedParam = pLastUpdatedParam; }
+	Param *lastUpdatedParam() const
+		{ return m_pLastUpdatedParam; }
+
+	bool isLastUpdatedParam(Param *pParam) const
+		{ return (pParam == m_pLastUpdatedParam); }
+
 	// Properties registry.
 	class Property;
 
@@ -319,6 +328,15 @@ public:
 
 	Property *findProperty(unsigned long iProperty) const
 		{ return m_properties.value(iProperty, nullptr); }
+
+	// Last updated property accessors.
+	void setLastUpdatedProperty(Property *pLastUpdatedProp)
+		{ m_pLastUpdatedProperty = pLastUpdatedProp; }
+	Property *lastUpdatedProperty() const
+		{ return m_pLastUpdatedProperty; }
+
+	bool isLastUpdatedProperty(Property *pProp) const
+		{ return (pProp == m_pLastUpdatedProperty); }
 
 	// Instance capped number of audio ports.
 	unsigned short audioIns() const
@@ -670,11 +688,17 @@ private:
 	// List of parameters (by name).
 	ParamNames m_paramNames;
 
+	// Last updated parameter.
+	Param *m_pLastUpdatedParam;
+
 	// List of  properties (also parameters).
 	Properties m_properties;
 
 	// List of parameters (by name).
 	PropertyKeys m_propertyKeys;
+
+	// Last updated property.
+	Property *m_pLastUpdatedProperty;
 
 	// An accessible list of observers.
 	QList<qtractorPluginListItem *> m_items;

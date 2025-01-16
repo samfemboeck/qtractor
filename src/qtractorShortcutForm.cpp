@@ -1,7 +1,7 @@
 // qtractorShortcutForm.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2024, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2025, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -21,8 +21,6 @@
 
 #include "qtractorAbout.h"
 #include "qtractorShortcutForm.h"
-
-#include "qtractorActionControl.h"
 
 #include "qtractorMidiControlObserverForm.h"
 
@@ -317,10 +315,20 @@ qtractorShortcutForm::qtractorShortcutForm (
 
 	m_pActionControl = nullptr;
 
-	m_iDirtyActionShortcuts = 0;
-	m_iDirtyActionControl = 0;
-
 	m_pActionControlItem = nullptr;
+
+	m_actions = actions;
+
+	QListIterator<QAction *> iter(m_actions);
+	while (iter.hasNext()) {
+		QAction *pAction = iter.next();
+		if (pAction->objectName().isEmpty())
+			continue;
+		const QKeySequence& shortcut = pAction->shortcut();
+		const QString& sShortcutText = shortcut.toString();
+		if (!sShortcutText.isEmpty())
+			m_shortcuts.insert(sShortcutText, pAction);
+	}
 
 //	m_ui.ShortcutTable->setIconSize(QSize(16, 16));
 	m_ui.ShortcutTable->setItemDelegate(
@@ -333,39 +341,27 @@ qtractorShortcutForm::qtractorShortcutForm (
 	pHeaderView->resizeSection(1, 320);
 //	pHeaderView->hideSection(3);
 
-	QList<QTreeWidgetItem *> items;
-	QListIterator<QAction *> iter(actions);
-	while (iter.hasNext()) {
-		QAction *pAction = iter.next();
-		if (pAction->objectName().isEmpty())
-			continue;
-		QTreeWidgetItem *pItem = new QTreeWidgetItem(m_ui.ShortcutTable);
-		const QString& sActionText
-			= qtractorActionControl::menuActionText(pAction, pAction->text());
-		pItem->setIcon(0, pAction->icon());
-		pItem->setText(0, sActionText);
-		pItem->setText(1, pAction->statusTip());
-		const QKeySequence& shortcut = pAction->shortcut();
-		const QString& sShortcutText = shortcut.toString();
-		pItem->setText(2, sShortcutText);
-	//	pItem->setText(3, actionControlText(pAction));
-		pItem->setFlags(
-			Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
-		m_actions.insert(pItem, pAction);
-		if (!sShortcutText.isEmpty())
-			m_shortcuts.insert(sShortcutText, pItem);
-		items.append(pItem);
-	}
-	m_ui.ShortcutTable->addTopLevelItems(items);
-	m_ui.ShortcutTable->expandAll();
-
 	// Custom context menu...
 	m_ui.ShortcutTable->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// Restore last seen form position and extents...
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
-	if (pOptions)
+	if (pOptions) {
 		pOptions->loadWidgetGeometry(this, true);
+		pOptions->loadComboBoxHistory(m_ui.ShortcutSearchComboBox);
+		m_ui.ShortcutSearchComboBox->setEditText(QString());
+	}
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+	// Some conveniency cleaner helper...
+	m_ui.ShortcutSearchComboBox->lineEdit()->setClearButtonEnabled(true);
+	m_ui.ShortcutSearchComboBox->lineEdit()->setPlaceholderText(
+		tr("Search shortcuts"));
+#endif
+
+	QObject::connect(m_ui.ShortcutSearchComboBox,
+		SIGNAL(editTextChanged(const QString&)),
+		SLOT(refresh()));
 
 	QObject::connect(m_ui.ShortcutTable,
 		SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
@@ -386,7 +382,7 @@ qtractorShortcutForm::qtractorShortcutForm (
 		SIGNAL(rejected()),
 		SLOT(reject()));
 
-	stabilizeForm();
+	refresh();
 }
 
 
@@ -394,8 +390,10 @@ qtractorShortcutForm::~qtractorShortcutForm (void)
 {
 	// Store form position and extents...
 	qtractorOptions *pOptions = qtractorOptions::getInstance();
-	if (pOptions)
+	if (pOptions) {
+		pOptions->saveComboBoxHistory(m_ui.ShortcutSearchComboBox);
 		pOptions->saveWidgetGeometry(this, true);
+	}
 }
 
 
@@ -413,16 +411,12 @@ void qtractorShortcutForm::setActionControl ( qtractorActionControl *pActionCont
 
 	QHeaderView *pHeaderView = m_ui.ShortcutTable->header();
 	if (m_pActionControl) {
-		QHash<QTreeWidgetItem *, QAction *>::ConstIterator iter
-			= m_actions.constBegin();
-		const QHash<QTreeWidgetItem *, QAction *>::ConstIterator& iter_end
-			= m_actions.constEnd();
-		for ( ; iter != iter_end; ++iter)
-			iter.key()->setText(3, actionControlText(iter.value()));
 		pHeaderView->showSection(3);
 	} else {
 		pHeaderView->hideSection(3);
 	}
+
+	refresh();
 }
 
 qtractorActionControl *qtractorShortcutForm::actionControl (void) const
@@ -434,12 +428,12 @@ qtractorActionControl *qtractorShortcutForm::actionControl (void) const
 // Action shortcut/control dirty-flag accessors.
 bool qtractorShortcutForm::isDirtyActionShortcuts (void) const
 {
-	return (m_iDirtyActionShortcuts > 0);
+	return !m_dirty_shortcuts.isEmpty();
 }
 
-bool qtractorShortcutForm::isDirtyActionControl (void) const
+bool qtractorShortcutForm::isDirtyActionControls (void) const
 {
-	return (m_iDirtyActionControl > 0);
+	return !m_dirty_controls.isEmpty();;
 }
 
 
@@ -457,8 +451,12 @@ bool qtractorShortcutForm::commitEditor (
 	if (sShortcutText == sDefaultText)
 		return false;
 
+	QTreeWidgetItem *pItem = nullptr;
+
 	if (!sShortcutText.isEmpty()) {
-		QTreeWidgetItem *pItem = m_shortcuts.value(sShortcutText, nullptr);
+		QAction *pAction = m_shortcuts.value(sShortcutText, nullptr);
+		if (pAction)
+			pItem = m_action_items.value(pAction, nullptr);
 		if (pItem) {
 			QMessageBox::warning(this,
 				tr("Warning"),
@@ -469,12 +467,14 @@ bool qtractorShortcutForm::commitEditor (
 			pItemEditor->clear();
 			return false;
 		}
-		pItem = m_ui.ShortcutTable->topLevelItem(index.row());
-		if (pItem) m_shortcuts.insert(sShortcutText, pItem);
 	}
 
-	if (!sDefaultText.isEmpty())
-		m_shortcuts.remove(sDefaultText);
+	pItem = m_ui.ShortcutTable->topLevelItem(index.row());
+	if (pItem) {
+		QAction *pAction = m_item_actions.value(pItem, nullptr);
+		if (pAction)
+			m_dirty_shortcuts.insert(pAction, sShortcutText);
+	}
 
 	return true;
 }
@@ -504,8 +504,62 @@ void qtractorShortcutForm::actionShortcutChanged (
 		const QString& sShortcutText
 			= QKeySequence(pItem->text(2).trimmed()).toString();
 		pItem->setText(2, sShortcutText);
-		++m_iDirtyActionShortcuts;
 	}
+
+	stabilizeForm();
+}
+
+
+void qtractorShortcutForm::refresh (void)
+{
+	m_pActionControlItem = nullptr;
+
+	m_ui.ShortcutTable->clear();
+
+	m_item_actions.clear();
+	m_action_items.clear();
+
+	QString sSearch = m_ui.ShortcutSearchComboBox->currentText().simplified();
+	const QRegularExpression rx(sSearch.replace(
+		QRegularExpression("[\\s]+"), ".*"),
+		QRegularExpression::CaseInsensitiveOption);
+
+	QList<QTreeWidgetItem *> items;
+	QListIterator<QAction *> iter(m_actions);
+	while (iter.hasNext()) {
+		QAction *pAction = iter.next();
+		if (pAction->objectName().isEmpty())
+			continue;
+		const QString& sActionText
+			= qtractorActionControl::menuActionText(pAction, pAction->text());
+		if (!rx.pattern().isEmpty()
+			&& !rx.match(sActionText).hasMatch()
+			&& !rx.match(pAction->statusTip()).hasMatch())
+			continue;
+		QString sShortcutText;
+		if (m_dirty_shortcuts.contains(pAction))
+			sShortcutText = m_dirty_shortcuts.value(pAction);
+		else
+			sShortcutText = pAction->shortcut().toString();
+		QString sControlText;
+		if (m_dirty_controls.contains(pAction))
+			sControlText = m_dirty_controls.value(pAction);
+		else
+			sControlText = actionControlText(pAction);
+		QTreeWidgetItem *pItem = new QTreeWidgetItem();
+		pItem->setIcon(0, pAction->icon());
+		pItem->setText(0, sActionText);
+		pItem->setText(1, pAction->statusTip());
+		pItem->setText(2, sShortcutText);
+		pItem->setText(3, sControlText);
+		pItem->setFlags(
+			Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
+		m_item_actions.insert(pItem, pAction);
+		m_action_items.insert(pAction, pItem);
+		items.append(pItem);
+	}
+	m_ui.ShortcutTable->addTopLevelItems(items);
+	m_ui.ShortcutTable->expandAll();
 
 	stabilizeForm();
 }
@@ -513,13 +567,23 @@ void qtractorShortcutForm::actionShortcutChanged (
 
 void qtractorShortcutForm::accept (void)
 {
-	if (m_iDirtyActionShortcuts > 0) {
-		QHash<QTreeWidgetItem *, QAction *>::ConstIterator iter
-			= m_actions.constBegin();
-		const QHash<QTreeWidgetItem *, QAction *>::ConstIterator& iter_end
-			= m_actions.constEnd();
-		for ( ; iter != iter_end; ++iter)
-			iter.value()->setShortcut(QKeySequence(iter.key()->text(2)));
+	// Apply keyboard shortcuts...
+	QHash<QAction *, QString>::ConstIterator iter1
+		= m_dirty_shortcuts.constBegin();
+	const QHash<QAction *, QString>::ConstIterator& iter1_end
+		= m_dirty_shortcuts.constEnd();
+	for ( ; iter1 != iter1_end; ++iter1)
+		iter1.key()->setShortcut(QKeySequence(iter1.value()));
+
+	// Free old/cloned MIDI observers...
+	QHash<QAction *,MidiObserver *>::ConstIterator iter2
+		= m_dirty_observers.constBegin();
+	const QHash<QAction *, MidiObserver *>::ConstIterator& iter2_end
+		= m_dirty_observers.constEnd();
+	for ( ; iter2 != iter2_end; ++iter2) {
+		MidiObserver *pMidiObserver = iter2.value();
+		if (pMidiObserver)
+			delete pMidiObserver;
 	}
 
 	QDialog::accept();
@@ -531,7 +595,7 @@ void qtractorShortcutForm::reject (void)
 	bool bReject = true;
 
 	// Check if there's any pending changes...
-	if (m_iDirtyActionShortcuts > 0) {
+	if (isDirtyActionShortcuts()) {
 		QMessageBox::StandardButtons buttons
 			= QMessageBox::Discard | QMessageBox::Cancel;
 		if (m_ui.DialogButtonBox->button(QDialogButtonBox::Ok)->isEnabled())
@@ -551,7 +615,7 @@ void qtractorShortcutForm::reject (void)
 		}
 	}
 	else
-	if (m_iDirtyActionControl > 0) {
+	if (isDirtyActionControls()) {
 		QMessageBox::StandardButtons buttons
 			= QMessageBox::Discard | QMessageBox::Cancel;
 		if (m_ui.DialogButtonBox->button(QDialogButtonBox::Ok)->isEnabled())
@@ -571,6 +635,39 @@ void qtractorShortcutForm::reject (void)
 		}
 	}
 
+	qtractorMidiControl *pMidiControl = nullptr;
+	if (bReject && m_pActionControl)
+		pMidiControl = qtractorMidiControl::getInstance();
+	if (pMidiControl) {
+		QHash<QAction *,MidiObserver *>::ConstIterator iter
+			= m_dirty_observers.constBegin();
+		const QHash<QAction *, MidiObserver *>::ConstIterator& iter_end
+			= m_dirty_observers.constEnd();
+		for ( ; iter != iter_end; ++iter) {
+			QAction *pMidiObserverAction = iter.key();
+			MidiObserver *pMidiObserver = iter.value();
+			MidiObserver *pNewMidiObserver
+				= m_pActionControl->getMidiObserver(pMidiObserverAction);
+			if (pNewMidiObserver) {
+				pMidiControl->unmapMidiObserver(pNewMidiObserver);
+				m_pActionControl->removeMidiObserver(pMidiObserverAction);
+			}
+			if (pMidiObserver) {
+				pNewMidiObserver = m_pActionControl->addMidiObserver(pMidiObserverAction);
+				pNewMidiObserver->setType(pMidiObserver->type());
+				pNewMidiObserver->setChannel(pMidiObserver->channel());
+				pNewMidiObserver->setParam(pMidiObserver->param());
+				pNewMidiObserver->setLogarithmic(pMidiObserver->isLogarithmic());
+				pNewMidiObserver->setFeedback(pMidiObserver->isFeedback());
+				pNewMidiObserver->setInvert(pMidiObserver->isInvert());
+				pNewMidiObserver->setHook(pMidiObserver->isHook());
+				pNewMidiObserver->setLatch(pMidiObserver->isLatch());
+				pMidiControl->mapMidiObserver(pNewMidiObserver);
+				delete pMidiObserver;
+			}
+		}
+	}
+
 	if (bReject)
 		QDialog::reject();
 }
@@ -579,7 +676,7 @@ void qtractorShortcutForm::reject (void)
 void qtractorShortcutForm::stabilizeForm (void)
 {
 	const bool bValid
-		= (m_iDirtyActionShortcuts > 0 || m_iDirtyActionControl > 0);
+		= (isDirtyActionShortcuts() || isDirtyActionControls());
 	m_ui.DialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(bValid);
 }
 
@@ -609,7 +706,7 @@ void qtractorShortcutForm::actionControlActivated (void)
 	if (m_pActionControlItem == nullptr)
 		return;
 
-	QAction *pMidiObserverAction = m_actions.value(m_pActionControlItem, nullptr);
+	QAction *pMidiObserverAction = m_item_actions.value(m_pActionControlItem, nullptr);
 	if (pMidiObserverAction == nullptr)
 		return;
 
@@ -618,9 +715,30 @@ void qtractorShortcutForm::actionControlActivated (void)
 	qtractorMidiControlObserverForm *pMidiObserverForm
 		= qtractorMidiControlObserverForm::getInstance();
 	if (pMidiObserverForm) {
+		if (!m_dirty_observers.contains(pMidiObserverAction)) {
+			MidiObserver *pMidiObserver
+				= m_pActionControl->getMidiObserver(pMidiObserverAction);
+			if (pMidiObserver) {
+				MidiObserver *pNewMidiObserver
+					= new MidiObserver(pMidiObserverAction);
+				pNewMidiObserver->setType(pMidiObserver->type());
+				pNewMidiObserver->setChannel(pMidiObserver->channel());
+				pNewMidiObserver->setParam(pMidiObserver->param());
+				pNewMidiObserver->setLogarithmic(pMidiObserver->isLogarithmic());
+				pNewMidiObserver->setFeedback(pMidiObserver->isFeedback());
+				pNewMidiObserver->setInvert(pMidiObserver->isInvert());
+				pNewMidiObserver->setHook(pMidiObserver->isHook());
+				pNewMidiObserver->setLatch(pMidiObserver->isLatch());
+				pMidiObserver = pNewMidiObserver;
+			}
+			m_dirty_observers.insert(pMidiObserverAction, pMidiObserver);
+		}
 		QObject::connect(pMidiObserverForm,
 			SIGNAL(accepted()),
 			SLOT(actionControlAccepted()));
+		QObject::connect(pMidiObserverForm,
+			SIGNAL(rejected()),
+			SLOT(actionControlRejected()));
 	}
 }
 
@@ -632,13 +750,35 @@ void qtractorShortcutForm::actionControlAccepted (void)
 
 	if (m_pActionControlItem) {
 		QAction *pMidiObserverAction
-			= m_actions.value(m_pActionControlItem, nullptr);
+			= m_item_actions.value(m_pActionControlItem, nullptr);
 		if (pMidiObserverAction) {
-			const QString& sText = actionControlText(pMidiObserverAction);
-			m_pActionControlItem->setText(3, sText);
+			const QString& sControlText = actionControlText(pMidiObserverAction);
+			m_pActionControlItem->setText(3, sControlText);
+			m_dirty_controls.insert(pMidiObserverAction, sControlText);
 		}
 		m_pActionControlItem = nullptr;
-		++m_iDirtyActionControl;
+	}
+
+	stabilizeForm();
+}
+
+
+void qtractorShortcutForm::actionControlRejected (void)
+{
+	if (m_pActionControl == nullptr)
+		return;
+
+	if (m_pActionControlItem) {
+		QAction *pMidiObserverAction
+			= m_item_actions.value(m_pActionControlItem, nullptr);
+		if (pMidiObserverAction) {
+			qtractorActionControl::MidiObserver *pMidiObserver
+				= m_dirty_observers.value(pMidiObserverAction, nullptr);
+			if (pMidiObserver)
+				delete pMidiObserver;
+			m_dirty_observers.remove(pMidiObserverAction);
+		}
+		m_pActionControlItem = nullptr;
 	}
 
 	stabilizeForm();
