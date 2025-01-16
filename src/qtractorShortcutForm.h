@@ -1,7 +1,7 @@
 // qtractorShortcutForm.h
 //
 /****************************************************************************
-   Copyright (C) 2005-2024, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2025, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -24,6 +24,8 @@
 
 #include "ui_qtractorShortcutForm.h"
 
+#include "qtractorActionControl.h"
+
 #include <QHash>
 
 #include <QItemDelegate>
@@ -31,9 +33,6 @@
 
 
 // Forward decls.
-class qtractorActionControl;
-
-class QAction;
 class QToolButton;
 
 
@@ -181,7 +180,7 @@ public:
 
 	// Action shortcut/control dirty-flag accessors.
 	bool isDirtyActionShortcuts() const;
-	bool isDirtyActionControl() const;
+	bool isDirtyActionControls() const;
 
 	// Shortcut action finder & settler.
 	bool commitEditor(qtractorShortcutTableItemEditor *pItemEditor);
@@ -194,6 +193,9 @@ protected slots:
 	void actionControlMenuRequested(const QPoint&);
 	void actionControlActivated();
 	void actionControlAccepted();
+	void actionControlRejected();
+
+	void refresh();
 
 	void accept();
 	void reject();
@@ -211,11 +213,19 @@ private:
 
 	qtractorActionControl *m_pActionControl;
 
-	QHash<QTreeWidgetItem *, QAction *> m_actions;
-	QHash<QString, QTreeWidgetItem *> m_shortcuts;
+	QList<QAction *> m_actions;
 
-	int m_iDirtyActionShortcuts;
-	int m_iDirtyActionControl;
+	QHash<QString, QAction *> m_shortcuts;
+
+	QHash<QTreeWidgetItem *, QAction *> m_item_actions;
+	QHash<QAction *, QTreeWidgetItem *> m_action_items;
+
+	QHash<QAction *, QString> m_dirty_shortcuts;
+	QHash<QAction *, QString> m_dirty_controls;
+
+	typedef qtractorActionControl::MidiObserver MidiObserver;
+
+	QHash<QAction *, MidiObserver *> m_dirty_observers;
 
 	QTreeWidgetItem *m_pActionControlItem;
 };
