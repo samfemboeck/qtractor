@@ -1,7 +1,7 @@
 // qtractorSession.h
 //
 /****************************************************************************
-   Copyright (C) 2005-2024, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2025, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -161,12 +161,12 @@ public:
 	unsigned int pixelSnap(unsigned int x);
 
 	// Frame/locate (SMPTE) conversion.
-	unsigned long frameFromLocate(unsigned long iLocate) const;
-	unsigned long locateFromFrame(unsigned long iFrame) const;
+	unsigned long frameFromLocate(unsigned int iLocate) const;
+	unsigned int  locateFromFrame(unsigned long iFrame) const;
 
 	// Song position pointer (SPP=MIDI beats) to frame converters.
-	unsigned long  frameFromSongPos(unsigned short iSongPos);
-	unsigned short songPosFromFrame(unsigned long iFrame);
+	unsigned long frameFromSongPos(unsigned int iSongPos);
+	unsigned int  songPosFromFrame(unsigned long iFrame);
 
 	// Update time scale divisor factors.
 	void updateTimeScale();
