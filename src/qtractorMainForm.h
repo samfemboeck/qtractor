@@ -133,6 +133,8 @@ public:
 	void addAudioFile(const QString& sFilename);
 	void addMidiFile(const QString& sFilename);
 
+	static QString styleSheet(const QString& sFilename);
+
 public slots:
 
 	void fileNew();
