@@ -5631,13 +5631,12 @@ void qtractorMainForm::transportRewind (void)
 	const int iRolling = (bShiftKeyModifier ? -3 : -1);
 
 	// Toggle rolling backward...
-	if (setRolling(iRolling) < 0) {
-		setPlaying(false);
-	} else {
+	if (setRolling(iRolling) >= 0) {
 		// Send MMC REWIND command...
 		m_pSession->midiEngine()->sendMmcCommand(
 			qtractorMmcEvent::REWIND);
 	}
+//	else setPlayingEx(false);
 
 	++m_iStabilizeTimer;
 }
@@ -5661,13 +5660,12 @@ void qtractorMainForm::transportFastForward (void)
 	const int iRolling = (bShiftKeyModifier ? +3 : +1);
 
 	// Toggle rolling backward...
-	if (setRolling(iRolling) > 0) {
-		setPlayingEx(false);
-	} else {
+	if (0 >= setRolling(iRolling)) {
 		// Send MMC FAST_FORWARD command...
 		m_pSession->midiEngine()->sendMmcCommand(
 			qtractorMmcEvent::FAST_FORWARD);
 	}
+//	else setPlayingEx(false);
 
 	++m_iStabilizeTimer;
 }
@@ -7923,17 +7921,7 @@ void qtractorMainForm::updateCustomStyleSheet (void)
 	if (m_pOptions == nullptr)
 		return;
 
-	QString sStyleSheet;
-
-	if (!m_pOptions->sCustomStyleSheet.isEmpty()) {
-		QFile file(m_pOptions->sCustomStyleSheet);
-		if (file.open(QFile::ReadOnly)) {
-			sStyleSheet = QString::fromUtf8(file.readAll());
-			file.close();
-		}
-	}
-
-	qApp->setStyleSheet(sStyleSheet);
+	qApp->setStyleSheet(styleSheet(m_pOptions->sCustomStyleSheet));
 }
 
 
@@ -9367,6 +9355,50 @@ void qtractorMainForm::transportTimeFinished (void)
 void qtractorMainForm::transportTempoContextMenu ( const QPoint& /*pos*/ )
 {
 	viewTempoMap();
+}
+
+
+// Open and retrieve style-sheet from file (*.qss).
+QString qtractorMainForm::styleSheet ( const QString& sFilename )
+{
+	QString sStyleSheet;
+
+	if (sFilename.isEmpty())
+		return sStyleSheet;
+
+	QFile file(sFilename);
+	if (file.open(QFile::ReadOnly)) {
+		sStyleSheet = QString::fromUtf8(file.readAll());
+		file.close();
+	}
+
+	if (!sStyleSheet.isEmpty()) {
+		QStringList subs;
+		const QDir& dir = QFileInfo(sFilename).absoluteDir();
+		const QRegularExpression rx(
+			"url\\([\\s]?[\"']?([^\"')]+)[\"']?[\\s]?\\)",
+			QRegularExpression::CaseInsensitiveOption);
+		QRegularExpressionMatchIterator iter = rx.globalMatch(sStyleSheet);
+		while (iter.hasNext()) {
+			const QRegularExpressionMatch& match = iter.next();
+			const QString& sPath = match.captured(1).trimmed();
+			if (sPath.isEmpty())
+				continue;
+			const QFileInfo info(dir, sPath);
+			if (!info.exists())
+				continue;
+			const QString& sBefore
+				= match.captured(0);
+			if (!subs.contains(sBefore)) {
+				QString sAfter = sBefore;
+				sAfter.replace(sPath, info.absoluteFilePath());
+				sStyleSheet.replace(sBefore, sAfter);
+				subs.append(sBefore);
+			}
+		}
+	}
+
+	return sStyleSheet;
 }
 
 
