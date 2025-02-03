@@ -44,6 +44,8 @@
 #include "qtractorAudioEngine.h"
 #include "qtractorMidiEngine.h"
 
+#include "qtractorTimeStretcher.h"
+
 #include "qtractorSessionCommand.h"
 #include "qtractorTimeScaleCommand.h"
 #include "qtractorClipCommand.h"
@@ -1555,10 +1557,22 @@ void qtractorMainForm::setup ( qtractorOptions *pOptions )
 	// Set default audio-buffer quality...
 	qtractorAudioBuffer::setDefaultResampleType(
 		m_pOptions->iAudioResampleType);
-	qtractorAudioBuffer::setDefaultWsolaTimeStretch(
-		m_pOptions->bAudioWsolaTimeStretch);
-	qtractorAudioBuffer::setDefaultWsolaQuickSeek(
-		m_pOptions->bAudioWsolaQuickSeek);
+
+	unsigned int iStretcherFlags = 0;
+	if (m_pOptions->bAudioWsolaTimeStretch)
+		iStretcherFlags |= qtractorTimeStretcher::WsolaTimeStretch;
+	if (m_pOptions->bAudioWsolaQuickSeek)
+		iStretcherFlags |= qtractorTimeStretcher::WsolaQuickSeek;
+#ifdef CONFIG_LIBRUBBERBAND
+	if (m_pOptions->bAudioRubberBandFormant)
+		iStretcherFlags |= qtractorTimeStretcher::RubberBandFormant;
+#ifdef CONFIG_LIBRUBBERBAND_R3
+	if (m_pOptions->bAudioRubberBandFinerR3)
+		iStretcherFlags |= qtractorTimeStretcher::RubberBandFinerR3;
+#endif
+#endif
+	qtractorAudioBuffer::setDefaultStretcherFlags(iStretcherFlags);
+
 	qtractorTrack::setTrackColorSaturation(
 		m_pOptions->iTrackColorSaturation);
 
@@ -5293,6 +5307,8 @@ void qtractorMainForm::viewOptions (void)
 	const int     iOldResampleType       = m_pOptions->iAudioResampleType;
 	const bool    bOldWsolaTimeStretch   = m_pOptions->bAudioWsolaTimeStretch;
 	const bool    bOldWsolaQuickSeek     = m_pOptions->bAudioWsolaQuickSeek;
+	const bool    bOldRubberBandFormant  = m_pOptions->bAudioRubberBandFormant;
+	const bool    bOldRubberBandFinerR3  = m_pOptions->bAudioRubberBandFinerR3;
 	const bool    bOldAudioPlayerAutoConnect = m_pOptions->bAudioPlayerAutoConnect;
 	const bool    bOldAudioPlayerBus     = m_pOptions->bAudioPlayerBus;
 	const bool    bOldAudioMetronome     = m_pOptions->bAudioMetronome;
@@ -5354,16 +5370,28 @@ void qtractorMainForm::viewOptions (void)
 				m_pOptions->iAudioResampleType);
 			iNeedRestart |= RestartSession;
 		}
-		if (( bOldWsolaTimeStretch && !m_pOptions->bAudioWsolaTimeStretch) ||
-			(!bOldWsolaTimeStretch &&  m_pOptions->bAudioWsolaTimeStretch)) {
-			qtractorAudioBuffer::setDefaultWsolaTimeStretch(
-				m_pOptions->bAudioWsolaTimeStretch);
-			iNeedRestart |= RestartSession;
-		}
-		if (( bOldWsolaQuickSeek && !m_pOptions->bAudioWsolaQuickSeek) ||
-			(!bOldWsolaQuickSeek &&  m_pOptions->bAudioWsolaQuickSeek)) {
-			qtractorAudioBuffer::setDefaultWsolaQuickSeek(
-				m_pOptions->bAudioWsolaQuickSeek);
+		if (( bOldWsolaTimeStretch  && !m_pOptions->bAudioWsolaTimeStretch)  ||
+			(!bOldWsolaTimeStretch  &&  m_pOptions->bAudioWsolaTimeStretch)  ||
+			( bOldWsolaQuickSeek    && !m_pOptions->bAudioWsolaQuickSeek)    ||
+			(!bOldWsolaQuickSeek    &&  m_pOptions->bAudioWsolaQuickSeek)    ||
+			( bOldRubberBandFormant && !m_pOptions->bAudioRubberBandFormant) ||
+			(!bOldRubberBandFormant &&  m_pOptions->bAudioRubberBandFormant) ||
+			( bOldRubberBandFinerR3 && !m_pOptions->bAudioRubberBandFinerR3) ||
+			(!bOldRubberBandFinerR3 &&  m_pOptions->bAudioRubberBandFinerR3)) {
+			unsigned int iStretcherFlags = 0;
+			if (m_pOptions->bAudioWsolaTimeStretch)
+				iStretcherFlags |= qtractorTimeStretcher::WsolaTimeStretch;
+			if (m_pOptions->bAudioWsolaQuickSeek)
+				iStretcherFlags |= qtractorTimeStretcher::WsolaQuickSeek;
+		#ifdef CONFIG_LIBRUBBERBAND
+			if (m_pOptions->bAudioRubberBandFormant)
+				iStretcherFlags |= qtractorTimeStretcher::RubberBandFormant;
+		#ifdef CONFIG_LIBRUBBERBAND_R3
+			if (m_pOptions->bAudioRubberBandFinerR3)
+				iStretcherFlags |= qtractorTimeStretcher::RubberBandFinerR3;
+		#endif
+		#endif
+			qtractorAudioBuffer::setDefaultStretcherFlags(iStretcherFlags);
 			iNeedRestart |= RestartSession;
 		}
 		// Audio engine control modes...
@@ -5630,6 +5658,9 @@ void qtractorMainForm::transportRewind (void)
 
 	// Make sure session is activated?...
 	//checkRestartSession();
+	qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
+	if (pMidiEngine == nullptr)
+		return;
 
 	// Rolling direction and speed (negative)...
 	bool bShiftKeyModifier = QApplication::keyboardModifiers()
@@ -5641,10 +5672,22 @@ void qtractorMainForm::transportRewind (void)
 	// Toggle rolling backward...
 	if (setRolling(iRolling) >= 0) {
 		// Send MMC REWIND command...
-		m_pSession->midiEngine()->sendMmcCommand(
-			qtractorMmcEvent::REWIND);
+		pMidiEngine->sendMmcCommand(qtractorMmcEvent::REWIND);
 	}
-//	else setPlayingEx(false);
+	else
+	if (m_pSession->isPlaying()) {
+		// setPlayingEx(false);
+		// Avoid double update (while on fastTimerSlot...)
+		m_iPlayHead = m_pSession->playHead();
+		if (m_iPlayHead > 0) {
+			const unsigned int iSongPos // Schedule ahead...
+				= m_pSession->songPosFromFrame(m_iPlayHead) + 1;
+			pMidiEngine->sendSppCommand(SND_SEQ_EVENT_SONGPOS, iSongPos);
+			pMidiEngine->sendSppCommand(SND_SEQ_EVENT_CONTINUE, iSongPos);
+		}
+		pMidiEngine->sendMmcLocate(
+			m_pSession->locateFromFrame(m_iPlayHead));
+	}
 
 	++m_iStabilizeTimer;
 }
@@ -5659,6 +5702,9 @@ void qtractorMainForm::transportFastForward (void)
 
 	// Make sure session is activated?...
 	//checkRestartSession();
+	qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
+	if (pMidiEngine == nullptr)
+		return;
 
 	// Rolling direction and speed (positive)...
 	bool bShiftKeyModifier = QApplication::keyboardModifiers()
@@ -5670,10 +5716,22 @@ void qtractorMainForm::transportFastForward (void)
 	// Toggle rolling backward...
 	if (0 >= setRolling(iRolling)) {
 		// Send MMC FAST_FORWARD command...
-		m_pSession->midiEngine()->sendMmcCommand(
-			qtractorMmcEvent::FAST_FORWARD);
+		pMidiEngine->sendMmcCommand(qtractorMmcEvent::FAST_FORWARD);
 	}
-//	else setPlayingEx(false);
+	else
+	if (m_pSession->isPlaying()) {
+		// setPlayingEx(false);
+		// Avoid double update (while on fastTimerSlot...)
+		m_iPlayHead = m_pSession->playHead();
+		if (m_iPlayHead > 0) {
+			const unsigned int iSongPos // Schedule ahead...
+				= m_pSession->songPosFromFrame(m_iPlayHead) + 1;
+			pMidiEngine->sendSppCommand(SND_SEQ_EVENT_SONGPOS, iSongPos);
+			pMidiEngine->sendSppCommand(SND_SEQ_EVENT_CONTINUE, iSongPos);
+		}
+		pMidiEngine->sendMmcLocate(
+			m_pSession->locateFromFrame(m_iPlayHead));
+	}
 
 	++m_iStabilizeTimer;
 }
@@ -6435,19 +6493,24 @@ bool qtractorMainForm::setPlayingEx ( bool bPlaying )
 
 	qtractorMidiEngine *pMidiEngine = m_pSession->midiEngine();
 	if (pMidiEngine) {
-		// Avoid double update (owhile n fastTimerSlot...)
+		// Avoid double update (while on fastTimerSlot...)
 		m_iPlayHead = m_pSession->playHead();
 		// Send MMC PLAY/STOP command...
 		pMidiEngine->sendMmcCommand(bPlaying
 			? qtractorMmcEvent::PLAY
 			: qtractorMmcEvent::STOP);
-		pMidiEngine->sendSppCommand(bPlaying
-			? (m_iPlayHead > 0
-				? SND_SEQ_EVENT_CONTINUE
-				: SND_SEQ_EVENT_START)
-			: SND_SEQ_EVENT_STOP);
 		// Send MMC LOCATE and MIDI SPP commands on stop/pause...
-		if (!bPlaying) {
+		if (bPlaying) {
+			if (m_iPlayHead > 0) {
+				const unsigned int iSongPos // Schedule ahead...
+					= m_pSession->songPosFromFrame(m_iPlayHead) + 1;
+				pMidiEngine->sendSppCommand(SND_SEQ_EVENT_SONGPOS, iSongPos);
+				pMidiEngine->sendSppCommand(SND_SEQ_EVENT_CONTINUE, iSongPos);
+			} else {
+				pMidiEngine->sendSppCommand(SND_SEQ_EVENT_START);
+			}
+		} else {
+			pMidiEngine->sendSppCommand(SND_SEQ_EVENT_STOP);
 			pMidiEngine->sendMmcLocate(
 				m_pSession->locateFromFrame(m_iPlayHead));
 			pMidiEngine->sendSppCommand(SND_SEQ_EVENT_SONGPOS,
@@ -8022,9 +8085,9 @@ void qtractorMainForm::fastTimerSlot (void)
 			// Send MMC LOCATE and MIDI SPP command...
 			if (!pAudioEngine->isFreewheel()) {
 				pMidiEngine->sendMmcLocate(
-						m_pSession->locateFromFrame(iPlayHead));
+					m_pSession->locateFromFrame(iPlayHead));
 				pMidiEngine->sendSppCommand(SND_SEQ_EVENT_SONGPOS,
-						m_pSession->songPosFromFrame(iPlayHead));
+					m_pSession->songPosFromFrame(iPlayHead));
 			}
 		}
 		else
