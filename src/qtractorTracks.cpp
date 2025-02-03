@@ -1219,6 +1219,7 @@ struct audioClipBufferItem
 		buff->setLength(clip->clipLength());
 		buff->setTimeStretch(clip->timeStretch());
 		buff->setPitchShift(clip->pitchShift());
+		buff->setStretcherFlags(clip->stretcherFlags());
 		buff->open(clip->filename());
 		buff->syncExport();
 	}

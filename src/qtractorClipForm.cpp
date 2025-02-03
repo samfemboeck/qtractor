@@ -1,7 +1,7 @@
 // qtractorClipForm.cpp
 //
 /****************************************************************************
-   Copyright (C) 2005-2024, rncbc aka Rui Nuno Capela. All rights reserved.
+   Copyright (C) 2005-2025, rncbc aka Rui Nuno Capela. All rights reserved.
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@
 
 #include "qtractorAudioClip.h"
 #include "qtractorMidiClip.h"
+
+#include "qtractorTimeStretcher.h"
 
 #include "qtractorSession.h"
 #include "qtractorOptions.h"
@@ -203,6 +205,16 @@ qtractorClipForm::qtractorClipForm ( QWidget *pParent )
 	QObject::connect(m_ui.WsolaQuickSeekCheckBox,
 		SIGNAL(stateChanged(int)),
 		SLOT(changed()));
+#ifdef CONFIG_LIBRUBBERBAND
+	QObject::connect(m_ui.RubberBandFormantCheckBox,
+		SIGNAL(stateChanged(int)),
+		SLOT(changed()));
+#ifdef CONFIG_LIBRUBBERBAND_R3
+	QObject::connect(m_ui.RubberBandFinerR3CheckBox,
+		SIGNAL(stateChanged(int)),
+		SLOT(changed()));
+#endif
+#endif
 	QObject::connect(m_ui.ClipMuteCheckBox,
 		SIGNAL(stateChanged(int)),
 		SLOT(changed()));
@@ -303,14 +315,26 @@ void qtractorClipForm::setClip ( qtractorClip *pClip )
 		m_ui.ClipPanningSpinBox->setVisible(true);
 		m_ui.AudioClipGroupBox->setVisible(true);
 	#ifdef CONFIG_LIBRUBBERBAND
-		m_ui.WsolaTimeStretchCheckBox->setChecked(pAudioClip->isWsolaTimeStretch());
+		m_ui.WsolaTimeStretchCheckBox->setChecked(
+			pAudioClip->isStretcherFlag(qtractorTimeStretcher::WsolaTimeStretch));
+		m_ui.RubberBandFormantCheckBox->setChecked(
+			pAudioClip->isStretcherFlag(qtractorTimeStretcher::RubberBandFormant));
+	#ifdef CONFIG_LIBRUBBERBAND_R3
+		m_ui.RubberBandFinerR3CheckBox->setChecked(
+			pAudioClip->isStretcherFlag(qtractorTimeStretcher::RubberBandFinerR3));
+	#else
+		m_ui.RubberBandFinerR3CheckBox->hide();
+	#endif
 	#else
 		m_ui.PitchShiftTextLabel->setEnabled(false);
 		m_ui.PitchShiftSpinBox->setEnabled(false);	
 		m_ui.WsolaTimeStretchCheckBox->setEnabled(false);
 		m_ui.WsolaTimeStretchCheckBox->setChecked(true);
+		m_ui.RubberBandFormantCheckBox->hide();
+		m_ui.RubberBandFinerR3CheckBox->hide();
 	#endif
-		m_ui.WsolaQuickSeekCheckBox->setChecked(pAudioClip->isWsolaQuickSeek());
+		m_ui.WsolaQuickSeekCheckBox->setChecked(
+			pAudioClip->isStretcherFlag(qtractorTimeStretcher::WsolaQuickSeek));
 		break;
 	}
 	case qtractorTrack::Midi: {
@@ -393,16 +417,25 @@ void qtractorClipForm::accept (void)
 		float fClipPanning = 0.0f;
 		float fTimeStretch = 0.0f;
 		float fPitchShift = 0.0f;
-		bool bWsolaTimeStretch = qtractorAudioBuffer::isDefaultWsolaTimeStretch();
-		bool bWsolaQuickSeek = qtractorAudioBuffer::isDefaultWsolaQuickSeek();
+		unsigned int iStretcherFlags = 0;
 		switch (clipType) {
 		case qtractorTrack::Audio:
 			fClipGain = pow10f2(m_ui.ClipGainSpinBox->value());
 			fClipPanning = m_ui.ClipPanningSpinBox->value();
 			fTimeStretch = 0.01f * m_ui.TimeStretchSpinBox->value();
 			fPitchShift = ::powf(2.0f, m_ui.PitchShiftSpinBox->value() / 12.0f);
-			bWsolaTimeStretch = m_ui.WsolaTimeStretchCheckBox->isChecked();
-			bWsolaQuickSeek = m_ui.WsolaQuickSeekCheckBox->isChecked();
+			if (m_ui.WsolaTimeStretchCheckBox->isChecked())
+				iStretcherFlags |= qtractorTimeStretcher::WsolaTimeStretch;
+			if (m_ui.WsolaQuickSeekCheckBox->isChecked())
+				iStretcherFlags |= qtractorTimeStretcher::WsolaQuickSeek;
+		#ifdef CONFIG_LIBRUBBERBAND
+			if (m_ui.RubberBandFormantCheckBox->isChecked())
+				iStretcherFlags |= qtractorTimeStretcher::RubberBandFormant;
+		#ifdef CONFIG_LIBRUBBERBAND_R3
+			if (m_ui.RubberBandFinerR3CheckBox->isChecked())
+				iStretcherFlags |= qtractorTimeStretcher::RubberBandFinerR3;
+		#endif
+		#endif
 			break;
 		case qtractorTrack::Midi:
 			fClipGain = 0.01f * m_ui.ClipGainSpinBox->value();
@@ -421,7 +454,7 @@ void qtractorClipForm::accept (void)
 			= fadeTypeFromIndex(m_ui.FadeOutTypeComboBox->currentIndex());
 		const bool bClipMute = m_ui.ClipMuteCheckBox->isChecked();
 		int iFileChange = 0;
-		int iWsolaChange = 0;
+		int iFlagsChange = 0;
 		// It depends whether we're adding a new clip or not...
 		if (m_bClipNew) {
 			// Just set new clip properties...
@@ -437,8 +470,7 @@ void qtractorClipForm::accept (void)
 				if (pAudioClip) {
 					pAudioClip->setTimeStretch(fTimeStretch);
 					pAudioClip->setPitchShift(fPitchShift);
-					pAudioClip->setWsolaTimeStretch(bWsolaTimeStretch);
-					pAudioClip->setWsolaQuickSeek(bWsolaQuickSeek);
+					pAudioClip->setStretcherFlags(iStretcherFlags);
 					++iFileChange;
 				}
 				break;
@@ -491,14 +523,8 @@ void qtractorClipForm::accept (void)
 						fTimeStretch = 0.0f;
 					if (qAbs(fPitchShift - pAudioClip->pitchShift()) < 0.001f)
 						fPitchShift = 0.0f;
-					const bool bOldWsolaTimeStretch = pAudioClip->isWsolaTimeStretch();
-					if (( bOldWsolaTimeStretch && !bWsolaTimeStretch) ||
-						(!bOldWsolaTimeStretch &&  bWsolaTimeStretch))
-						++iWsolaChange;
-					const bool bOldWsolaQuickSeek = pAudioClip->isWsolaQuickSeek();
-					if (( bOldWsolaQuickSeek   && !bWsolaQuickSeek  ) ||
-						(!bOldWsolaQuickSeek   &&  bWsolaQuickSeek  ))
-						++iWsolaChange;
+					if (pAudioClip->stretcherFlags() != iStretcherFlags)
+						++iFlagsChange;
 				}
 				break;
 			}
@@ -540,9 +566,9 @@ void qtractorClipForm::accept (void)
 			if (iFadeOutLength != m_pClip->fadeOutLength()
 				|| fadeOutType != m_pClip->fadeOutType())
 				pClipCommand->fadeOutClip(m_pClip, iFadeOutLength, fadeOutType);
-			// WSOLA audio clip options...
-			if (iWsolaChange > 0)
-				pClipCommand->wsolaClip(m_pClip, bWsolaTimeStretch, bWsolaQuickSeek);
+			// Audio clip time-stretch/pitch-shifting engine flags options...
+			if (iFlagsChange > 0)
+				pClipCommand->stretcherFlagsClip(m_pClip, iStretcherFlags);
 			// Mute...
 			if (( bClipMute && !m_pClip->isClipMute()) ||
 				(!bClipMute &&  m_pClip->isClipMute()))
@@ -654,8 +680,19 @@ void qtractorClipForm::stabilizeForm (void)
 	m_ui.FadeOutTypeComboBox->setEnabled(
 		m_ui.FadeOutLengthSpinBox->value() > 0);
 	m_ui.FadeOutLengthSpinBox->setMaximum(iClipLength);
-	m_ui.WsolaQuickSeekCheckBox->setEnabled(
-		m_ui.WsolaTimeStretchCheckBox->isChecked());
+
+	const bool bTimeStretch
+		= (qAbs(float(m_ui.TimeStretchSpinBox->value()) - 100.0f) > 0.0f);
+	const bool bWsolaTimeStretch
+		= bTimeStretch && m_ui.WsolaTimeStretchCheckBox->isChecked();
+	m_ui.WsolaTimeStretchCheckBox->setEnabled(bTimeStretch);
+	m_ui.WsolaQuickSeekCheckBox->setEnabled(bWsolaTimeStretch);
+
+	const bool bPitchShift
+		= (qAbs(float(m_ui.PitchShiftSpinBox->value())) > 0.0f);
+	m_ui.RubberBandFormantCheckBox->setEnabled(bPitchShift);
+	m_ui.RubberBandFinerR3CheckBox->setEnabled(bPitchShift
+		|| (bTimeStretch && !bWsolaTimeStretch));
 
 	bool bValid = (m_iDirtyCount > 0);
 	bValid = bValid && !m_ui.ClipNameLineEdit->text().isEmpty();
