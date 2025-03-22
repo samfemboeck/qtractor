@@ -623,6 +623,13 @@ bool qtractorTrack::open (void)
 	// Ah, at least make new name feedback...
 	updateTrackName();
 
+	// Formerly on mixer track strip update,
+	// but now where it surely belongs, here...
+	//
+	mapControllers();
+
+	applyCurveFile(m_pCurveFile);
+
 	// Done.
 	return (m_pMonitor != nullptr);
 }
@@ -1311,6 +1318,13 @@ void qtractorTrack::removeClip ( qtractorClip *pClip )
 	else
 	if (m_props.trackType == qtractorTrack::Midi)
 		m_pSession->files()->removeClipItem(qtractorFileList::Midi, pClip);
+
+	if (m_bClipRecordEx && m_pClipRecord == pClip) {
+		m_bClipRecordEx = false;
+		m_pClipRecord = nullptr;
+		m_iClipRecordStart = 0;
+		setRecord(false);
+	}
 
 	pClip->setActive(false);
 
