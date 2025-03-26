@@ -460,7 +460,7 @@ void qtractorSession::updateSession (
 
 	// Account for the last tempo-map node
 	qtractorTimeScale::Node *pNode
-		= m_props.timeScale.nodes().last();
+		= timeScale()->nodes().last();
 	if (pNode &&
 		m_iSessionEnd < pNode->frame)
 		m_iSessionEnd = pNode->frame;
