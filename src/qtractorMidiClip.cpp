@@ -1226,6 +1226,8 @@ void qtractorMidiClip::updateEditorContents (void)
 	qtractorMidiEditor *pMidiEditor = m_pMidiEditorForm->editor();
 	if (pMidiEditor)
 		pMidiEditor->updateContents();
+
+	m_pMidiEditorForm->stabilizeForm();
 }
 
 
@@ -1665,10 +1667,12 @@ void qtractorMidiClip::setStepInputLast ( unsigned long iStepInputLast )
 			= m_iStepInputHead
 			+ iStepInputLast
 			- m_iStepInputLast;
-		if (iStepInputFrame > m_iStepInputTail)
+		if (iStepInputFrame > m_iStepInputTail) {
 			advanceStepInput();
+			m_iStepInputLast = iStepInputLast;
+		}
 	}
-
+	else
 	m_iStepInputLast = iStepInputLast;
 }
 
@@ -1777,16 +1781,26 @@ qtractorMidiEvent *qtractorMidiClip::findStepInputEvent (
 
 
 // Submit a command to the clip editor, if available.
-bool qtractorMidiClip::execute ( qtractorMidiEditCommand *pMidiEditCommand )
+bool qtractorMidiClip::execute (
+	qtractorMidiEditCommand *pMidiEditCommand, bool bPush )
 {
-	if (m_pMidiEditorForm == nullptr)
+	qtractorCommandList *pCommandList = nullptr;
+
+	if (m_pMidiEditorForm == nullptr) {
+		qtractorTrack *pTrack = track();
+		if (pTrack && pTrack->session())
+			pCommandList = pTrack->session()->commands();
+	} else {
+		pCommandList = commands();
+	}
+
+	if (pCommandList == nullptr)
 		return false;
 
-	qtractorMidiEditor *pMidiEditor = m_pMidiEditorForm->editor();
-	if (pMidiEditor == nullptr)
-		return false;
-
-	return pMidiEditor->execute(pMidiEditCommand);
+	if (bPush)
+		return pCommandList->push(pMidiEditCommand);
+	else
+		return pCommandList->exec(pMidiEditCommand);
 }
 
 
