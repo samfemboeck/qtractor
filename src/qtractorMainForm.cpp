@@ -6476,6 +6476,13 @@ bool qtractorMainForm::setPlaying ( bool bPlaying )
 					pCurveCommand = new qtractorCurveCaptureListCommand();
 				pCurveCommand->addCurveList(pCurveList);
 			}
+			if (pTrack->trackType() == qtractorTrack::Midi
+				&& pTrack->isClipRecordEx()) {
+				qtractorMidiClip *pMidiClip
+					= static_cast<qtractorMidiClip *> (pTrack->clipRecord());
+				if (pMidiClip)
+					pMidiClip->clearInpEvents();
+			}
 		}
 		if (pCurveCommand)
 			m_pSession->commands()->push(pCurveCommand);
