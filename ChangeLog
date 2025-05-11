@@ -4,6 +4,19 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+GIT HEAD
+
+- Files item selection mode switching corrected. (EXPERIMENTAL)
+
+- Mitigate or postpone a 'too many open files' condition as much 
+  as possible. (EXPERIMENTAL)
+
+- Let muted clips show the "[Mute]" tag as the name label prefix,
+  so that it's visible even on small clips.
+
+- Stepping up next development cycle (Qt >= 6.9)
+
+
 1.5.4  2025-04-04  An Early Spring'25 Release.
 
 - Fixed non-zero clip offset conversion on tempo(BPM) time-scale
