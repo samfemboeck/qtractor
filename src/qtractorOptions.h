@@ -129,6 +129,8 @@ public:
 	bool    bAudioPlayerAutoConnect;
 	bool    bAudioMetroAutoConnect;
 
+	bool    bAudioSelfConnected;
+
 	// Audio metronome latency offset compensation.
 	unsigned long iAudioMetroOffset;
 
