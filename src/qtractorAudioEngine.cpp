@@ -2873,7 +2873,7 @@ bool qtractorAudioBus::open (void)
 				sIPortName.arg(i + 1).toUtf8().constData(),
 				JACK_DEFAULT_AUDIO_TYPE,
 				JackPortIsInput, 0);
-			m_ppIBuffer[i] = nullptr;
+			m_ppIBuffer[i] = new float [iBufferSizeEx];
 			if (m_ppIPorts[i] == nullptr) ++iDisabled;
 		}
 	}
@@ -2951,8 +2951,11 @@ void qtractorAudioBus::close (void)
 			delete [] m_ppIPorts;
 		m_ppIPorts = nullptr;
 		// Free input buffers.
-		if (m_ppIBuffer)
+		if (m_ppIBuffer) {
+			for (i = 0; i < m_iChannels; ++i)
+				delete [] m_ppIBuffer[i];
 			delete [] m_ppIBuffer;
+		}
 		m_ppIBuffer = nullptr;
 	}
 
@@ -3129,8 +3132,10 @@ void qtractorAudioBus::process_prepare ( unsigned int nframes )
 
 	if (busMode & qtractorBus::Input) {
 		for (i = 0; i < m_iChannels; ++i) {
-			m_ppIBuffer[i] = static_cast<float *>
+			float *pIBuffer = static_cast<float *>
 				(jack_port_get_buffer(m_ppIPorts[i], nframes));
+			// Copy-in input buffer...
+			::memcpy(m_ppIBuffer[i], pIBuffer, nframes * sizeof(float));
 		}
 	}
 
