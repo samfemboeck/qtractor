@@ -145,7 +145,7 @@ Audio:	%1 channels, %2 Hz</source>
     <message>
         <location filename="../qtractorClip.cpp" line="158"/>
         <source>[Mute] </source>
-        <translation type="unfinished"></translation>
+        <translation>[Звук вимкнено] </translation>
     </message>
     <message>
         <location filename="../qtractorClip.cpp" line="563"/>
@@ -543,12 +543,12 @@ MIDI:	</translation>
     <message>
         <location filename="../qtractorMidiClip.cpp" line="1819"/>
         <source>step input</source>
-        <translation type="unfinished"></translation>
+        <translation>кроковий вхід</translation>
     </message>
     <message>
         <location filename="../qtractorMidiClip.cpp" line="1819"/>
         <source>overdub</source>
-        <translation type="unfinished"></translation>
+        <translation>перекриття</translation>
     </message>
     <message>
         <location filename="../qtractorMidiEngine.cpp" line="4356"/>
@@ -1581,12 +1581,12 @@ Do you want to discard the changes?</source>
     <message>
         <location filename="../qtractorClipForm.ui" line="599"/>
         <source>Whether to use RubberBand formant preserve</source>
-        <translation type="unfinished"></translation>
+        <translation>Визначає, чи слід використовувати збереження форманти RubberBand</translation>
     </message>
     <message>
         <location filename="../qtractorClipForm.ui" line="602"/>
         <source>RubberBand &amp;formant preserve</source>
-        <translation type="unfinished"></translation>
+        <translation>Збереження &amp;форманти RubberBand</translation>
     </message>
     <message>
         <location filename="../qtractorClipForm.ui" line="615"/>
@@ -1601,12 +1601,12 @@ Do you want to discard the changes?</source>
     <message>
         <location filename="../qtractorClipForm.ui" line="631"/>
         <source>Whether to use RubberBand R3 finer engine</source>
-        <translation type="unfinished"></translation>
+        <translation>Визначає, чи слід використовувати точний рушій R3 RubberBand</translation>
     </message>
     <message>
         <location filename="../qtractorClipForm.ui" line="634"/>
         <source>RubberBand R&amp;3 finer engine</source>
-        <translation type="unfinished"></translation>
+        <translation>Точний рушій R&amp;3 RubberBand</translation>
     </message>
     <message>
         <location filename="../qtractorClipForm.ui" line="646"/>
@@ -6514,12 +6514,17 @@ In general, connecting an output bus (or insert send),
 directly into any input bus (or insert return),
 is not advisable. It often doesn&apos;t work, if at all.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Виявлено самоз&apos;єднання звукових даних!
+
+Загалом, з&apos;єднаня каналу виведення (або надсилання вставлення)
+безпосереднього з будь-яким каналом вхідних даних (або повернення вставлення)
+є тим, що ми не радимо робити. Часто такі з&apos;єднання непрацездатні, якщо взагалі можливі.
+</translation>
     </message>
     <message>
         <location filename="../qtractorMainForm.cpp" line="8335"/>
         <source>Don&apos;t show this again</source>
-        <translation type="unfinished"></translation>
+        <translation>Більше не показувати</translation>
     </message>
     <message>
         <location filename="../qtractorMainForm.cpp" line="8353"/>
@@ -7455,7 +7460,7 @@ Length:	%3</source>
     <message>
         <location filename="../qtractorMidiEditor.cpp" line="114"/>
         <source>Closed Hi-Hat</source>
-        <translation type="unfinished"></translation>
+        <translation>Закритий гай-гет</translation>
     </message>
     <message>
         <location filename="../qtractorMidiEditor.cpp" line="115"/>
@@ -8009,7 +8014,7 @@ Length:	%3</source>
     <message>
         <location filename="../qtractorMidiEditor.cpp" line="240"/>
         <source>Decay Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Час згасання</translation>
     </message>
     <message>
         <location filename="../qtractorMidiEditor.cpp" line="249"/>
@@ -12302,12 +12307,12 @@ Are you sure?</source>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="964"/>
         <source>Whether to use RubberBand formant preserve</source>
-        <translation type="unfinished"></translation>
+        <translation>Визначає, чи слід використовувати збереження форманти RubberBand</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="967"/>
         <source>RubberBand &amp;formant preserve</source>
-        <translation type="unfinished"></translation>
+        <translation>Збереження &amp;форманти RubberBand</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="980"/>
@@ -12322,12 +12327,12 @@ Are you sure?</source>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="996"/>
         <source>Whether to use RubberBand R3 finer engine</source>
-        <translation type="unfinished"></translation>
+        <translation>Визначає, чи слід використовувати точний рушій R3 RubberBand</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="999"/>
         <source>RubberBand R&amp;3 finer engine</source>
-        <translation type="unfinished"></translation>
+        <translation>Точний рушій R&amp;3 RubberBand</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1012"/>
@@ -12352,17 +12357,17 @@ Are you sure?</source>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1060"/>
         <source>Connections</source>
-        <translation type="unfinished">З&apos;єднання</translation>
+        <translation>З&apos;єднання</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1075"/>
         <source>Whether to warn about audio self-connections</source>
-        <translation type="unfinished"></translation>
+        <translation>Визначає, чи слід попереджати про самоз&apos;єднання звукових каналів</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1078"/>
         <source>&amp;Warn about self-connections</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Попереджати про самоз&apos;єднання</translation>
     </message>
     <message>
         <location filename="../qtractorOptionsForm.ui" line="1120"/>
@@ -14395,7 +14400,7 @@ Do you want to apply the changes?</source>
     <message>
         <location filename="../qtractorShortcutForm.ui" line="49"/>
         <source>Shortcut search string (regular expression)</source>
-        <translation type="unfinished"></translation>
+        <translation>Рядок пошуку скорочення (формальний вираз)</translation>
     </message>
     <message>
         <location filename="../qtractorShortcutForm.ui" line="96"/>
@@ -14420,7 +14425,7 @@ Do you want to apply the changes?</source>
     <message>
         <location filename="../qtractorShortcutForm.cpp" line="359"/>
         <source>Search shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Пошук скорочень</translation>
     </message>
     <message>
         <location filename="../qtractorShortcutForm.cpp" line="462"/>
