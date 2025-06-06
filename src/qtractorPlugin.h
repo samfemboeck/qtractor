@@ -120,7 +120,9 @@ class qtractorPluginType
 public:
 
 	// Have hints for plugin paths.
-	enum Hint { Any = 0, Ladspa, Dssi, Vst2, Vst3, Clap, Lv2, Insert, AuxSend };
+	enum Hint { Any = 0,
+		Ladspa, Dssi, Vst2, Vst3, Clap, Lv2,
+		Insert, AuxSend, Control };
 
 	// Constructor.
 	qtractorPluginType(qtractorPluginFile *pFile, unsigned long iIndex,
@@ -469,6 +471,7 @@ public:
 
 	void toggleFormEditor(bool bOn);
 	void updateFormDirtyCount();
+	void updateMidiControlAutoConnect();
 	void updateFormAuxSendBusName();
 	void updateFormActivated();
 	void refreshForm();
