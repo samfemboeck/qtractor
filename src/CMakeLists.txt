@@ -67,6 +67,8 @@ set (HEADERS
   qtractorMidiControlCommand.h
   qtractorMidiControlObserver.h
   qtractorMidiControlTypeGroup.h
+  qtractorMidiControlPluginWidget.h
+  qtractorMidiControlPlugin.h
   qtractorMidiCursor.h
   qtractorMidiEditor.h
   qtractorMidiEditCommand.h
@@ -202,6 +204,8 @@ set (SOURCES
   qtractorMidiControlCommand.cpp
   qtractorMidiControlObserver.cpp
   qtractorMidiControlTypeGroup.cpp
+  qtractorMidiControlPluginWidget.cpp
+  qtractorMidiControlPlugin.cpp
   qtractorMidiCursor.cpp
   qtractorMidiEditor.cpp
   qtractorMidiEditCommand.cpp
@@ -291,6 +295,7 @@ set (FORMS
   qtractorMainForm.ui
   qtractorMidiControlForm.ui
   qtractorMidiControlObserverForm.ui
+  qtractorMidiControlPluginWidget.ui
   qtractorMidiEditorForm.ui
   qtractorMidiSysexForm.ui
   qtractorMidiToolsForm.ui
