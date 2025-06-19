@@ -4,10 +4,19 @@ Qtractor - An Audio/MIDI multi-track sequencer
 ChangeLog
 
 
+GIT HEAD
+
+- Draw all audio clip peaks+rms waveforms slightly compressed, so
+  that low-level signals have improved visibility. (EXPERIMENTAL)
+
+- Warn when saving any type of session into an extracted archive
+  directory.
+
+
 1.5.6  2025-06-06  An End-of-Spring'25 Release.
 
 - MIDI clip editor (aka. piano-roll): Transport/Step/Note/Backward,
-  Formard, now plays the step-selected notes, provided send/Preview
+  Forward, now plays the step-selected notes, provided send/Preview
   is on and playback is not rolling.
 
 - MIDI Tools: Normalize now finally fixed to an absolute Value,
