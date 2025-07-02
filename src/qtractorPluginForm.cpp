@@ -35,6 +35,8 @@
 #include "qtractorMidiControlObserverForm.h"
 #include "qtractorMidiControlPluginWidget.h"
 
+#include "qtractorAuxSendIOMatrixForm.h"
+
 #include "qtractorSpinBox.h"
 
 #include "qtractorBusForm.h"
@@ -166,6 +168,9 @@ qtractorPluginForm::qtractorPluginForm (
 	QObject::connect(m_ui.AuxSendBusNameToolButton,
 		SIGNAL(clicked()),
 		SLOT(clickAuxSendBusNameSlot()));
+	QObject::connect(m_ui.AuxSendIOMatrixToolButton,
+		SIGNAL(clicked()),
+		SLOT(clickAuxSendIOMatrixSlot()));
 
 	QObject::connect(m_pDirectAccessParamMenu,
 		SIGNAL(aboutToShow()),
@@ -373,9 +378,11 @@ void qtractorPluginForm::setPlugin ( qtractorPlugin *pPlugin )
 
 	// Show aux-send tool options...
 	const bool bAuxSendPlugin = (typeHint == qtractorPluginType::AuxSend);
+	const bool bAudioAuxSendPlugin = (bAuxSendPlugin && pType->index() > 0);
 	m_ui.AuxSendBusNameComboBox->setVisible(bAuxSendPlugin);
 	m_ui.AuxSendBusNameLabel->setVisible(bAuxSendPlugin);
 	m_ui.AuxSendBusNameToolButton->setVisible(bAuxSendPlugin);
+	m_ui.AuxSendIOMatrixToolButton->setVisible(bAudioAuxSendPlugin);
 
 	// Set initial plugin preset name...
 	setPreset(m_pPlugin->preset());
@@ -559,7 +566,7 @@ void qtractorPluginForm::updateAuxSendBusName (void)
 			if (pBus->busMode() & qtractorBus::Output) {
 				qtractorAudioBus *pAudioBus
 					= static_cast<qtractorAudioBus *> (pBus);
-				if (pAudioBus && pAudioBus->channels() == m_pPlugin->channels()) {
+				if (pAudioBus) {
 					if (bAudioOutBus && // Skip current or cyclic buses...
 						pAudioBus->pluginList_out() == pPluginList) {
 						cyclicAudioOutBuses.append(
@@ -622,6 +629,8 @@ void qtractorPluginForm::updateAuxSendBusName (void)
 	m_ui.AuxSendBusNameComboBox->setCurrentIndex(iIndex);
 
 	m_pPlugin->updateEditorTitle();
+
+	stabilize();
 }
 
 
@@ -1084,6 +1093,46 @@ void qtractorPluginForm::clickAuxSendBusNameSlot (void)
 }
 
 
+// Audio bus I/O matrix (aux-send) edit slot.
+void qtractorPluginForm::clickAuxSendIOMatrixSlot (void)
+{
+	qtractorSession *pSession = qtractorSession::getInstance();
+	if (pSession == nullptr)
+		return;
+
+	if (m_pPlugin == nullptr)
+		return;
+
+	qtractorPluginType *pType = m_pPlugin->type();
+	if (pType == nullptr)
+		return;
+
+	if (pType->typeHint() != qtractorPluginType::AuxSend)
+		return;
+
+	if (pType->index() == 0) // index == 0 => MIDI aux-send.
+		return;
+
+	qtractorAudioAuxSendPlugin *pAudioAuxSendPlugin
+		= static_cast<qtractorAudioAuxSendPlugin *> (m_pPlugin);
+	if (pAudioAuxSendPlugin == nullptr)
+		return;
+
+	qtractorAudioBus *pAudioBus = pAudioAuxSendPlugin->audioBus();
+	if (pAudioBus == nullptr)
+		return;
+
+	qtractorAuxSendIOMatrixForm dialog(this);
+	dialog.setChannels(pAudioAuxSendPlugin->channels(), pAudioBus->channels());
+	dialog.setMatrix(pAudioAuxSendPlugin->audioBusMatrix());
+	dialog.refresh();
+	if (dialog.exec() == QDialog::Accepted) {
+		pSession->execute(
+			new qtractorAuxSendIOMatrixCommand(m_pPlugin, dialog.matrix()));
+	}
+}
+
+
 // Direct access parameter slots
 void qtractorPluginForm::updateDirectAccessParamSlot (void)
 {
@@ -1250,6 +1299,16 @@ void qtractorPluginForm::stabilize (void)
 		bEnabled && (!bExists || m_iDirtyCount > 0));
 	m_ui.DeletePresetToolButton->setEnabled(
 		bEnabled && bExists);
+
+	if (pType->typeHint() == qtractorPluginType::AuxSend
+		&& pType->index() > 0) { // index == channels > 0 => Audio aux-send.
+		qtractorAudioBus *pAudioBus = nullptr;
+		qtractorAudioAuxSendPlugin *pAudioAuxSendPlugin
+			= static_cast<qtractorAudioAuxSendPlugin *> (m_pPlugin);
+		if (pAudioAuxSendPlugin)
+			pAudioBus = pAudioAuxSendPlugin->audioBus();
+		m_ui.AuxSendIOMatrixToolButton->setEnabled(pAudioBus != nullptr);
+	}
 }
 
 
@@ -1516,10 +1575,11 @@ qtractorPluginParamWidget::qtractorPluginParamWidget (
 		}
 		else
 		if (m_pParam->isInteger()) {
+			int iCol = 0;
 			pLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-			pGridLayout->addWidget(pLabel, 0, 0);
+			pGridLayout->addWidget(pLabel, 0, iCol++);
 			m_pSpinBox = new qtractorObserverSpinBox(/*this*/);
-			m_pSpinBox->setMinimumWidth(64);
+			m_pSpinBox->setMinimumWidth(52);
 			m_pSpinBox->setMaximumWidth(96);
 			m_pSpinBox->setDecimals(0);
 			m_pSpinBox->setMinimum(m_pParam->minValue());
@@ -1527,16 +1587,16 @@ qtractorPluginParamWidget::qtractorPluginParamWidget (
 			m_pSpinBox->setAlignment(pProp ? Qt::AlignRight : Qt::AlignHCenter);
 			m_pSpinBox->setSubject(m_pParam->subject());
 		//	m_pSpinBox->setValue(int(m_pParam->value()));
-			pGridLayout->addWidget(m_pSpinBox, 0, 1,
-				Qt::AlignRight | Qt::AlignVCenter);
-			pGridLayout->setColumnStretch(1, 2);
+			pGridLayout->setColumnStretch(iCol, 2);
 			if (m_pParam->isDisplay()) {
 				m_pDisplay = new qtractorPluginParamDisplay(m_pParam);
-				m_pDisplay->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+				m_pDisplay->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 			//	m_pDisplay->setText(m_pParam->display());
 				m_pDisplay->setMinimumWidth(64);
-				pGridLayout->addWidget(m_pDisplay, 0, 2);
+				pGridLayout->addWidget(m_pDisplay, 0, iCol++);
 			}
+			pGridLayout->addWidget(m_pSpinBox, 0, iCol,
+				Qt::AlignRight | Qt::AlignVCenter);
 		} else {
 			if (m_pParam->isDisplay()) {
 				pLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
