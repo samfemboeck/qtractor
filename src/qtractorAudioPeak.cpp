@@ -895,10 +895,6 @@ qtractorAudioPeak::~qtractorAudioPeak (void)
 qtractorAudioPeakFile::Frame *qtractorAudioPeak::peakFrames (
 	unsigned long iFrameOffset, unsigned long iFrameLength, int width )
 {
-	// Skip empty blanks...
-	if (width < 1)
-		return nullptr;
-
 	// Try open current peak file as is...
 	if (!m_pPeakFile->openRead())
 		return nullptr;
@@ -948,21 +944,20 @@ qtractorAudioPeakFile::Frame *qtractorAudioPeak::peakFrames (
 	const int p1 = int(iPeakLength);
 	const int n1 = iChannels * p1;
 
-	if (width < p1 && width > 1) {
+	if (width < p1 && width > 1 && 2 >= iChannels) {
 		const int w2 = (width >> 1) + 1;
 		const int n2 = iChannels * w2;
 		m_pPeakFrames = new qtractorAudioPeakFile::Frame [n2];
 		int n = 0; int i = 0;
 		while (n < n2) {
-			const int i2 = (n * p1) / w2;
+			const int i2 = ((n + iChannels) * n1) / n2;
 			for (unsigned short k = 0; k < iChannels; ++k) {
-				qtractorAudioPeakFile::Frame *pNewFrame = &m_pPeakFrames[n++];
-				qtractorAudioPeakFile::Frame *pOldFrame = &pPeakFrames[i + k];
-				pNewFrame->max = pOldFrame->max;
-				pNewFrame->min = pOldFrame->min;
-				pNewFrame->rms = pOldFrame->rms;
-				for (int j = i + 1; j < i2; j += iChannels) {
-					pOldFrame += iChannels;
+				qtractorAudioPeakFile::Frame *pNewFrame = &m_pPeakFrames[n + k];
+				pNewFrame->max = 0;
+				pNewFrame->min = 0;
+				pNewFrame->rms = 0;
+				for (int j = i; j < i2; j += iChannels) {
+					qtractorAudioPeakFile::Frame *pOldFrame = &pPeakFrames[j + k];
 					if (pNewFrame->max < pOldFrame->max)
 						pNewFrame->max = pOldFrame->max;
 					if (pNewFrame->min < pOldFrame->min)
@@ -971,6 +966,7 @@ qtractorAudioPeakFile::Frame *qtractorAudioPeak::peakFrames (
 						pNewFrame->rms = pOldFrame->rms;
 				}
 			}
+			n += iChannels;
 			i = i2;
 		}
 		// New-indirect frame buffer length...
