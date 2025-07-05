@@ -511,8 +511,8 @@ qtractorMainForm::qtractorMainForm (
 #endif
 #endif
 	//	pal.setColor(QPalette::Window, Qt::black);
-		pal.setColor(QPalette::Base, Qt::black);
-		pal.setColor(QPalette::Text, Qt::green);
+        pal.setColor(QPalette::Base, Qt::white);
+        pal.setColor(QPalette::Text, Qt::black);
 	//	pal.setColor(QPalette::Button, Qt::darkGray);
 	//	pal.setColor(QPalette::ButtonText, Qt::green);
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
